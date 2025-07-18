@@ -27,38 +27,38 @@
   }
 
   .dark {
-    --background: 255 17% 10%;
+    --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
-    --card: 255 17% 15%;
+    --card: 0 0% 3.9%;
     --card-foreground: 0 0% 98%;
-    --popover: 255 17% 15%;
+    --popover: 0 0% 3.9%;
     --popover-foreground: 0 0% 98%;
-    --primary: 260 80% 65%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 255 17% 20%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 14.9%;
     --secondary-foreground: 0 0% 98%;
-    --muted: 255 17% 20%;
-    --muted-foreground: 255 10% 65%;
-    --accent: 260 80% 65%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 255 17% 25%;
-    --input: 255 17% 25%;
-    --ring: 260 80% 70%;
-    --chart-1: 260 80% 65%;
-    --chart-2: 260 70% 55%;
-    --chart-3: 260 60% 45%;
-    --chart-4: 260 90% 75%;
-    --chart-5: 260 50% 35%;
-    --sidebar-background: 255 17% 8%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+    --chart-1: 0 0% 80%;
+    --chart-2: 0 0% 70%;
+    --chart-3: 0 0% 60%;
+    --chart-4: 0 0% 50%;
+    --chart-5: 0 0% 40%;
+    --sidebar-background: 0 0% 3.9%;
     --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 260 80% 65%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 255 17% 20%;
+    --sidebar-primary: 0 0% 98%;
+    --sidebar-primary-foreground: 0 0% 9%;
+    --sidebar-accent: 0 0% 14.9%;
     --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 255 17% 25%;
-    --sidebar-ring: 260 80% 70%;
+    --sidebar-border: 0 0% 14.9%;
+    --sidebar-ring: 0 0% 83.1%;
   }
 }
 
@@ -68,5 +68,12 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+  .grid-bg {
+    background-image:
+      linear-gradient(to right, hsl(var(--border)) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(var(--border)) 1px, transparent 1px);
+    background-size: 40px 40px;
+    background-position: center center;
   }
 }
