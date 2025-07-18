@@ -1,8 +1,11 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ArrowRight, Code, Cpu, DollarSign, Bot, Zap, ShieldCheck, Mail, MessageSquare, Phone } from 'lucide-react';
+import { ArrowRight, Code, Cpu, Bot, Zap, ShieldCheck, User, Mail, Send } from 'lucide-react';
 import Link from 'next/link';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 
 export default function LandingPage() {
 
@@ -73,27 +76,6 @@ export default function LandingPage() {
       answer: "We accept all major credit cards, including Visa, Mastercard, and American Express, processed securely through our payment provider."
     }
   ];
-
-  const contactMethods = [
-    {
-      icon: <Mail className="h-6 w-6 text-cyan-400" />,
-      title: "Email",
-      value: "support@devproascent.io",
-      href: "mailto:support@devproascent.io"
-    },
-    {
-      icon: <MessageSquare className="h-6 w-6 text-cyan-400" />,
-      title: "Live Chat",
-      value: "Chat with us",
-      href: "#"
-    },
-    {
-      icon: <Phone className="h-6 w-6 text-cyan-400" />,
-      title: "Phone",
-      value: "+1 (555) 010-4242",
-      href: "tel:+15550104242"
-    }
-  ]
 
   return (
     <div className="flex flex-col min-h-screen bg-black text-gray-200 font-body">
@@ -263,21 +245,35 @@ export default function LandingPage() {
              <div className="text-center max-w-3xl mx-auto">
               <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline text-cyan-400">Establish Connection</h2>
               <p className="mt-4 text-lg text-gray-400">
-                Our support agents are available to assist you. Select your preferred communication channel.
+                Have a question or want to work together? Drop us a line.
               </p>
             </div>
-            <div className="mt-16 grid gap-8 md:grid-cols-3">
-              {contactMethods.map((method) => (
-                 <a key={method.title} href={method.href} className="block p-0.5 bg-gradient-to-br from-cyan-500/50 to-gray-800 rounded-lg hover:from-cyan-400">
-                    <Card className="bg-gray-900/80 h-full border-none">
-                      <CardContent className="p-6 flex flex-col items-center text-center">
-                          {method.icon}
-                          <h3 className="text-xl font-bold mt-4 text-gray-100">{method.title}</h3>
-                          <p className="mt-2 text-cyan-400">{method.value}</p>
-                      </CardContent>
-                    </Card>
-                </a>
-              ))}
+            <div className="mt-16 max-w-2xl mx-auto">
+              <Card className="bg-gray-900/50 border border-cyan-500/30 backdrop-blur-sm">
+                <CardContent className="p-6 sm:p-8">
+                  <form className="space-y-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <Label htmlFor="name" className="text-cyan-400">Name</Label>
+                        <Input id="name" type="text" placeholder="Your name" className="bg-gray-800 border-gray-700 text-gray-200 focus:ring-cyan-400" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="email" className="text-cyan-400">Email</Label>
+                        <Input id="email" type="email" placeholder="Your email" className="bg-gray-800 border-gray-700 text-gray-200 focus:ring-cyan-400" />
+                      </div>
+                    </div>
+                     <div className="space-y-2">
+                        <Label htmlFor="message" className="text-cyan-400">Message</Label>
+                        <Textarea id="message" placeholder="Your message" rows={5} className="bg-gray-800 border-gray-700 text-gray-200 focus:ring-cyan-400" />
+                      </div>
+                      <div className="text-right">
+                        <Button type="submit" className="bg-cyan-400 text-black hover:bg-cyan-300 shadow-[0_0_15px_rgba(56,189,248,0.5)]">
+                          Send Message <Send className="ml-2 h-4 w-4" />
+                        </Button>
+                      </div>
+                  </form>
+                </CardContent>
+              </Card>
             </div>
            </div>
         </section>
