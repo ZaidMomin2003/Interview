@@ -1,3 +1,6 @@
+
+"use client";
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -6,8 +9,119 @@ import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { useEffect, useRef, useState } from 'react';
+import { cn } from '@/lib/utils';
+import { useInView } from 'react-intersection-observer';
+
+function AnimatedCounter({ to, label }: { to: number, label: string }) {
+  const [count, setCount] = useState(0);
+  const { ref, inView } = useInView({
+    triggerOnce: true,
+    threshold: 0.5,
+  });
+
+  useEffect(() => {
+    if (inView) {
+      let start = 0;
+      const duration = 2000;
+      const end = to;
+      if (start === end) return;
+
+      const range = end - start;
+      let current = start;
+      const increment = end > start ? 1 : -1;
+      const stepTime = Math.abs(Math.floor(duration / range));
+      
+      const timer = setInterval(() => {
+        current += increment * Math.ceil(range/100);
+        if((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
+          current = end;
+          clearInterval(timer);
+        }
+        setCount(current);
+      }, stepTime > 0 ? stepTime : 1);
+
+      return () => {
+        clearInterval(timer);
+      };
+    }
+  }, [inView, to]);
+
+  return (
+    <div ref={ref} className="text-center">
+      <p className="text-5xl font-bold font-headline text-cyan-400">{count.toLocaleString()}+</p>
+      <p className="text-gray-400 mt-2">{label}</p>
+    </div>
+  );
+}
+
+
+function SpotlightCard({ children, className }: { children: React.ReactNode, className?: string }) {
+  const divRef = useRef<HTMLDivElement>(null);
+  const [isFocused, setIsFocused] = useState(false);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [opacity, setOpacity] = useState(0);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!divRef.current || isFocused) return;
+
+    const div = divRef.current;
+    const rect = div.getBoundingClientRect();
+
+    setPosition({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+  };
+
+  const handleFocus = () => {
+    setIsFocused(true);
+    setOpacity(1);
+  };
+
+  const handleBlur = () => {
+    setIsFocused(false);
+    setOpacity(0);
+  };
+
+  const handleMouseEnter = () => {
+    setOpacity(1);
+  };
+
+  const handleMouseLeave = () => {
+    setOpacity(0);
+  };
+
+  return (
+    <div
+      ref={divRef}
+      onMouseMove={handleMouseMove}
+      onFocus={handleFocus}
+      onBlur={handleBlur}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      className={cn("relative overflow-hidden rounded-lg border bg-gray-900/50 border-cyan-500/30 backdrop-blur-sm transition-colors duration-300 group", className)}
+    >
+      <div
+        className="pointer-events-none absolute -inset-px opacity-0 transition duration-300"
+        style={{
+          opacity,
+          background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, rgba(56, 189, 248, 0.1), transparent 40%)`,
+        }}
+      />
+      {children}
+    </div>
+  );
+};
+
 
 export default function LandingPage() {
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const features = [
     {
@@ -84,7 +198,10 @@ export default function LandingPage() {
       <div className="absolute inset-0 -z-10 h-full w-full bg-gradient-to-b from-black via-transparent to-black"></div>
 
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b border-cyan-500/30 bg-black/50 backdrop-blur-sm">
+      <header className={cn(
+          "sticky top-0 z-50 w-full transition-all duration-300",
+          isScrolled ? "border-b border-cyan-500/30 bg-black/50 backdrop-blur-lg" : "bg-transparent"
+        )}>
         <div className="container mx-auto flex h-20 items-center justify-between px-4">
           <Link href="/" className="flex items-center gap-2">
             <Cpu className="h-8 w-8 text-cyan-400" />
@@ -100,10 +217,10 @@ export default function LandingPage() {
              <Link href="#contact" className="text-sm font-medium text-gray-400 hover:text-cyan-400 transition-colors">Contact</Link>
           </nav>
           <div className="flex items-center gap-2">
-            <Button variant="outline" className="border-cyan-400 text-cyan-400 hover:bg-cyan-400 hover:text-black" asChild>
+            <Button variant="outline" className="border-cyan-400 text-cyan-400 hover:bg-cyan-400 hover:text-black transition-all duration-300 hover:scale-105 active:scale-95" asChild>
               <Link href="/dashboard">Login</Link>
             </Button>
-            <Button className="bg-cyan-400 text-black hover:bg-cyan-300 shadow-[0_0_15px_rgba(56,189,248,0.5)]" asChild>
+            <Button className="bg-cyan-400 text-black hover:bg-cyan-300 shadow-[0_0_15px_rgba(56,189,248,0.5)] transition-all duration-300 hover:scale-105 active:scale-95 hover:shadow-[0_0_25px_rgba(56,189,248,0.7)]" asChild>
               <Link href="/dashboard">Get Started</Link>
             </Button>
           </div>
@@ -114,7 +231,7 @@ export default function LandingPage() {
         {/* Hero Section */}
         <section id="hero" className="py-32 sm:py-40 md:py-48">
           <div className="container mx-auto px-4 text-center">
-            <h1 className="text-5xl font-bold tracking-tighter sm:text-6xl md:text-7xl lg:text-8xl font-headline bg-clip-text text-transparent bg-gradient-to-b from-gray-100 to-cyan-400">
+             <h1 className="animate-text-gradient bg-gradient-to-r from-cyan-400 via-purple-400 to-cyan-400 bg-clip-text text-5xl font-bold tracking-tighter text-transparent sm:text-6xl md:text-7xl lg:text-8xl font-headline">
               Ascend Your Career
             </h1>
             <p className="mt-6 max-w-3xl mx-auto text-lg text-gray-400">
@@ -122,7 +239,7 @@ export default function LandingPage() {
               interviews, and accelerate your developer journey into the digital frontier.
             </p>
             <div className="mt-10">
-              <Button size="lg" className="bg-cyan-400 text-black hover:bg-cyan-300 shadow-[0_0_20px_rgba(56,189,248,0.6)]" asChild>
+              <Button size="lg" className="bg-cyan-400 text-black hover:bg-cyan-300 shadow-[0_0_20px_rgba(56,189,248,0.6)] transition-all duration-300 hover:scale-105 active:scale-95 hover:shadow-[0_0_30px_rgba(56,189,248,0.8)]" asChild>
                 <Link href="/dashboard">
                   Engage AI Co-Pilot <ArrowRight className="ml-2" />
                 </Link>
@@ -140,6 +257,11 @@ export default function LandingPage() {
                 We are a collective of engineers and AI researchers dedicated to building the future of career development. We believe in empowering developers with the tools they need to navigate the complexities of the tech industry and achieve their highest potential.
               </p>
             </div>
+             <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+              <AnimatedCounter to={15000} label="Resumes Generated" />
+              <AnimatedCounter to={25000} label="Coding Problems Solved" />
+              <AnimatedCounter to={98} label="User Satisfaction (%)" />
+            </div>
           </div>
         </section>
 
@@ -154,7 +276,7 @@ export default function LandingPage() {
             </div>
             <div className="mt-16 grid gap-8 md:grid-cols-3">
               {features.map((feature, i) => (
-                <Card key={i} className="bg-gray-900/50 border border-cyan-500/30 hover:border-cyan-400 transition-colors duration-300 backdrop-blur-sm group">
+                <SpotlightCard key={i}>
                   <CardHeader className="items-center text-center">
                     <div className="p-4 bg-gray-800 border border-cyan-500/30 rounded-lg group-hover:scale-110 transition-transform">
                        {feature.icon}
@@ -168,7 +290,7 @@ export default function LandingPage() {
                       {feature.description}
                     </p>
                   </CardContent>
-                </Card>
+                </SpotlightCard>
               ))}
             </div>
           </div>
@@ -185,7 +307,10 @@ export default function LandingPage() {
             </div>
             <div className="mt-16 grid gap-8 md:grid-cols-3">
               {pricingTiers.map((tier) => (
-                <Card key={tier.name} className={`bg-gray-900/50 border border-cyan-500/30 flex flex-col ${tier.popular ? 'border-cyan-400 shadow-[0_0_25px_rgba(56,189,248,0.4)]' : ''}`}>
+                <Card key={tier.name} className={cn(
+                  "bg-gray-900/50 border border-cyan-500/30 flex flex-col transition-all duration-300 hover:border-cyan-400 hover:shadow-cyan-400/20 hover:shadow-2xl hover:-translate-y-2",
+                  tier.popular ? 'border-cyan-400 shadow-[0_0_25px_rgba(56,189,248,0.4)]' : ''
+                )}>
                    {tier.popular && (
                     <div className="text-center py-1 bg-cyan-400 text-black font-bold text-sm">MOST POPULAR</div>
                   )}
@@ -205,7 +330,10 @@ export default function LandingPage() {
                     </ul>
                   </CardContent>
                   <div className="p-6 pt-0">
-                     <Button className={`w-full ${tier.popular ? 'bg-cyan-400 text-black hover:bg-cyan-300' : 'bg-gray-700 text-gray-200 hover:bg-gray-600'}`} asChild>
+                     <Button className={cn(
+                       "w-full transition-all duration-300 hover:scale-105 active:scale-95",
+                       tier.popular ? 'bg-cyan-400 text-black hover:bg-cyan-300 hover:shadow-[0_0_25px_rgba(56,189,248,0.7)]' : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
+                     )} asChild>
                       <Link href={tier.href}>{tier.cta}</Link>
                     </Button>
                   </div>
@@ -227,7 +355,7 @@ export default function LandingPage() {
             <Accordion type="single" collapsible className="w-full mt-12">
               {faqs.map((faq, i) => (
                  <AccordionItem key={i} value={`item-${i}`} className="border-cyan-500/30">
-                  <AccordionTrigger className="text-lg text-left font-semibold text-gray-200 hover:text-cyan-400">
+                  <AccordionTrigger className="text-lg text-left font-semibold text-gray-200 hover:text-cyan-400 transition-colors duration-300">
                     {faq.question}
                   </AccordionTrigger>
                   <AccordionContent className="text-gray-400 text-base">
@@ -267,7 +395,7 @@ export default function LandingPage() {
                         <Textarea id="message" placeholder="Your message" rows={5} className="bg-gray-800 border-gray-700 text-gray-200 focus:ring-cyan-400" />
                       </div>
                       <div className="text-right">
-                        <Button type="submit" className="bg-cyan-400 text-black hover:bg-cyan-300 shadow-[0_0_15px_rgba(56,189,248,0.5)]">
+                        <Button type="submit" className="bg-cyan-400 text-black hover:bg-cyan-300 shadow-[0_0_15px_rgba(56,189,248,0.5)] transition-all duration-300 hover:scale-105 active:scale-95">
                           Send Message <Send className="ml-2 h-4 w-4" />
                         </Button>
                       </div>
