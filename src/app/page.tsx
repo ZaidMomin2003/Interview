@@ -207,7 +207,7 @@ export default function LandingPage() {
       <div
         className="pointer-events-none fixed inset-0 z-0 transition-opacity duration-300"
         style={{
-          background: `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(56, 189, 248, 0.15), transparent 40%)`,
+          background: `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(56, 189, 248, 0.25), transparent 40%)`,
         }}
       />
       <div className="absolute inset-0 -z-10 h-full w-full bg-black bg-[linear-gradient(to_right,#1f2937_1px,transparent_1px),linear-gradient(to_bottom,#1f2937_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
@@ -266,7 +266,7 @@ export default function LandingPage() {
 
         {/* About Us Section */}
         <section id="about" className="py-20 sm:py-24">
-          <div className="container mx-auto px-4">
+          <div className="container mx-auto px-4 max-w-5xl">
             <div className="text-center max-w-3xl mx-auto">
               <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline text-cyan-400">About DevPro Ascent</h2>
               <p className="mt-4 text-lg text-gray-400">
@@ -283,7 +283,7 @@ export default function LandingPage() {
 
         {/* Features Section */}
         <section id="features" className="py-20 sm:py-24">
-          <div className="container mx-auto px-4">
+          <div className="container mx-auto px-4 max-w-5xl">
             <div className="text-center max-w-3xl mx-auto">
               <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline text-cyan-400">Core Matrix</h2>
               <p className="mt-4 text-lg text-gray-400">
@@ -314,7 +314,7 @@ export default function LandingPage() {
 
         {/* Pricing Section */}
         <section id="pricing" className="py-20 sm:py-24">
-          <div className="container mx-auto px-4">
+          <div className="container mx-auto px-4 max-w-5xl">
             <div className="text-center max-w-3xl mx-auto">
               <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline text-cyan-400">Access Protocols</h2>
               <p className="mt-4 text-lg text-gray-400">
@@ -385,7 +385,7 @@ export default function LandingPage() {
 
         {/* Contact Us Section */}
         <section id="contact" className="py-20 sm:py-24">
-           <div className="container mx-auto px-4">
+           <div className="container mx-auto px-4 max-w-3xl">
              <div className="text-center max-w-3xl mx-auto">
               <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline text-cyan-400">Establish Connection</h2>
               <p className="mt-4 text-lg text-gray-400">
