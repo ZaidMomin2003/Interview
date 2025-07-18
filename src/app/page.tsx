@@ -1,61 +1,55 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { CodeXml, FileText, Bot, Rocket, BrainCircuit, Sparkles } from 'lucide-react';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { ArrowRight, CheckCircle, Quote, TrendingUp, Zap, BarChartBig } from 'lucide-react';
 import Link from 'next/link';
-import Image from 'next/image';
 
 export default function LandingPage() {
   const features = [
     {
-      icon: <FileText className="h-10 w-10 text-accent" />,
-      title: 'AI Resume Builder',
-      description: 'Craft the perfect, professional resume tailored to your dream job in minutes. Let our AI handle the formatting and keywords.',
-      dataAiHint: 'resume professional',
+      icon: <BarChartBig className="h-8 w-8 text-accent" />,
+      title: 'Advanced Analytics',
+      description: 'Unlock deep insights with our comprehensive suite of analytical tools and visualizations.',
     },
     {
-      icon: <Rocket className="h-10 w-10 text-accent" />,
-      title: 'Resume Optimization',
-      description: 'Get actionable feedback on your existing resume. Our AI analyzes your resume against job descriptions to boost your chances.',
-      dataAiHint: 'rocket launch',
+      icon: <Zap className="h-8 w-8 text-accent" />,
+      title: 'Real-Time Dashboards',
+      description: 'Monitor your key metrics in real-time with dynamic, interactive, and customizable dashboards.',
     },
     {
-      icon: <BrainCircuit className="h-10 w-10 text-accent" />,
-      title: 'Dynamic Question Generator',
-      description: 'Sharpen your coding skills with personalized questions. Tailored to your skill level, preferred languages, and topics.',
-      dataAiHint: 'brain circuit',
+      icon: <TrendingUp className="h-8 w-8 text-accent" />,
+      title: 'Predictive Modeling',
+      description: 'Leverage machine learning to forecast trends and make proactive, data-informed decisions.',
+    },
+  ];
+
+  const faqs = [
+    {
+      question: 'What kind of data sources can I connect?',
+      answer: 'Dataly supports a wide range of data sources, including SQL databases, NoSQL databases, cloud storage services like S3 and Google Cloud Storage, as well as popular third-party services like Google Analytics and Salesforce.',
     },
     {
-      icon: <CodeXml className="h-10 w-10 text-accent" />,
-      title: 'Integrated Code Editor',
-      description: 'Solve problems directly in our sleek, integrated code editor with syntax highlighting and a clean interface.',
-      dataAiHint: 'code editor',
+      question: 'Is Dataly suitable for small businesses?',
+      answer: 'Absolutely. Our platform is designed to be scalable and flexible, meeting the needs of businesses of all sizes. We offer various pricing tiers, including a plan that is perfect for startups and small businesses looking to get started with data analytics.',
     },
     {
-      icon: <Sparkles className="h-10 w-10 text-accent" />,
-      title: 'AI-Powered Code Feedback',
-      description: 'Submit your solutions and receive instant, detailed feedback. Understand your mistakes and learn more efficient approaches.',
-      dataAiHint: 'AI feedback',
-    },
-    {
-      icon: <Bot className="h-10 w-10 text-accent" />,
-      title: 'Your Career Copilot',
-      description: 'DevPro Ascent is more than a set of tools; it\'s your partner in navigating the tech landscape and achieving your career goals.',
-      dataAiHint: 'robot assistant',
+      question: 'How secure is my data?',
+      answer: 'Data security is our top priority. We employ end-to-end encryption, regular security audits, and comply with industry-standard security protocols like SOC 2 and GDPR to ensure your data is always protected.',
     },
   ];
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
+    <div className="flex flex-col min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-14 items-center">
+        <div className="container flex h-16 items-center">
           <Link href="/" className="flex items-center gap-2 mr-6">
-            <svg
+             <svg
               xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
+              viewBox="0 0 256 256"
               className="h-6 w-6 text-accent"
+              fill="currentColor"
             >
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.59L7.41 13 9 11.41l2 2 4.59-4.59L17 10.41 11 16.59z" />
+              <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24ZM112,184a8,8,0,0,1-16,0V144H80a8,8,0,0,1,0-16h16V72a8,8,0,0,1,16,0v56h16a8,8,0,0,1,0,16H112Zm64,0a8,8,0,0,1-16,0V160H144a8,8,0,0,1,0-16h16V128a8,8,0,0,1,16,0v16h16a8,8,0,0,1,0,16H176Z" />
             </svg>
             <span className="font-bold font-headline text-lg">Dataly</span>
           </Link>
@@ -65,7 +59,7 @@ export default function LandingPage() {
                 <Link href="/dashboard">Sign In</Link>
               </Button>
               <Button asChild className="bg-accent hover:bg-accent/90 text-accent-foreground">
-                <Link href="/dashboard">Get Started</Link>
+                <Link href="/dashboard">Get Started Free</Link>
               </Button>
             </nav>
           </div>
@@ -73,92 +67,106 @@ export default function LandingPage() {
       </header>
 
       <main className="flex-1">
-        <section className="py-20 sm:py-32">
+        <section className="py-24 sm:py-32 md:py-40">
           <div className="container px-4 text-center">
+            <div className="bg-accent/20 text-accent font-medium inline-flex items-center gap-2 rounded-full px-4 py-1 mb-6">
+              <CheckCircle className="h-4 w-4" />
+              <span>Now with AI-Powered Predictive Analytics</span>
+            </div>
             <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl font-headline">
-              Empowering your business with <span className="text-accent">data driven insights</span>
+              Turn Data into Actionable Insights
             </h1>
-            <p className="mt-6 max-w-2xl mx-auto text-lg text-muted-foreground">
-             Founded by a team of data enthusiasts and industry experts, we specialize in developing cutting-edge fixed analytics platforms designed to meet the needs of businesses of all sizes.
+            <p className="mt-6 max-w-3xl mx-auto text-lg text-muted-foreground">
+              Dataly is the all-in-one analytics platform that empowers your team to explore data, build real-time dashboards, and make smarter decisions without the complexity.
             </p>
-            <div className="mt-10 flex justify-center gap-4">
-              <Button size="lg" variant="outline">
-                Learn More
+            <div className="mt-10 flex flex-col sm:flex-row justify-center items-center gap-4">
+              <Button size="lg" asChild className="bg-accent hover:bg-accent/90 text-accent-foreground shadow-lg shadow-accent/20">
+                <Link href="/dashboard">Get Started for Free <ArrowRight className="ml-2" /></Link>
               </Button>
-              <Button size="lg" asChild className="bg-accent hover:bg-accent/90 text-accent-foreground">
-                <Link href="/dashboard">Get Started</Link>
+              <Button size="lg" variant="outline">
+                Book a Demo
               </Button>
             </div>
           </div>
         </section>
 
-        <section id="features" className="py-20 sm:py-32 bg-secondary">
+        <section id="features" className="py-20 sm:py-24 bg-secondary">
           <div className="container px-4">
             <div className="text-center">
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl font-headline">Our Values</h2>
+              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl font-headline">The Platform for Data-Driven Teams</h2>
               <p className="mt-4 max-w-2xl mx-auto text-lg text-muted-foreground">
-                Empower your product team to make smarter decisions and drive innovation with our advanced analytics platform.
+                Stop guessing. Start knowing. Everything you need to understand your business and customers on a deeper level.
               </p>
             </div>
-            <div className="mt-16 grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-               <Card className="bg-card hover:border-accent transition-colors duration-300">
+            <div className="mt-16 grid gap-8 md:grid-cols-3">
+              {features.map((feature) => (
+                <Card key={feature.title} className="bg-card/50 backdrop-blur-sm border-border/50 hover:border-accent/80 hover:bg-card transition-all duration-300 transform hover:-translate-y-1">
                   <CardHeader>
-                    <CardTitle className="font-headline text-xl">Innovation</CardTitle>
+                    <div className="p-3 bg-accent/10 rounded-lg w-fit mb-4 border border-accent/20">
+                      {feature.icon}
+                    </div>
+                    <CardTitle className="font-headline text-xl">{feature.title}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-muted-foreground mb-4">We continuously push the boundaries of technology to deliver the latest in analytics solutions.</p>
-                    <Image src="https://placehold.co/400x200.png" alt="Innovation chart" width={400} height={200} className="w-full h-auto rounded-md" data-ai-hint="chart graph" />
+                    <p className="text-muted-foreground">{feature.description}</p>
                   </CardContent>
                 </Card>
-                <Card className="bg-card hover:border-accent transition-colors duration-300">
-                  <CardHeader>
-                    <CardTitle className="font-headline text-xl">Customer Centricity</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground mb-4">Your success is our priority. We strive to provide exceptional support and tailor our solutions to meet your unique needs.</p>
-                     <Image src="https://placehold.co/400x200.png" alt="Customer Centricity chart" width={400} height={200} className="w-full h-auto rounded-md" data-ai-hint="data table" />
-                  </CardContent>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="py-20 sm:py-24">
+          <div className="container px-4">
+            <div className="grid md:grid-cols-2 gap-12 items-center">
+              <div>
+                <h2 className="text-3xl font-bold tracking-tight sm:text-4xl font-headline">Trusted by the most innovative companies</h2>
+                <p className="mt-4 text-lg text-muted-foreground">
+                  Our customers see an average 45% increase in operational efficiency and a 30% boost in revenue within the first year.
+                </p>
+              </div>
+              <div className="relative">
+                <Card className="bg-secondary/50 p-8 rounded-xl shadow-lg">
+                  <Quote className="h-10 w-10 text-accent/50 absolute -top-4 -left-4" />
+                  <blockquote className="text-lg text-foreground italic">
+                    "Dataly has completely transformed how we approach our data. What used to take weeks of engineering time now takes minutes. It's the most intuitive and powerful analytics tool we've ever used."
+                  </blockquote>
+                  <div className="mt-6">
+                    <p className="font-semibold">Sarah Johnson</p>
+                    <p className="text-sm text-muted-foreground">Head of Product, InnovateCorp</p>
+                  </div>
                 </Card>
-                <Card className="bg-card hover:border-accent transition-colors duration-300 md:col-span-2 lg:col-span-1">
-                  <CardHeader>
-                    <CardTitle className="font-headline text-xl">Integrity</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground mb-4">We are committed to transparency and honesty in all our interactions, ensuring you receive reliable and accurate insights.</p>
-                     <Image src="https://placehold.co/400x200.png" alt="Integrity chart" width={400} height={200} className="w-full h-auto rounded-md" data-ai-hint="dashboard metrics" />
-                  </CardContent>
-                </Card>
+              </div>
             </div>
           </div>
         </section>
         
-        <section className="py-20 sm:py-32">
-           <div className="container px-4 text-center">
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl font-headline">Our Team</h2>
-              <p className="mt-4 max-w-2xl mx-auto text-lg text-muted-foreground">
-                Our team is our greatest asset. We bring together a diverse group of talented professionals with a shared passion for data and innovation.
-              </p>
-              <div className="mt-16 grid gap-8 sm:grid-cols-2 md:grid-cols-4 justify-center">
-                {[
-                  {name: 'Jane Smith', role: 'CEO & Co-Founder', hint: 'woman portrait'},
-                  {name: 'John Doe', role: 'CTO & Co-Founder', hint: 'man portrait'},
-                  {name: 'Emily White', role: 'Head of Data Science', hint: 'woman smiling'},
-                  {name: 'Michael Brown', role: 'Lead Engineer', hint: 'man glasses'},
-                ].map((member) => (
-                  <div key={member.name}>
-                    <Image src="https://placehold.co/200x200.png" alt={member.name} width={200} height={200} className="w-32 h-32 rounded-full mx-auto mb-4 object-cover" data-ai-hint={member.hint} />
-                    <h3 className="font-bold text-lg">{member.name}</h3>
-                    <p className="text-muted-foreground">{member.role}</p>
-                  </div>
-                ))}
+        <section className="py-20 sm:py-24 bg-secondary">
+           <div className="container px-4 max-w-4xl mx-auto">
+              <div className="text-center">
+                <h2 className="text-3xl font-bold tracking-tight sm:text-4xl font-headline">Frequently Asked Questions</h2>
+                <p className="mt-4 max-w-2xl mx-auto text-lg text-muted-foreground">
+                  Have questions? We have answers. If you can't find what you're looking for, feel free to contact us.
+                </p>
               </div>
+              <Accordion type="single" collapsible className="w-full mt-12">
+                {faqs.map((faq, i) => (
+                  <AccordionItem key={i} value={`item-${i + 1}`}>
+                    <AccordionTrigger className="text-lg font-medium text-left hover:text-accent">
+                      {faq.question}
+                    </AccordionTrigger>
+                    <AccordionContent className="text-base text-muted-foreground">
+                      {faq.answer}
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
            </div>
         </section>
-
       </main>
 
-      <footer className="bg-secondary border-t">
-        <div className="container py-8 flex items-center justify-between">
+      <footer className="bg-background border-t">
+        <div className="container py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-sm text-muted-foreground">&copy; {new Date().getFullYear()} Dataly. All rights reserved.</p>
           <div className="flex gap-4">
             <Link href="#" className="text-sm text-muted-foreground hover:text-foreground">Privacy Policy</Link>
