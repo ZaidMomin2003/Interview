@@ -233,9 +233,6 @@ export default function LandingPage() {
              <Link href="#contact" className="text-sm font-medium text-gray-400 hover:text-cyan-400 transition-colors">Contact</Link>
           </nav>
           <div className="flex items-center gap-2">
-            <Button variant="outline" className="border-cyan-400 text-cyan-400 hover:bg-cyan-400 hover:text-black transition-all duration-300 hover:scale-105 active:scale-95" asChild>
-              <Link href="/dashboard">Login</Link>
-            </Button>
             <Button className="bg-cyan-400 text-black hover:bg-cyan-300 shadow-[0_0_15px_rgba(56,189,248,0.5)] transition-all duration-300 hover:scale-105 active:scale-95 hover:shadow-[0_0_25px_rgba(56,189,248,0.7)]" asChild>
               <Link href="/dashboard">Get Started</Link>
             </Button>
