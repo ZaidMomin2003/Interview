@@ -10,7 +10,7 @@ export default function AppLayout({
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
-        <div className="min-h-screen lg:p-8 p-4 bg-background">
+        <div className="relative min-h-screen lg:p-8 p-4">
             {children}
         </div>
       </SidebarInset>
