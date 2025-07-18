@@ -81,7 +81,7 @@ export function AppSidebar() {
         ))}
       </SidebarMenu>
 
-      <SidebarFooter className="border-t -mx-2 pt-2">
+      <SidebarFooter className="border-t mt-auto p-2">
          <SidebarMenuItem>
             <SidebarMenuButton tooltip="Settings">
               <Settings />
