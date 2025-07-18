@@ -82,18 +82,12 @@ export function AppSidebar() {
       </SidebarMenu>
 
       <SidebarFooter className="border-t mt-auto p-2">
-         <SidebarMenuItem>
-            <SidebarMenuButton tooltip="Settings">
-              <Settings />
-              <span>Settings</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-           <SidebarMenuItem>
-            <SidebarMenuButton tooltip="Log Out">
-              <LogOut />
-              <span>Log Out</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
+        <SidebarMenuItem>
+          <SidebarMenuButton tooltip="Log Out" className="bg-transparent hover:bg-destructive/80 text-red-500 hover:text-white border border-red-500/50 hover:border-red-500 transition-colors duration-300">
+            <LogOut />
+            <span>Log Out</span>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
       </SidebarFooter>
     </Sidebar>
   );
