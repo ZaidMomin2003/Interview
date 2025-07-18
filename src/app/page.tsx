@@ -1,5 +1,6 @@
+
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { ArrowRight, Terminal, Bot, Zap } from 'lucide-react';
 import Link from 'next/link';
@@ -39,7 +40,7 @@ export default function LandingPage() {
   ];
 
   return (
-    <div className="flex flex-col min-h-screen bg-background text-foreground font-code">
+    <div className="flex flex-col min-h-screen bg-background text-foreground">
       <div className="absolute inset-0 -z-10 h-full w-full bg-background grid-bg"></div>
       <div className="absolute inset-0 -z-10 h-full w-full bg-gradient-to-b from-transparent via-transparent to-background"></div>
 
