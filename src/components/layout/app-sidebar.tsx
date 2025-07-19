@@ -17,6 +17,7 @@ import {
   Rocket,
   LogOut,
   Video,
+  Target,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -30,6 +31,11 @@ const menuItems = [
     href: "/dashboard",
     label: "Dashboard",
     icon: LayoutDashboard,
+  },
+   {
+    href: "/arena",
+    label: "Arena",
+    icon: Target,
   },
   {
     href: "/ai-interview",
