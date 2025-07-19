@@ -208,9 +208,9 @@ const LanguagesStep = () => {
   return (
     <div className="grid grid-cols-3 gap-4">
       {languageOptions.map(lang => (
-        <div
+        <Label
           key={lang.id}
-          onClick={() => handleLanguageToggle(lang.id)}
+          htmlFor={`lang-${lang.id}`}
           className={cn(
             "flex items-center gap-3 p-4 rounded-lg border-2 cursor-pointer transition-all duration-200",
             selectedLanguages.includes(lang.id) ? "bg-cyan-400/20 border-cyan-400" : "bg-gray-800/50 border-gray-700 hover:border-cyan-500"
@@ -218,8 +218,13 @@ const LanguagesStep = () => {
         >
           <Code className="h-6 w-6 text-cyan-400" />
           <p className="font-semibold">{lang.label}</p>
-          <Checkbox checked={selectedLanguages.includes(lang.id)} className="ml-auto h-5 w-5" />
-        </div>
+          <Checkbox 
+            id={`lang-${lang.id}`}
+            checked={selectedLanguages.includes(lang.id)} 
+            onCheckedChange={() => handleLanguageToggle(lang.id)}
+            className="ml-auto h-5 w-5" 
+          />
+        </Label>
       ))}
     </div>
   );
