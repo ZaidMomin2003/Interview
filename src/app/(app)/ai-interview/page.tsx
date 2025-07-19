@@ -1,3 +1,4 @@
+
 // src/app/(app)/ai-interview/page.tsx
 'use client';
 
@@ -9,6 +10,7 @@ import { Mic, MicOff, Video, VideoOff, PhoneOff } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 // Check for SpeechRecognition API
 const SpeechRecognition =
@@ -25,23 +27,34 @@ export default function AiInterviewPage() {
 
   const stopListening = useCallback(() => {
     if (recognitionRef.current) {
-      recognitionRef.current.onend = null; // Prevent restart on manual stop
+      recognitionRef.current.onresult = null;
+      recognitionRef.current.onerror = null;
+      recognitionRef.current.onend = null;
       recognitionRef.current.stop();
+      setIsListening(false);
     }
-    setIsListening(false);
   }, []);
-
+  
   const startListening = useCallback(() => {
-    if (recognitionRef.current) {
-      setTranscript(''); // Clear transcript when starting
+    if (!recognitionRef.current) return;
+    setTranscript(''); // Clear transcript when starting
+    try {
       recognitionRef.current.start();
+      setIsListening(true);
+    } catch (e) {
+      console.error("Could not start recognition:", e);
+      if ((e as DOMException).name === 'NotAllowedError') {
+         toast({
+            variant: 'destructive',
+            title: 'Microphone Access Denied',
+            description: `Please allow microphone access in your browser settings.`,
+        });
+      }
     }
-    setIsListening(true);
-  }, []);
+  }, [toast]);
 
 
   useEffect(() => {
-    // Request camera permission
     const getCameraPermission = async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
@@ -63,12 +76,12 @@ export default function AiInterviewPage() {
     };
     getCameraPermission();
 
-    // Setup Speech Recognition
     if (SpeechRecognition) {
       const recognition = new SpeechRecognition();
       recognition.continuous = true;
       recognition.interimResults = true;
       recognition.lang = 'en-US';
+      recognitionRef.current = recognition;
 
       recognition.onresult = (event) => {
         let finalTranscript = '';
@@ -88,7 +101,6 @@ export default function AiInterviewPage() {
         stopListening();
       };
       
-      recognitionRef.current = recognition;
     } else {
         toast({
             variant: 'destructive',
@@ -98,19 +110,12 @@ export default function AiInterviewPage() {
     }
 
     return () => {
-        // Cleanup: stop camera and recognition
         if (videoRef.current && videoRef.current.srcObject) {
             const stream = videoRef.current.srcObject as MediaStream;
             stream.getTracks().forEach(track => track.stop());
         }
-        if (recognitionRef.current) {
-            recognitionRef.current.onresult = null;
-            recognitionRef.current.onerror = null;
-            recognitionRef.current.onend = null;
-            recognitionRef.current.stop();
-        }
+        stopListening();
     };
-    // The empty dependency array ensures this setup runs only once on mount.
   }, [toast, stopListening]); 
 
   // This effect manages the onend behavior based on the isListening state
@@ -118,9 +123,8 @@ export default function AiInterviewPage() {
     const recognition = recognitionRef.current;
     if (!recognition) return;
 
-    if (isListening) {
-      // If we are supposed to be listening, set onend to try and restart it.
-      recognition.onend = () => {
+    const handleRecognitionEnd = () => {
+      if (isListening) {
         console.log("Speech recognition ended, restarting...");
         try {
           recognition.start();
@@ -128,11 +132,11 @@ export default function AiInterviewPage() {
           console.error("Failed to restart recognition:", e);
           setIsListening(false);
         }
-      };
-    } else {
-      // If we are not supposed to be listening, onend should do nothing.
-      recognition.onend = null;
-    }
+      }
+    };
+
+    recognition.onend = handleRecognitionEnd;
+
   }, [isListening]);
 
 
@@ -162,9 +166,8 @@ export default function AiInterviewPage() {
       <div className="flex-grow grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Main Video Panel (User) */}
         <div className="md:col-span-2 relative w-full h-full bg-gray-900 rounded-lg overflow-hidden flex items-center justify-center">
-          {hasCameraPermission ? (
-            <video ref={videoRef} className={cn("w-full h-full object-cover", isCameraOn ? 'block' : 'hidden')} autoPlay muted />
-          ) : (
+          <video ref={videoRef} className={cn("w-full h-full object-cover", isCameraOn ? 'block' : 'hidden')} autoPlay muted />
+          {!hasCameraPermission && (
             <div className="text-center text-muted-foreground p-4">
               <AlertCircle className="mx-auto h-12 w-12" />
               <p className="mt-2">Camera access is required. Please allow access in your browser.</p>
@@ -187,10 +190,11 @@ export default function AiInterviewPage() {
                 alt="AI Interviewer" 
                 layout="fill"
                 objectFit="cover"
-                className="rounded-md"
-                data-ai-hint="robot face"
+                className="rounded-md opacity-75"
+                data-ai-hint="futuristic robot"
               />
-               <div className="absolute bottom-2 left-2 bg-black/50 text-white px-2 py-1 rounded-md text-sm">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+               <div className="absolute bottom-2 left-2 bg-black/50 text-white px-2 py-1 rounded-md text-sm font-headline">
                 AI Interviewer
               </div>
             </CardContent>
