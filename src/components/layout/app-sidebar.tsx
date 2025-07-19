@@ -1,3 +1,4 @@
+// src/components/layout/app-sidebar.tsx
 "use client";
 
 import {
@@ -17,12 +18,18 @@ import {
   Rocket,
   Settings,
   LogOut,
+  Video,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "../ui/button";
 
 const menuItems = [
+  {
+    href: "/ai-interview",
+    label: "AI Interview",
+    icon: Video,
+  },
   {
     href: "/dashboard",
     label: "Dashboard",
