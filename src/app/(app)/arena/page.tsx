@@ -38,7 +38,7 @@ const generateTasks = (day: number): DailyTask[] => [
         type: 'Coding' as const,
         title: `Day ${day} Coding Challenges`,
         description: 'Tackle your daily set of data structure or algorithm problems.',
-        icon: <Code className="h-6 w-6 text-cyan-400" />,
+        icon: <Code className="h-6 w-6 text-primary" />,
         action: 'Go to Gym',
         href: '/coding-practice',
     },
@@ -74,14 +74,14 @@ export default function ArenaPage() {
     if (!interviewDate || isPastDate(interviewDate)) {
         return (
             <div className="flex flex-col items-center justify-center h-full min-h-[70vh] text-center">
-                 <div className="p-6 bg-gray-800/50 border border-cyan-500/30 rounded-full mb-6">
-                    <CalendarOff className="h-16 w-16 text-cyan-400" />
+                 <div className="p-6 bg-secondary/50 border border-border rounded-full mb-6">
+                    <CalendarOff className="h-16 w-16 text-primary" />
                 </div>
                 <h1 className="text-4xl font-bold font-headline">Set Your Target</h1>
                 <p className="text-muted-foreground mt-4 max-w-md">
                     To generate your personalized training plan, please set a target interview date in your profile.
                 </p>
-                <Button asChild className="mt-8 bg-cyan-400 text-black hover:bg-cyan-300">
+                <Button asChild className="mt-8">
                     <Link href="/profile">Go to Profile <ArrowRight className="ml-2 h-4 w-4" /></Link>
                 </Button>
             </div>
@@ -106,7 +106,7 @@ export default function ArenaPage() {
             <div>
                 <h1 className="text-3xl md:text-4xl font-bold font-headline">Interview Arena</h1>
                 <p className="text-muted-foreground mt-2">
-                    Your personalized {daysUntilInterview! + 1}-day plan to ace your interview for the <span className="text-cyan-400">{user?.targetRole || 'target role'}</span>.
+                    Your personalized {daysUntilInterview! + 1}-day plan to ace your interview for the <span className="text-primary">{user?.targetRole || 'target role'}</span>.
                 </p>
             </div>
 
@@ -121,10 +121,10 @@ export default function ArenaPage() {
                                 key={index}
                                 onClick={() => handleDayClick(index, date)}
                                 className={cn(
-                                    "bg-gray-900/50 border border-cyan-500/30 transition-all duration-300 backdrop-blur-sm group text-center cursor-pointer",
-                                    isCurrentDay && "border-2 border-cyan-400 shadow-cyan-400/20 shadow-lg",
-                                    !isFutureDay && "hover:border-cyan-400 hover:-translate-y-1",
-                                    isFutureDay && "bg-gray-800/20 border-gray-700/50 text-muted-foreground opacity-70 hover:opacity-100"
+                                    "bg-secondary/30 border border-border transition-all duration-300 backdrop-blur-sm group text-center cursor-pointer",
+                                    isCurrentDay && "border-2 border-primary shadow-primary/20 shadow-lg",
+                                    !isFutureDay && "hover:border-primary hover:-translate-y-1",
+                                    isFutureDay && "bg-secondary/20 border-border/50 text-muted-foreground opacity-70 hover:opacity-100"
                                 )}
                             >
                                 <DialogTrigger asChild disabled={isFutureDay}>
@@ -135,7 +135,7 @@ export default function ArenaPage() {
                                         </CardHeader>
                                         <CardContent className="p-4 pt-0">
                                             {isPast && <CheckCircle2 className="mx-auto h-8 w-8 text-green-500" />}
-                                            {isCurrentDay && <Target className="mx-auto h-8 w-8 text-cyan-400/70 transition-transform group-hover:scale-110" />}
+                                            {isCurrentDay && <Target className="mx-auto h-8 w-8 text-primary/70 transition-transform group-hover:scale-110" />}
                                             {isFutureDay && <Lock className="mx-auto h-8 w-8 text-gray-500" />}
                                         </CardContent>
                                     </div>
@@ -145,25 +145,25 @@ export default function ArenaPage() {
                     })}
                 </div>
                 {selectedDay && (
-                    <DialogContent className="max-w-2xl bg-gray-900 border-cyan-500/30 text-gray-200">
+                    <DialogContent className="max-w-2xl bg-secondary/50 border-border backdrop-blur-lg">
                         <DialogHeader>
-                            <DialogTitle className="text-2xl font-headline text-cyan-400">
+                            <DialogTitle className="text-2xl font-headline text-primary">
                                 Day {selectedDay.day}: {format(selectedDay.date, 'EEEE, MMMM d')}
                             </DialogTitle>
                         </DialogHeader>
                         <ScrollArea className="max-h-[70vh] pr-4 -mr-4">
                             <div className="space-y-4 py-4">
                                 {selectedDay.tasks.map((task) => (
-                                    <Card key={task.id} className="bg-gray-800/50 border-gray-700/50">
+                                    <Card key={task.id} className="bg-background/50 border-border">
                                         <CardContent className="p-4 flex items-center justify-between gap-4">
                                             <div className="flex items-start gap-4">
-                                                <div className="p-3 bg-gray-900/70 border border-gray-600 rounded-lg">{task.icon}</div>
+                                                <div className="p-3 bg-secondary/50 border border-border rounded-lg">{task.icon}</div>
                                                 <div>
-                                                    <h4 className="font-bold text-gray-100">{task.title}</h4>
+                                                    <h4 className="font-bold">{task.title}</h4>
                                                     <p className="text-sm text-muted-foreground">{task.description}</p>
                                                 </div>
                                             </div>
-                                            <Button variant="outline" size="sm" asChild className="shrink-0 border-cyan-400 text-cyan-400 hover:bg-cyan-400 hover:text-black">
+                                            <Button variant="outline" size="sm" asChild>
                                                 <Link href={task.href}>
                                                     {task.action}
                                                     <ArrowRight className="ml-2 h-3 w-3" />

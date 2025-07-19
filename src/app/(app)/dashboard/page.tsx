@@ -40,16 +40,13 @@ export default function DashboardPage() {
   const displayName = user?.displayName?.split(' ')[0] || 'developer';
 
   return (
-    <div className="space-y-8 text-gray-200">
-      <div className="absolute inset-0 -z-10 h-full w-full bg-black bg-[linear-gradient(to_right,#1f2937_1px,transparent_1px),linear-gradient(to_bottom,#1f2937_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
-      <div className="absolute inset-0 -z-10 h-full w-full bg-gradient-to-b from-black via-transparent to-black"></div>
-
+    <div className="space-y-8 text-foreground">
       <div className="max-w-7xl mx-auto">
         <div>
-          <h1 className="text-4xl md:text-5xl font-bold font-headline bg-clip-text text-transparent bg-gradient-to-b from-gray-100 to-cyan-400">
+          <h1 className="text-4xl md:text-5xl font-bold font-headline bg-clip-text text-transparent bg-gradient-to-b from-gray-100 to-primary">
             Welcome back, {displayName}
           </h1>
-          <p className="text-gray-400 mt-2">Here's your progress overview. Keep up the great work!</p>
+          <p className="text-muted-foreground mt-2">Here's your progress overview. Keep up the great work!</p>
         </div>
 
         {/* Main Grid Layout */}
@@ -59,9 +56,9 @@ export default function DashboardPage() {
           <div className="lg:col-span-2 space-y-6">
               {/* Stats Cards */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <Card className="bg-gray-900/50 border-cyan-500/30">
+                  <Card className="bg-secondary/30 backdrop-blur-sm">
                       <CardHeader className="flex flex-row items-center justify-between pb-2">
-                          <CardTitle className="text-sm font-medium text-cyan-400">Interviews Completed</CardTitle>
+                          <CardTitle className="text-sm font-medium text-primary">Interviews Completed</CardTitle>
                           <Video className="h-4 w-4 text-muted-foreground" />
                       </CardHeader>
                       <CardContent>
@@ -69,9 +66,9 @@ export default function DashboardPage() {
                           <p className="text-xs text-muted-foreground">+1 from last week</p>
                       </CardContent>
                   </Card>
-                   <Card className="bg-gray-900/50 border-cyan-500/30">
+                   <Card className="bg-secondary/30 backdrop-blur-sm">
                       <CardHeader className="flex flex-row items-center justify-between pb-2">
-                          <CardTitle className="text-sm font-medium text-cyan-400">Coding Questions Solved</CardTitle>
+                          <CardTitle className="text-sm font-medium text-primary">Coding Questions Solved</CardTitle>
                           <CodeXml className="h-4 w-4 text-muted-foreground" />
                       </CardHeader>
                       <CardContent>
@@ -79,9 +76,9 @@ export default function DashboardPage() {
                           <p className="text-xs text-muted-foreground">+12 from last week</p>
                       </CardContent>
                   </Card>
-                   <Card className="bg-gray-900/50 border-cyan-500/30">
+                   <Card className="bg-secondary/30 backdrop-blur-sm">
                       <CardHeader className="flex flex-row items-center justify-between pb-2">
-                          <CardTitle className="text-sm font-medium text-cyan-400">MCQs Answered</CardTitle>
+                          <CardTitle className="text-sm font-medium text-primary">MCQs Answered</CardTitle>
                           <CheckCircle className="h-4 w-4 text-muted-foreground" />
                       </CardHeader>
                       <CardContent>
@@ -92,9 +89,9 @@ export default function DashboardPage() {
               </div>
               
               {/* Progress Chart */}
-              <Card className="bg-gray-900/50 border-cyan-500/30">
+              <Card className="bg-secondary/30 backdrop-blur-sm">
                   <CardHeader>
-                      <CardTitle className="text-cyan-400">Activity Overview</CardTitle>
+                      <CardTitle className="text-primary">Activity Overview</CardTitle>
                       <CardDescription>Your performance over the last 4 weeks.</CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -103,8 +100,8 @@ export default function DashboardPage() {
                                <XAxis dataKey="name" tickLine={false} axisLine={false} tickMargin={8} tickFormatter={(value) => value.slice(0, 6)} />
                                <YAxis tickLine={false} axisLine={false} tickMargin={8} />
                               <Tooltip content={<ChartTooltipContent />} />
-                              <Bar dataKey="questions" fill="var(--color-questions)" radius={4} />
-                              <Bar dataKey="interviews" fill="var(--color-interviews)" radius={4} />
+                              <Bar dataKey="questions" fill="var(--color-primary)" radius={4} />
+                              <Bar dataKey="interviews" fill="hsl(var(--accent))" radius={4} />
                           </BarChart>
                       </ChartContainer>
                   </CardContent>
@@ -113,29 +110,29 @@ export default function DashboardPage() {
 
           {/* Right Column */}
           <div className="space-y-6">
-              <Card className="bg-gradient-to-br from-cyan-900/50 to-gray-900/50 border-cyan-400/50 text-center flex flex-col items-center justify-center p-6">
+              <Card className="bg-gradient-to-br from-primary/20 to-secondary/30 border-primary/50 text-center flex flex-col items-center justify-center p-6 backdrop-blur-sm">
                    <CardHeader className="p-0">
-                      <CardDescription className="text-cyan-300">Interview Readiness</CardDescription>
-                      <CardTitle className="text-5xl font-bold text-white my-2">{progressData.interviewReadiness}%</CardTitle>
+                      <CardDescription className="text-primary/80">Interview Readiness</CardDescription>
+                      <CardTitle className="text-5xl font-bold text-foreground my-2">{progressData.interviewReadiness}%</CardTitle>
                   </CardHeader>
                   <CardContent className="p-0">
-                      <p className="text-sm text-cyan-200/80 mb-4">Based on your recent activity and performance.</p>
-                       <Button className="bg-cyan-400 text-black hover:bg-cyan-300 shadow-[0_0_15px_rgba(56,189,248,0.5)]" asChild>
+                      <p className="text-sm text-primary/70 mb-4">Based on your recent activity and performance.</p>
+                       <Button className="bg-primary/90 text-primary-foreground hover:bg-primary shadow-[0_0_15px_hsl(var(--primary)/0.5)]" asChild>
                           <Link href="/arena">Go to Arena <Target className="ml-2 h-4 w-4" /></Link>
                       </Button>
                   </CardContent>
               </Card>
 
-              <Card className="bg-gray-900/50 border-cyan-500/30">
+              <Card className="bg-secondary/30 backdrop-blur-sm">
                   <CardHeader>
-                      <CardTitle className="text-cyan-400">Topics to Improve</CardTitle>
+                      <CardTitle className="text-primary">Topics to Improve</CardTitle>
                       <CardDescription>Focus on these areas to boost your readiness score.</CardDescription>
                   </CardHeader>
                   <CardContent>
                       <div className="flex flex-col gap-3">
                           {progressData.topicsToImprove.map(topic => (
-                               <div key={topic} className="flex items-center justify-between p-2 rounded-md bg-gray-800/60">
-                                  <span className="font-medium text-gray-300">{topic}</span>
+                               <div key={topic} className="flex items-center justify-between p-3 rounded-lg bg-black/30">
+                                  <span className="font-medium">{topic}</span>
                                   <Button variant="ghost" size="sm" asChild>
                                       <Link href="/coding-practice">Practice <ArrowRight className="ml-1 h-3 w-3" /></Link>
                                   </Button>
