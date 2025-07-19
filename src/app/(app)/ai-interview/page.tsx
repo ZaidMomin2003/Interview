@@ -185,8 +185,8 @@ export default function AiInterviewPage() {
 
   return (
     <div className="max-w-6xl mx-auto w-full p-0 sm:p-4">
-      <div className="flex flex-col h-full bg-black text-white p-4 gap-4 rounded-none sm:rounded-lg border-y sm:border border-cyan-500/30">
-        <div className="flex-grow grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="flex flex-col h-full bg-black text-white sm:p-4 gap-4 rounded-none sm:rounded-lg border-y sm:border border-cyan-500/30">
+        <div className="flex-grow grid grid-cols-1 md:grid-cols-3 gap-4 p-4 sm:p-0">
           {/* Main Video Panel (User) */}
           <div className="md:col-span-2 relative w-full h-full bg-gray-900 rounded-lg overflow-hidden flex items-center justify-center min-h-[30vh] md:min-h-0 md:aspect-video">
             <video ref={videoRef} className={cn("w-full h-full object-cover", isCameraOn ? 'block' : 'hidden')} autoPlay muted />
@@ -227,7 +227,7 @@ export default function AiInterviewPage() {
         </div>
 
         {/* Transcript for larger screens */}
-        <Card className="hidden md:flex flex-grow bg-gray-900 border-cyan-500/30 flex-col min-h-[20vh]">
+        <Card className="hidden md:flex flex-grow bg-gray-900 border-cyan-500/30 flex-col min-h-[20vh] mx-4 sm:mx-0">
             <CardHeader>
               <CardTitle className="text-cyan-400 font-headline">Transcript</CardTitle>
             </CardHeader>
