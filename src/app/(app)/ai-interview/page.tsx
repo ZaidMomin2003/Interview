@@ -1,11 +1,11 @@
 // src/app/(app)/ai-interview/page.tsx
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Mic, MicOff, Video, VideoOff, PhoneOff, AlertCircle } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
+import { Mic, MicOff, Video, VideoOff, PhoneOff } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
@@ -18,11 +18,27 @@ export default function AiInterviewPage() {
   const { toast } = useToast();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [hasCameraPermission, setHasCameraPermission] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
   const [isCameraOn, setIsCameraOn] = useState(true);
   const [transcript, setTranscript] = useState('');
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
+
+  const stopListening = useCallback(() => {
+    if (recognitionRef.current) {
+      recognitionRef.current.onend = null; // Prevent restart on manual stop
+      recognitionRef.current.stop();
+    }
+    setIsListening(false);
+  }, []);
+
+  const startListening = useCallback(() => {
+    if (recognitionRef.current) {
+      setTranscript(''); // Clear transcript when starting
+      recognitionRef.current.start();
+    }
+    setIsListening(true);
+  }, []);
+
 
   useEffect(() => {
     // Request camera permission
@@ -55,55 +71,30 @@ export default function AiInterviewPage() {
       recognition.lang = 'en-US';
 
       recognition.onresult = (event) => {
-        let interimTranscript = '';
         let finalTranscript = '';
-        for (let i = event.resultIndex; i < event.results.length; ++i) {
-          if (event.results[i].isFinal) {
-            finalTranscript += event.results[i][0].transcript;
-          } else {
-            interimTranscript += event.results[i][0].transcript;
-          }
+        for (let i = 0; i < event.results.length; ++i) {
+          finalTranscript += event.results[i][0].transcript;
         }
-        setTranscript(transcript + finalTranscript + interimTranscript);
+        setTranscript(finalTranscript);
       };
 
       recognition.onerror = (event) => {
         console.error('Speech recognition error:', event.error);
-        
-        let description = `An error occurred: ${event.error}. Please check microphone permissions.`;
-        if (event.error === 'network') {
-          description = 'A network error occurred with the speech recognition service. Please try again.';
-        } else if (event.error === 'no-speech') {
-          description = "No speech was detected. Please make sure your microphone is working."
-          // No need to stop listening on no-speech, it can restart automatically
-          return;
-        }
-
         toast({
             variant: 'destructive',
             title: 'Speech Recognition Error',
-            description,
+            description: `An error occurred: ${event.error}. Please check microphone permissions.`,
         });
-
-        // For critical errors, stop listening
-        setIsListening(false);
-        setIsMuted(true);
+        stopListening();
       };
       
-      recognition.onend = () => {
-        // If listening is supposed to be active, try to restart it.
-        // This handles cases where recognition stops unexpectedly.
-        if (recognitionRef.current && isListening) {
-           try {
-             recognitionRef.current.start();
-           } catch(e) {
-             console.error("Failed to restart recognition:", e);
-             setIsListening(false); // Stop trying if it fails
-           }
-        }
-      }
-
       recognitionRef.current = recognition;
+    } else {
+        toast({
+            variant: 'destructive',
+            title: 'Unsupported Browser',
+            description: 'Speech recognition is not supported by your browser.',
+        });
     }
 
     return () => {
@@ -113,32 +104,45 @@ export default function AiInterviewPage() {
             stream.getTracks().forEach(track => track.stop());
         }
         if (recognitionRef.current) {
-            recognitionRef.current.onend = null; // prevent restart on unmount
+            recognitionRef.current.onresult = null;
+            recognitionRef.current.onerror = null;
+            recognitionRef.current.onend = null;
             recognitionRef.current.stop();
         }
     };
-    // The isListening state is now a dependency to correctly manage the onend handler
-  }, [toast, isListening]); 
+    // The empty dependency array ensures this setup runs only once on mount.
+  }, [toast, stopListening]); 
+
+  // This effect manages the onend behavior based on the isListening state
+  useEffect(() => {
+    const recognition = recognitionRef.current;
+    if (!recognition) return;
+
+    if (isListening) {
+      // If we are supposed to be listening, set onend to try and restart it.
+      recognition.onend = () => {
+        console.log("Speech recognition ended, restarting...");
+        try {
+          recognition.start();
+        } catch(e) {
+          console.error("Failed to restart recognition:", e);
+          setIsListening(false);
+        }
+      };
+    } else {
+      // If we are not supposed to be listening, onend should do nothing.
+      recognition.onend = null;
+    }
+  }, [isListening]);
+
 
   const toggleMic = () => {
-    if (!SpeechRecognition) {
-      toast({
-        variant: 'destructive',
-        title: 'Unsupported Browser',
-        description: 'Speech recognition is not supported by your browser.',
-      });
-      return;
-    }
+    if (!SpeechRecognition) return;
     
-    const newIsListening = !isListening;
-    setIsListening(newIsListening);
-    setIsMuted(!newIsListening);
-
-    if (newIsListening) {
-      setTranscript(''); // Clear transcript when starting
-      recognitionRef.current?.start();
+    if (isListening) {
+      stopListening();
     } else {
-      recognitionRef.current?.stop();
+      startListening();
     }
   };
 
