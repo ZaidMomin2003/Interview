@@ -90,7 +90,7 @@ export function AppSidebar() {
           <SidebarMenuItem key={item.href}>
             <SidebarMenuButton
               asChild
-              isActive={pathname.startsWith(item.href)}
+              isActive={pathname.startsWith(item.href) && item.href !== '/profile'}
               tooltip={item.label}
             >
               <Link href={item.href}>
@@ -105,7 +105,7 @@ export function AppSidebar() {
       <SidebarFooter className="border-t mt-auto p-2 space-y-2">
         <SidebarMenu>
           <SidebarMenuItem>
-             <SidebarMenuButton tooltip="Profile" asChild>
+             <SidebarMenuButton tooltip="Profile" asChild isActive={pathname === '/profile'}>
                 <Link href="/profile">
                   <Avatar className="size-7">
                     {user?.photoURL && <AvatarImage src={user.photoURL} alt={user.displayName || 'User'} />}
