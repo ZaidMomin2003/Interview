@@ -5,7 +5,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Bot } from 'lucide-react';
 import { Mic, MicOff, Video, VideoOff, PhoneOff } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -31,8 +31,8 @@ export default function AiInterviewPage() {
       recognitionRef.current.onerror = null;
       recognitionRef.current.onend = null;
       recognitionRef.current.stop();
-      setIsListening(false);
     }
+    setIsListening(false);
   }, []);
   
   const startListening = useCallback(() => {
@@ -85,10 +85,15 @@ export default function AiInterviewPage() {
 
       recognition.onresult = (event) => {
         let finalTranscript = '';
-        for (let i = 0; i < event.results.length; ++i) {
-          finalTranscript += event.results[i][0].transcript;
+        let interimTranscript = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          if (event.results[i].isFinal) {
+            finalTranscript += event.results[i][0].transcript;
+          } else {
+            interimTranscript += event.results[i][0].transcript;
+          }
         }
-        setTranscript(finalTranscript);
+        setTranscript(transcript + finalTranscript + interimTranscript);
       };
 
       recognition.onerror = (event) => {
@@ -116,7 +121,7 @@ export default function AiInterviewPage() {
         }
         stopListening();
     };
-  }, [toast, stopListening]); 
+  }, [toast, stopListening, transcript]); 
 
   // This effect manages the onend behavior based on the isListening state
   useEffect(() => {
@@ -183,20 +188,11 @@ export default function AiInterviewPage() {
 
         {/* Right Panel (AI Interviewer & Transcript) */}
         <div className="flex flex-col gap-4">
-          <Card className="w-full h-64 bg-gray-900 border-cyan-500/30">
-             <CardContent className="p-0 relative h-full flex items-center justify-center">
-               <Image 
-                src="https://placehold.co/600x400.png" 
-                alt="AI Interviewer" 
-                layout="fill"
-                objectFit="cover"
-                className="rounded-md opacity-75"
-                data-ai-hint="futuristic robot"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
-               <div className="absolute bottom-2 left-2 bg-black/50 text-white px-2 py-1 rounded-md text-sm font-headline">
-                AI Interviewer
-              </div>
+          <Card className="w-full h-64 bg-gray-900 border-cyan-500/30 flex flex-col items-center justify-center">
+             <CardContent className="p-6 text-center">
+               <Bot className="h-24 w-24 text-cyan-400/70 mx-auto" />
+               <p className="mt-4 font-headline text-lg text-gray-200">AI Interviewer</p>
+               <p className="text-sm text-muted-foreground">Ready when you are.</p>
             </CardContent>
           </Card>
           <Card className="flex-grow bg-gray-900 border-cyan-500/30 flex flex-col">
