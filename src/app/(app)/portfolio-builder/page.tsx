@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
-import { GalleryVertical, Link as LinkIcon, Eye, Copy, Check, PlusCircle, Trash2 } from 'lucide-react';
+import { GalleryVertical, Link as LinkIcon, Eye, Copy, Check, PlusCircle, Trash2, Palette } from 'lucide-react';
 import Link from 'next/link';
 
 // Dummy data structure, in a real app this would come from state/DB
@@ -26,6 +26,59 @@ const initialPortfolioData = {
     { id: 1, name: 'Babbage Fellowship', issuer: 'Royal Society', date: '1842' },
   ]
 };
+
+const themes = [
+  { name: 'Default', class: 'theme-default' },
+  { name: 'Forest', class: 'theme-forest' },
+  { name: 'Ocean', class: 'theme-ocean' },
+  { name: 'Sunset', class: 'theme-sunset' },
+];
+
+function ThemeSwitcher() {
+  const [currentTheme, setCurrentTheme] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('app-theme') || 'theme-default';
+    }
+    return 'theme-default';
+  });
+
+  const setTheme = (themeClass: string) => {
+    document.documentElement.classList.remove(...themes.map(t => t.class));
+    document.documentElement.classList.add(themeClass);
+    localStorage.setItem('app-theme', themeClass);
+    setCurrentTheme(themeClass);
+  };
+  
+  // Set initial theme on mount
+  useState(() => {
+     if (typeof window !== 'undefined') {
+        const savedTheme = localStorage.getItem('app-theme') || 'theme-default';
+        setTheme(savedTheme);
+     }
+  });
+
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center gap-2 text-cyan-400">
+        <Palette className="w-5 h-5"/>
+        <h3 className="text-lg font-headline">Color Palette</h3>
+      </div>
+       <div className="flex flex-wrap gap-2">
+          {themes.map((theme) => (
+            <Button
+              key={theme.name}
+              variant={currentTheme === theme.class ? 'default' : 'outline'}
+              onClick={() => setTheme(theme.class)}
+            >
+              {theme.name}
+            </Button>
+          ))}
+        </div>
+    </div>
+  )
+}
+
 
 export default function PortfolioBuilderPage() {
   const { user } = useAuth();
@@ -154,7 +207,7 @@ export default function PortfolioBuilderPage() {
         <CardHeader>
           <CardTitle>Settings</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-6">
            <div className="flex items-center justify-between">
               <Label htmlFor="include-stats" className="flex flex-col">
                 <span className="font-semibold">Include Dashboard Stats</span>
@@ -162,6 +215,7 @@ export default function PortfolioBuilderPage() {
               </Label>
               <Switch id="include-stats" checked={portfolio.includeDashboardStats} onCheckedChange={(checked) => setPortfolio(p => ({ ...p, includeDashboardStats: checked}))}/>
            </div>
+           <ThemeSwitcher />
         </CardContent>
       </Card>
       
