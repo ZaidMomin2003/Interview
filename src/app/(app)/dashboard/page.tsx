@@ -1,3 +1,4 @@
+
 // src/app/(app)/dashboard/page.tsx
 'use client';
 import { useAuth } from "@/hooks/use-auth";
@@ -31,7 +32,7 @@ const chartConfig = {
   },
   interviews: {
     label: "Interviews",
-    color: "hsl(var(--accent))",
+    color: "hsl(var(--primary) / 0.5)",
   },
 } satisfies React.ComponentProps<typeof ChartContainer>["config"];
 
@@ -100,8 +101,8 @@ export default function DashboardPage() {
                                <XAxis dataKey="name" tickLine={false} axisLine={false} tickMargin={8} tickFormatter={(value) => value.slice(0, 6)} />
                                <YAxis tickLine={false} axisLine={false} tickMargin={8} />
                               <Tooltip content={<ChartTooltipContent />} />
-                              <Bar dataKey="questions" fill="var(--color-primary)" radius={4} />
-                              <Bar dataKey="interviews" fill="hsl(var(--accent))" radius={4} />
+                              <Bar dataKey="questions" fill="var(--color-questions)" radius={4} />
+                              <Bar dataKey="interviews" fill="var(--color-interviews)" radius={4} />
                           </BarChart>
                       </ChartContainer>
                   </CardContent>
