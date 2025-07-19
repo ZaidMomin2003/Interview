@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { differenceInDays, format, addDays, isFuture, isToday, isPast as isPastDate } from 'date-fns';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription } from '@/components/ui/alert-dialog';
 import { BrainCircuit, Code, MessageSquare, ArrowRight, Target, CalendarOff, CheckCircle2, Lock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -56,6 +57,7 @@ const generateTasks = (day: number): DailyTask[] => [
 export default function ArenaPage() {
     const { user } = useAuth();
     const [selectedDay, setSelectedDay] = useState<{ day: number; date: Date; tasks: DailyTask[] } | null>(null);
+    const [showFutureDayWarning, setShowFutureDayWarning] = useState(false);
 
     const interviewDate = user?.interviewDate ? new Date(user.interviewDate) : null;
     const today = new Date();
@@ -87,11 +89,16 @@ export default function ArenaPage() {
     }
 
     const handleDayClick = (dayIndex: number, date: Date) => {
-        setSelectedDay({
-            day: dayIndex + 1,
-            date,
-            tasks: generateTasks(dayIndex + 1),
-        });
+        const isFutureDay = date > today;
+        if (isFutureDay) {
+            setShowFutureDayWarning(true);
+        } else {
+            setSelectedDay({
+                day: dayIndex + 1,
+                date,
+                tasks: generateTasks(dayIndex + 1),
+            });
+        }
     };
 
     return (
@@ -110,27 +117,30 @@ export default function ArenaPage() {
                         const isCurrentDay = isToday(date);
                         const isFutureDay = date > today;
                         return (
-                            <DialogTrigger asChild key={index} disabled={isFutureDay}>
-                                <Card
-                                    onClick={() => !isFutureDay && handleDayClick(index, date)}
-                                    className={cn(
-                                        "bg-gray-900/50 border border-cyan-500/30 transition-all duration-300 backdrop-blur-sm group text-center",
-                                        isCurrentDay && "border-2 border-cyan-400 shadow-cyan-400/20 shadow-lg",
-                                        !isFutureDay && "hover:border-cyan-400 cursor-pointer hover:-translate-y-1",
-                                        isFutureDay && "bg-gray-800/20 border-gray-700/50 text-muted-foreground cursor-not-allowed opacity-60"
-                                    )}
-                                >
-                                    <CardHeader className="p-4">
-                                        <CardTitle className="font-headline text-xl">Day {index + 1}</CardTitle>
-                                        <p className="text-sm text-muted-foreground">{format(date, 'MMM d')}</p>
-                                    </CardHeader>
-                                    <CardContent className="p-4 pt-0">
-                                        {isPast && <CheckCircle2 className="mx-auto h-8 w-8 text-green-500" />}
-                                        {isCurrentDay && <Target className="mx-auto h-8 w-8 text-cyan-400/70 transition-transform group-hover:scale-110" />}
-                                        {isFutureDay && <Lock className="mx-auto h-8 w-8 text-gray-500" />}
-                                    </CardContent>
-                                </Card>
-                            </DialogTrigger>
+                             <Card
+                                key={index}
+                                onClick={() => handleDayClick(index, date)}
+                                className={cn(
+                                    "bg-gray-900/50 border border-cyan-500/30 transition-all duration-300 backdrop-blur-sm group text-center cursor-pointer",
+                                    isCurrentDay && "border-2 border-cyan-400 shadow-cyan-400/20 shadow-lg",
+                                    !isFutureDay && "hover:border-cyan-400 hover:-translate-y-1",
+                                    isFutureDay && "bg-gray-800/20 border-gray-700/50 text-muted-foreground opacity-70 hover:opacity-100"
+                                )}
+                            >
+                                <DialogTrigger asChild disabled={isFutureDay}>
+                                    <div>
+                                        <CardHeader className="p-4">
+                                            <CardTitle className="font-headline text-xl">Day {index + 1}</CardTitle>
+                                            <p className="text-sm text-muted-foreground">{format(date, 'MMM d')}</p>
+                                        </CardHeader>
+                                        <CardContent className="p-4 pt-0">
+                                            {isPast && <CheckCircle2 className="mx-auto h-8 w-8 text-green-500" />}
+                                            {isCurrentDay && <Target className="mx-auto h-8 w-8 text-cyan-400/70 transition-transform group-hover:scale-110" />}
+                                            {isFutureDay && <Lock className="mx-auto h-8 w-8 text-gray-500" />}
+                                        </CardContent>
+                                    </div>
+                                </DialogTrigger>
+                            </Card>
                         );
                     })}
                 </div>
@@ -167,6 +177,18 @@ export default function ArenaPage() {
                     </DialogContent>
                 )}
             </Dialog>
+
+            <AlertDialog open={showFutureDayWarning} onOpenChange={setShowFutureDayWarning}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Day Locked</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            You must complete the tasks for the current day before proceeding to future days. Keep up the great work!
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogAction onClick={() => setShowFutureDayWarning(false)}>Got it</AlertDialogAction>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     );
 }
