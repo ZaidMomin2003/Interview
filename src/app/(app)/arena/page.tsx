@@ -6,9 +6,9 @@ import { useAuth } from '@/hooks/use-auth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { differenceInDays, format, addDays, isFuture, isToday } from 'date-fns';
+import { differenceInDays, format, addDays, isFuture, isToday, isPast as isPastDate } from 'date-fns';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { BrainCircuit, Code, MessageSquare, ArrowRight, Target, CalendarOff, CheckCircle2 } from 'lucide-react';
+import { BrainCircuit, Code, MessageSquare, ArrowRight, Target, CalendarOff, CheckCircle2, Lock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
@@ -64,12 +64,12 @@ export default function ArenaPage() {
     let daysUntilInterview: number | null = null;
     let prepDays: Date[] = [];
 
-    if (interviewDate && isFuture(interviewDate)) {
+    if (interviewDate && (isFuture(interviewDate) || isToday(interviewDate))) {
         daysUntilInterview = differenceInDays(interviewDate, today);
         prepDays = Array.from({ length: daysUntilInterview + 1 }, (_, i) => addDays(today, i));
     }
 
-    if (!interviewDate || !isFuture(interviewDate)) {
+    if (!interviewDate || isPastDate(interviewDate)) {
         return (
             <div className="flex flex-col items-center justify-center h-full min-h-[70vh] text-center">
                  <div className="p-6 bg-gray-800/50 border border-cyan-500/30 rounded-full mb-6">
@@ -108,14 +108,16 @@ export default function ArenaPage() {
                     {prepDays.map((date, index) => {
                         const isPast = date < today;
                         const isCurrentDay = isToday(date);
+                        const isFutureDay = date > today;
                         return (
-                            <DialogTrigger asChild key={index} disabled={isPast}>
+                            <DialogTrigger asChild key={index} disabled={isFutureDay}>
                                 <Card
-                                    onClick={() => handleDayClick(index, date)}
+                                    onClick={() => !isFutureDay && handleDayClick(index, date)}
                                     className={cn(
-                                        "bg-gray-900/50 border border-cyan-500/30 hover:border-cyan-400 transition-all duration-300 backdrop-blur-sm group text-center cursor-pointer hover:-translate-y-1",
-                                        isPast && "bg-gray-800/20 border-gray-700/50 text-muted-foreground hover:border-gray-700/50 cursor-not-allowed hover:-translate-y-0 opacity-60",
-                                        isCurrentDay && "border-2 border-cyan-400 shadow-cyan-400/20 shadow-lg"
+                                        "bg-gray-900/50 border border-cyan-500/30 transition-all duration-300 backdrop-blur-sm group text-center",
+                                        isCurrentDay && "border-2 border-cyan-400 shadow-cyan-400/20 shadow-lg",
+                                        !isFutureDay && "hover:border-cyan-400 cursor-pointer hover:-translate-y-1",
+                                        isFutureDay && "bg-gray-800/20 border-gray-700/50 text-muted-foreground cursor-not-allowed opacity-60"
                                     )}
                                 >
                                     <CardHeader className="p-4">
@@ -123,7 +125,9 @@ export default function ArenaPage() {
                                         <p className="text-sm text-muted-foreground">{format(date, 'MMM d')}</p>
                                     </CardHeader>
                                     <CardContent className="p-4 pt-0">
-                                        {isPast ? <CheckCircle2 className="mx-auto h-8 w-8 text-green-500" /> : <Target className="mx-auto h-8 w-8 text-cyan-400/70 transition-transform group-hover:scale-110" />}
+                                        {isPast && <CheckCircle2 className="mx-auto h-8 w-8 text-green-500" />}
+                                        {isCurrentDay && <Target className="mx-auto h-8 w-8 text-cyan-400/70 transition-transform group-hover:scale-110" />}
+                                        {isFutureDay && <Lock className="mx-auto h-8 w-8 text-gray-500" />}
                                     </CardContent>
                                 </Card>
                             </DialogTrigger>
