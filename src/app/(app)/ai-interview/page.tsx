@@ -36,20 +36,24 @@ export default function AiInterviewPage() {
   }, []);
   
   const startListening = useCallback(() => {
-    if (!recognitionRef.current) return;
-    setTranscript(''); // Clear transcript when starting
+    if (!SpeechRecognition || !recognitionRef.current) return;
+    
+    // Clear transcript only when starting a new session
+    setTranscript('');
+    
     try {
-      recognitionRef.current.start();
-      setIsListening(true);
+        recognitionRef.current.start();
+        setIsListening(true);
     } catch (e) {
-      console.error("Could not start recognition:", e);
-      if ((e as DOMException).name === 'NotAllowedError') {
-         toast({
-            variant: 'destructive',
-            title: 'Microphone Access Denied',
-            description: `Please allow microphone access in your browser settings.`,
-        });
-      }
+        console.error("Could not start recognition:", e);
+        if ((e as DOMException).name === 'NotAllowedError') {
+            toast({
+                variant: 'destructive',
+                title: 'Microphone Access Denied',
+                description: `Please allow microphone access in your browser settings.`,
+            });
+        }
+        setIsListening(false);
     }
   }, [toast]);
 
@@ -93,20 +97,20 @@ export default function AiInterviewPage() {
             interimTranscript += event.results[i][0].transcript;
           }
         }
-        setTranscript(transcript + finalTranscript + interimTranscript);
+         // Use a callback with setTranscript to ensure we have the latest state
+        setTranscript(prevTranscript => {
+            // Check if the final transcript part is already included
+            if(event.results[event.results.length-1].isFinal) {
+               return prevTranscript.replace(/Listening...$/, '') + finalTranscript + ' ';
+            }
+            return prevTranscript.replace(/Listening...$/, '') + finalTranscript + interimTranscript;
+        });
       };
 
       recognition.onerror = (event) => {
         console.error('Speech recognition error:', event.error);
         if (event.error === 'network') {
           console.log('Network error, attempting to restart recognition...');
-          // Optional: Add a small delay before restarting
-          setTimeout(() => {
-            if (isListening) {
-              stopListening();
-              startListening();
-            }
-          }, 1000);
         } else {
           toast({
             variant: 'destructive',
@@ -133,7 +137,7 @@ export default function AiInterviewPage() {
         stopListening();
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [toast, stopListening, startListening, isListening]); 
+  }, []); 
 
   // This effect manages the onend behavior based on the isListening state
   useEffect(() => {
@@ -180,8 +184,8 @@ export default function AiInterviewPage() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto w-full">
-      <div className="flex flex-col h-full bg-black text-white p-4 gap-4 rounded-lg border border-cyan-500/30">
+    <div className="max-w-6xl mx-auto w-full p-0 sm:p-4">
+      <div className="flex flex-col h-full bg-black text-white p-4 gap-4 rounded-none sm:rounded-lg border-y sm:border border-cyan-500/30">
         <div className="flex-grow grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Main Video Panel (User) */}
           <div className="md:col-span-2 relative w-full h-full bg-gray-900 rounded-lg overflow-hidden flex items-center justify-center min-h-[30vh] md:min-h-0 md:aspect-video">
@@ -236,7 +240,7 @@ export default function AiInterviewPage() {
 
 
         {/* Controls */}
-        <div className="flex justify-center items-center p-4 bg-gray-900/50 border-t border-cyan-500/30 rounded-lg">
+        <div className="flex justify-center items-center p-4 bg-gray-900/50 border-t border-cyan-500/30 rounded-b-lg">
           <div className="flex items-center gap-4">
             <Button onClick={toggleMic} variant={isListening ? 'destructive' : 'secondary'} size="lg" className="rounded-full w-16 h-16">
               {isListening ? <Mic className="h-6 w-6" /> : <MicOff className="h-6 w-6" />}
