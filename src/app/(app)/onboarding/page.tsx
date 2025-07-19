@@ -2,7 +2,7 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useForm, FormProvider } from 'react-hook-form';
+import { useForm, FormProvider, useFormContext } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -251,7 +251,7 @@ const SocialsStep = () => {
                     <Label htmlFor={field.name} className="capitalize flex items-center gap-2 text-cyan-400">
                         <LinkIcon className="h-5 w-5" /> {field.name}
                     </Label>
-                    <Input id={field.name} {...register(field.name)} placeholder={field.placeholder} className="bg-gray-800 border-gray-700 text-gray-200" />
+                    <Input id={field.name} {...register(field.name as any)} placeholder={field.placeholder} className="bg-gray-800 border-gray-700 text-gray-200" />
                 </div>
             ))}
         </div>
