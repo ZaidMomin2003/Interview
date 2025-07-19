@@ -69,33 +69,37 @@ export default function AiInterviewPage() {
 
       recognition.onerror = (event) => {
         console.error('Speech recognition error:', event.error);
-         if (event.error === 'network') {
-          toast({
-            variant: 'destructive',
-            title: 'Network Error',
-            description: 'Speech recognition service is unavailable. Will try to reconnect.',
-          });
-          // Attempt to restart recognition after a delay
-          if(isListening) {
-            setTimeout(() => recognitionRef.current?.start(), 1000);
-          }
-        } else {
-            toast({
-                variant: 'destructive',
-                title: 'Speech Recognition Error',
-                description: `An error occurred: ${event.error}. Please check microphone permissions.`,
-            });
-            setIsListening(false);
-            setIsMuted(true);
+        
+        let description = `An error occurred: ${event.error}. Please check microphone permissions.`;
+        if (event.error === 'network') {
+          description = 'A network error occurred with the speech recognition service. Please try again.';
+        } else if (event.error === 'no-speech') {
+          description = "No speech was detected. Please make sure your microphone is working."
+          // No need to stop listening on no-speech, it can restart automatically
+          return;
         }
+
+        toast({
+            variant: 'destructive',
+            title: 'Speech Recognition Error',
+            description,
+        });
+
+        // For critical errors, stop listening
+        setIsListening(false);
+        setIsMuted(true);
       };
       
       recognition.onend = () => {
-        if(isListening) {
-          // Restart recognition if it stops unexpectedly, but not on network error to avoid loops
-          if(recognitionRef.current && (recognitionRef.current as any).error !== 'network') {
-             recognition.start();
-          }
+        // If listening is supposed to be active, try to restart it.
+        // This handles cases where recognition stops unexpectedly.
+        if (recognitionRef.current && isListening) {
+           try {
+             recognitionRef.current.start();
+           } catch(e) {
+             console.error("Failed to restart recognition:", e);
+             setIsListening(false); // Stop trying if it fails
+           }
         }
       }
 
@@ -113,9 +117,8 @@ export default function AiInterviewPage() {
             recognitionRef.current.stop();
         }
     };
-    // isListening should not be a dependency here to avoid re-running the effect on every toggle.
-    // The state is handled through refs and component state.
-  }, [toast]);
+    // The isListening state is now a dependency to correctly manage the onend handler
+  }, [toast, isListening]); 
 
   const toggleMic = () => {
     if (!SpeechRecognition) {
