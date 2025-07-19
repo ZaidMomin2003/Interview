@@ -69,18 +69,33 @@ export default function AiInterviewPage() {
 
       recognition.onerror = (event) => {
         console.error('Speech recognition error:', event.error);
-        toast({
+         if (event.error === 'network') {
+          toast({
             variant: 'destructive',
-            title: 'Speech Recognition Error',
-            description: `An error occurred: ${event.error}`,
-        });
-        setIsListening(false);
+            title: 'Network Error',
+            description: 'Speech recognition service is unavailable. Will try to reconnect.',
+          });
+          // Attempt to restart recognition after a delay
+          if(isListening) {
+            setTimeout(() => recognitionRef.current?.start(), 1000);
+          }
+        } else {
+            toast({
+                variant: 'destructive',
+                title: 'Speech Recognition Error',
+                description: `An error occurred: ${event.error}. Please check microphone permissions.`,
+            });
+            setIsListening(false);
+            setIsMuted(true);
+        }
       };
       
       recognition.onend = () => {
         if(isListening) {
-          // Restart recognition if it stops unexpectedly
-          recognition.start();
+          // Restart recognition if it stops unexpectedly, but not on network error to avoid loops
+          if(recognitionRef.current && (recognitionRef.current as any).error !== 'network') {
+             recognition.start();
+          }
         }
       }
 
@@ -94,10 +109,13 @@ export default function AiInterviewPage() {
             stream.getTracks().forEach(track => track.stop());
         }
         if (recognitionRef.current) {
+            recognitionRef.current.onend = null; // prevent restart on unmount
             recognitionRef.current.stop();
         }
     };
-  }, [toast, isListening]);
+    // isListening should not be a dependency here to avoid re-running the effect on every toggle.
+    // The state is handled through refs and component state.
+  }, [toast]);
 
   const toggleMic = () => {
     if (!SpeechRecognition) {
@@ -109,14 +127,16 @@ export default function AiInterviewPage() {
       return;
     }
     
-    if (isListening) {
-      recognitionRef.current?.stop();
-      setTranscript(''); // Clear transcript when stopping
-    } else {
+    const newIsListening = !isListening;
+    setIsListening(newIsListening);
+    setIsMuted(!newIsListening);
+
+    if (newIsListening) {
+      setTranscript(''); // Clear transcript when starting
       recognitionRef.current?.start();
+    } else {
+      recognitionRef.current?.stop();
     }
-    setIsListening(!isListening);
-    setIsMuted(!isMuted);
   };
 
   const toggleCamera = () => {
