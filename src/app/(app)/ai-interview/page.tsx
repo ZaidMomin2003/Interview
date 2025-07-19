@@ -98,12 +98,23 @@ export default function AiInterviewPage() {
 
       recognition.onerror = (event) => {
         console.error('Speech recognition error:', event.error);
-        toast({
+        if (event.error === 'network') {
+          console.log('Network error, attempting to restart recognition...');
+          // Optional: Add a small delay before restarting
+          setTimeout(() => {
+            if (isListening) {
+              stopListening();
+              startListening();
+            }
+          }, 1000);
+        } else {
+          toast({
             variant: 'destructive',
             title: 'Speech Recognition Error',
             description: `An error occurred: ${event.error}. Please check microphone permissions.`,
-        });
-        stopListening();
+          });
+          stopListening();
+        }
       };
       
     } else {
@@ -121,27 +132,29 @@ export default function AiInterviewPage() {
         }
         stopListening();
     };
-  }, [toast, stopListening, transcript]); 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [toast, stopListening, startListening, isListening]); 
 
   // This effect manages the onend behavior based on the isListening state
   useEffect(() => {
     const recognition = recognitionRef.current;
     if (!recognition) return;
-
+  
     const handleRecognitionEnd = () => {
       if (isListening) {
         console.log("Speech recognition ended, restarting...");
         try {
+          // No need to call stopListening() here, just restart
           recognition.start();
         } catch(e) {
           console.error("Failed to restart recognition:", e);
-          setIsListening(false);
+          setIsListening(false); // Set to false on failure to restart
         }
       }
     };
-
+  
     recognition.onend = handleRecognitionEnd;
-
+  
   }, [isListening]);
 
 
@@ -170,7 +183,7 @@ export default function AiInterviewPage() {
     <div className="flex flex-col h-full bg-black text-white p-4 gap-4 rounded-lg border border-cyan-500/30">
       <div className="flex-grow grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Main Video Panel (User) */}
-        <div className="md:col-span-2 relative w-full h-full bg-gray-900 rounded-lg overflow-hidden flex items-center justify-center min-h-[40vh]">
+        <div className="md:col-span-2 relative w-full h-full bg-gray-900 rounded-lg overflow-hidden flex items-center justify-center min-h-[30vh] md:min-h-[40vh]">
           <video ref={videoRef} className={cn("w-full h-full object-cover", isCameraOn ? 'block' : 'hidden')} autoPlay muted />
           {!hasCameraPermission && (
             <div className="text-center text-muted-foreground p-4">
@@ -188,14 +201,14 @@ export default function AiInterviewPage() {
 
         {/* Right Panel (AI Interviewer & Transcript) */}
         <div className="flex flex-col gap-4">
-          <Card className="w-full h-64 bg-gray-900 border-cyan-500/30 flex flex-col items-center justify-center">
+          <Card className="w-full h-48 md:h-64 bg-gray-900 border-cyan-500/30 flex flex-col items-center justify-center">
              <CardContent className="p-6 text-center">
-               <Bot className="h-24 w-24 text-cyan-400/70 mx-auto" />
+               <Bot className="h-16 md:h-24 w-16 md:w-24 text-cyan-400/70 mx-auto" />
                <p className="mt-4 font-headline text-lg text-gray-200">AI Interviewer</p>
                <p className="text-sm text-muted-foreground">Ready when you are.</p>
             </CardContent>
           </Card>
-          <Card className="flex-grow bg-gray-900 border-cyan-500/30 flex flex-col">
+          <Card className="flex-grow bg-gray-900 border-cyan-500/30 flex flex-col min-h-[20vh]">
             <CardHeader>
               <CardTitle className="text-cyan-400 font-headline">Transcript</CardTitle>
             </CardHeader>
