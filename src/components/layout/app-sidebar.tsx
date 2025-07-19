@@ -88,7 +88,7 @@ export function AppSidebar() {
              <SidebarTrigger/>
            </Button>
            <Link href="/dashboard" className="flex items-center gap-2">
-            <Rocket className="h-6 w-6 text-accent" />
+            <Rocket className="h-6 w-6 text-primary" />
             <span className="font-bold font-headline text-lg group-data-[collapsible=icon]:hidden">
               DevPro Ascent
             </span>
@@ -103,6 +103,8 @@ export function AppSidebar() {
               asChild
               isActive={pathname.startsWith(item.href)}
               tooltip={item.label}
+              variant="ghost"
+              className="justify-start"
             >
               <Link href={item.href}>
                 <item.icon />
@@ -116,7 +118,7 @@ export function AppSidebar() {
       <SidebarFooter className="border-t mt-auto p-2 space-y-2">
         <SidebarMenu>
           <SidebarMenuItem>
-             <SidebarMenuButton tooltip="Profile" asChild isActive={pathname.startsWith('/profile')}>
+             <SidebarMenuButton tooltip="Profile" asChild isActive={pathname.startsWith('/profile')} variant="ghost" className="justify-start">
                 <Link href="/profile">
                   <Avatar className="size-7">
                     {user?.photoURL && <AvatarImage src={user.photoURL} alt={user.displayName || 'User'} />}
@@ -129,7 +131,7 @@ export function AppSidebar() {
               </SidebarMenuButton>
           </SidebarMenuItem>
            <SidebarMenuItem>
-            <SidebarMenuButton tooltip="Log Out" onClick={handleLogout} className="bg-transparent hover:bg-destructive/80 text-red-500 hover:text-white border border-red-500/50 hover:border-red-500 transition-colors duration-300">
+            <SidebarMenuButton tooltip="Log Out" onClick={handleLogout} variant="ghost" className="text-muted-foreground hover:bg-destructive hover:text-destructive-foreground justify-start">
               <LogOut />
               <span>Log Out</span>
             </SidebarMenuButton>

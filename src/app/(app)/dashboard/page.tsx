@@ -4,37 +4,22 @@
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CodeXml, FileText, ArrowRight, Video, Target, CheckCircle, PercentCircle, BarChartHorizontalBig } from "lucide-react";
+import { CodeXml, FileText, ArrowRight, Video, Target, CheckCircle, PercentCircle, BarChartHorizontalBig, Info } from "lucide-react";
 import Link from "next/link";
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
-import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
-import { Badge } from "@/components/ui/badge";
 
 // Placeholder data
 const progressData = {
     interviewsCompleted: 3,
     codingQuestionsSolved: 42,
     mcqsAnswered: 128,
-    interviewReadiness: 78,
-    topicsToImprove: ["Dynamic Programming", "System Design (Advanced)", "Concurrency"],
-    weeklyProgress: [
-        { name: "Week 1", questions: 10, interviews: 1 },
-        { name: "Week 2", questions: 15, interviews: 1 },
-        { name: "Week 3", questions: 12, interviews: 0 },
-        { name: "Week 4", questions: 20, interviews: 1 },
-    ],
 };
 
-const chartConfig = {
-  questions: {
-    label: "Questions Solved",
-    color: "hsl(var(--primary))",
-  },
-  interviews: {
-    label: "Interviews",
-    color: "hsl(var(--primary) / 0.5)",
-  },
-} satisfies React.ComponentProps<typeof ChartContainer>["config"];
+const recentTopics = [
+    { name: "Atomic Structure", created: "6 days ago" },
+    { name: "Quantum Mechanics", created: "10 days ago" },
+    { name: "French Revolution", created: "12 days ago" },
+]
+
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -44,7 +29,7 @@ export default function DashboardPage() {
     <div className="space-y-8 text-foreground">
       <div className="max-w-7xl mx-auto">
         <div>
-          <h1 className="text-4xl md:text-5xl font-bold font-headline bg-clip-text text-transparent bg-gradient-to-b from-gray-100 to-primary">
+          <h1 className="text-3xl md:text-4xl font-bold font-headline">
             Welcome back, {displayName}
           </h1>
           <p className="text-muted-foreground mt-2">Here's your progress overview. Keep up the great work!</p>
@@ -57,9 +42,9 @@ export default function DashboardPage() {
           <div className="lg:col-span-2 space-y-6">
               {/* Stats Cards */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <Card className="bg-secondary/30 backdrop-blur-sm">
+                  <Card>
                       <CardHeader className="flex flex-row items-center justify-between pb-2">
-                          <CardTitle className="text-sm font-medium text-primary">Interviews Completed</CardTitle>
+                          <CardTitle className="text-sm font-medium">Interviews Completed</CardTitle>
                           <Video className="h-4 w-4 text-muted-foreground" />
                       </CardHeader>
                       <CardContent>
@@ -67,9 +52,9 @@ export default function DashboardPage() {
                           <p className="text-xs text-muted-foreground">+1 from last week</p>
                       </CardContent>
                   </Card>
-                   <Card className="bg-secondary/30 backdrop-blur-sm">
+                   <Card>
                       <CardHeader className="flex flex-row items-center justify-between pb-2">
-                          <CardTitle className="text-sm font-medium text-primary">Coding Questions Solved</CardTitle>
+                          <CardTitle className="text-sm font-medium">Coding Questions Solved</CardTitle>
                           <CodeXml className="h-4 w-4 text-muted-foreground" />
                       </CardHeader>
                       <CardContent>
@@ -77,9 +62,9 @@ export default function DashboardPage() {
                           <p className="text-xs text-muted-foreground">+12 from last week</p>
                       </CardContent>
                   </Card>
-                   <Card className="bg-secondary/30 backdrop-blur-sm">
+                   <Card>
                       <CardHeader className="flex flex-row items-center justify-between pb-2">
-                          <CardTitle className="text-sm font-medium text-primary">MCQs Answered</CardTitle>
+                          <CardTitle className="text-sm font-medium">MCQs Answered</CardTitle>
                           <CheckCircle className="h-4 w-4 text-muted-foreground" />
                       </CardHeader>
                       <CardContent>
@@ -89,57 +74,57 @@ export default function DashboardPage() {
                   </Card>
               </div>
               
-              {/* Progress Chart */}
-              <Card className="bg-secondary/30 backdrop-blur-sm">
+              <Card>
                   <CardHeader>
-                      <CardTitle className="text-primary">Activity Overview</CardTitle>
-                      <CardDescription>Your performance over the last 4 weeks.</CardDescription>
+                      <CardTitle className="text-xl">Create a New Study Topic</CardTitle>
                   </CardHeader>
                   <CardContent>
-                      <ChartContainer config={chartConfig} className="h-[250px] w-full">
-                          <BarChart accessibilityLayer data={progressData.weeklyProgress} margin={{ top: 20, right: 20, bottom: 5, left: 0 }}>
-                               <XAxis dataKey="name" tickLine={false} axisLine={false} tickMargin={8} tickFormatter={(value) => value.slice(0, 6)} />
-                               <YAxis tickLine={false} axisLine={false} tickMargin={8} />
-                              <Tooltip content={<ChartTooltipContent />} />
-                              <Bar dataKey="questions" fill="var(--color-questions)" radius={4} />
-                              <Bar dataKey="interviews" fill="var(--color-interviews)" radius={4} />
-                          </BarChart>
-                      </ChartContainer>
+                    {/* This would be a form in a real application */}
+                    <div className="space-y-4">
+                        <p className="text-sm font-medium">Study Topic</p>
+                        <div className="p-3 rounded-md bg-input text-muted-foreground">
+                            e.g., The French Revolution, Quantum Physics
+                        </div>
+                         <Button>Generate Materials</Button>
+                    </div>
+                  </CardContent>
+              </Card>
+
+              <Card>
+                  <CardHeader>
+                      <CardTitle>Recent Topics</CardTitle>
+                      <CardDescription>You have created {recentTopics.length} topics. Jump back into a recent one.</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                      <div className="space-y-4">
+                          {recentTopics.map(topic => (
+                               <div key={topic.name} className="flex items-center justify-between p-3 rounded-lg bg-secondary hover:bg-accent transition-colors">
+                                  <div>
+                                    <span className="font-medium">{topic.name}</span>
+                                    <p className="text-xs text-muted-foreground">Created {topic.created}</p>
+                                  </div>
+                                  <Button variant="ghost" size="sm" asChild>
+                                      <Link href="/coding-practice">Study <ArrowRight className="ml-1 h-3 w-3" /></Link>
+                                  </Button>
+                              </div>
+                          ))}
+                      </div>
                   </CardContent>
               </Card>
           </div>
 
           {/* Right Column */}
           <div className="space-y-6">
-              <Card className="bg-gradient-to-br from-primary/20 to-secondary/30 border-primary/50 text-center flex flex-col items-center justify-center p-6 backdrop-blur-sm">
+              <Card className="text-center flex flex-col items-center justify-center p-6 h-full">
                    <CardHeader className="p-0">
-                      <CardDescription className="text-primary/80">Interview Readiness</CardDescription>
-                      <CardTitle className="text-5xl font-bold text-foreground my-2">{progressData.interviewReadiness}%</CardTitle>
+                      <CardTitle className="text-xl">Today's Goal</CardTitle>
                   </CardHeader>
-                  <CardContent className="p-0">
-                      <p className="text-sm text-primary/70 mb-4">Based on your recent activity and performance.</p>
-                       <Button className="bg-primary/90 text-primary-foreground hover:bg-primary shadow-[0_0_15px_hsl(var(--primary)/0.5)]" asChild>
-                          <Link href="/arena">Go to Arena <Target className="ml-2 h-4 w-4" /></Link>
-                      </Button>
-                  </CardContent>
-              </Card>
-
-              <Card className="bg-secondary/30 backdrop-blur-sm">
-                  <CardHeader>
-                      <CardTitle className="text-primary">Topics to Improve</CardTitle>
-                      <CardDescription>Focus on these areas to boost your readiness score.</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                      <div className="flex flex-col gap-3">
-                          {progressData.topicsToImprove.map(topic => (
-                               <div key={topic} className="flex items-center justify-between p-3 rounded-lg bg-black/30">
-                                  <span className="font-medium">{topic}</span>
-                                  <Button variant="ghost" size="sm" asChild>
-                                      <Link href="/coding-practice">Practice <ArrowRight className="ml-1 h-3 w-3" /></Link>
-                                  </Button>
-                              </div>
-                          ))}
-                      </div>
+                  <CardContent className="p-0 flex-grow flex flex-col items-center justify-center">
+                    <Info className="w-10 h-10 text-muted-foreground mb-4"/>
+                    <p className="text-sm text-muted-foreground mb-2">No study plan set for today.</p>
+                    <Button variant="link" asChild>
+                        <Link href="/arena">Create a roadmap</Link>
+                    </Button>
                   </CardContent>
               </Card>
           </div>

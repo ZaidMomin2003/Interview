@@ -4,26 +4,26 @@
 
 @layer base {
   :root, .theme-default {
-    --background: 215 50% 12%;
+    --background: 220 13% 10%;
     --foreground: 210 20% 98%;
-    --card: 215 40% 18%;
+    --card: 220 13% 14%;
     --card-foreground: 210 20% 98%;
-    --popover: 215 50% 12%;
+    --popover: 220 13% 10%;
     --popover-foreground: 210 20% 98%;
     --primary: 191 97% 55%;
-    --primary-foreground: 210 20% 98%;
-    --secondary: 215 30% 22%;
+    --primary-foreground: 210 20% 10%;
+    --secondary: 220 13% 18%;
     --secondary-foreground: 210 20% 98%;
-    --muted: 215 30% 22%;
+    --muted: 220 13% 18%;
     --muted-foreground: 217.9 10.6% 64.9%;
-    --accent: 297 51% 55%;
+    --accent: 220 13% 24%;
     --accent-foreground: 210 20% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 20% 98%;
-    --border: 215 30% 25%;
-    --input: 215 30% 25%;
+    --border: 220 13% 20%;
+    --input: 220 13% 12%;
     --ring: 191 97% 55%;
-    --radius: 1rem;
+    --radius: 0.75rem;
   }
 
   .theme-forest {
@@ -81,12 +81,12 @@
   }
 
   .dark {
-    --sidebar-background: var(--background);
+    --sidebar-background: hsl(var(--secondary));
     --sidebar-foreground: var(--foreground);
     --sidebar-primary: var(--primary);
     --sidebar-primary-foreground: var(--primary-foreground);
-    --sidebar-accent: var(--secondary);
-    --sidebar-accent-foreground: var(--secondary-foreground);
+    --sidebar-accent: hsl(var(--background));
+    --sidebar-accent-foreground: var(--foreground);
     --sidebar-border: var(--border);
     --sidebar-ring: var(--ring);
   }

@@ -66,8 +66,6 @@ export default function AppLayout({
           </Button>
         </div>
         <div className="relative min-h-screen lg:p-8 p-4 bg-background text-foreground">
-            <div className="absolute inset-0 -z-10 h-full w-full bg-background bg-[linear-gradient(to_right,#1f2937_1px,transparent_1px),linear-gradient(to_bottom,#1f2937_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
-            <div className="absolute inset-0 -z-10 h-full w-full bg-gradient-to-b from-background via-transparent to-background"></div>
             {children}
         </div>
       </SidebarInset>
