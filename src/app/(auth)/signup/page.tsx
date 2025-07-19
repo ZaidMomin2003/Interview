@@ -43,9 +43,9 @@ export default function SignUpPage() {
       }
       toast({
         title: "Account Created",
-        description: "You have successfully signed up! Redirecting to dashboard...",
+        description: "Welcome! Let's get you set up.",
       });
-      router.push('/dashboard');
+      router.push('/onboarding');
     } catch (error: any) {
       toast({
         variant: 'destructive',
