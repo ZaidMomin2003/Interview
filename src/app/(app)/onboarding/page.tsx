@@ -11,17 +11,22 @@ import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Briefcase, GraduationCap, Building, Code, Smartphone, Link as LinkIcon, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Loader2, Briefcase, GraduationCap, Building, Code, Smartphone, Link as LinkIcon, ArrowRight, ArrowLeft, Target, CalendarDays, CaseSensitive } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { ReactNode } from 'react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
+import { Calendar } from '@/components/ui/calendar';
 
 const onboardingSchema = z.object({
   status: z.enum(['student', 'employee']),
   languages: z.array(z.string()).min(1, 'Please select at least one language.'),
   university: z.string().optional(),
+  targetCompanies: z.string().optional(),
+  targetRole: z.string().optional(),
+  interviewDate: z.date().optional(),
   linkedin: z.string().url().optional().or(z.literal('')),
   github: z.string().url().optional().or(z.literal('')),
   instagram: z.string().url().optional().or(z.literal('')),
@@ -29,12 +34,14 @@ const onboardingSchema = z.object({
   phone: z.string().optional(),
 });
 
-type OnboardingData = z.infer<typeof onboardingSchema>;
+export type OnboardingData = z.infer<typeof onboardingSchema>;
 
 const steps = [
   { id: 'status', title: 'What is your current status?', fields: ['status'] },
   { id: 'languages', title: 'Which languages are you proficient in?', fields: ['languages'] },
   { id: 'university', title: 'What university are you attending?', fields: ['university'], dependsOn: 'status', expectedValue: 'student' },
+  { id: 'careerGoals', title: 'What are your career goals?', fields: ['targetCompanies', 'targetRole'] },
+  { id: 'timeline', title: 'What is your interview timeline?', fields: ['interviewDate'] },
   { id: 'socials', title: 'Connect your social accounts (optional)', fields: ['linkedin', 'github', 'instagram', 'twitter'] },
   { id: 'phone', title: 'What is your phone number? (optional)', fields: ['phone'] },
 ];
@@ -55,7 +62,7 @@ export default function OnboardingPage() {
   const [currentStep, setCurrentStep] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const { toast } = useToast();
   
   const methods = useForm<OnboardingData>({
@@ -71,7 +78,15 @@ export default function OnboardingPage() {
   const processForm = (data: OnboardingData) => {
     setIsLoading(true);
     console.log('Onboarding data:', data);
-    // Here you would typically save the data to your backend/Firestore
+    
+    // Update the user in our dummy auth hook
+    if (user) {
+        updateUser({
+            ...user,
+            ...data,
+        });
+    }
+
     toast({
       title: 'Onboarding Complete!',
       description: "Welcome! We're redirecting you to your dashboard.",
@@ -88,7 +103,7 @@ export default function OnboardingPage() {
 
     let nextStepIndex = currentStep + 1;
     // Skip university step if user is an employee
-    if (activeStep.id === 'languages' && getValues('status') === 'employee') {
+    if (steps[nextStepIndex]?.id === 'university' && getValues('status') === 'employee') {
       nextStepIndex++;
     }
 
@@ -101,7 +116,7 @@ export default function OnboardingPage() {
 
   const prevStep = () => {
     let prevStepIndex = currentStep - 1;
-    if (steps[prevStepIndex].id === 'university' && getValues('status') === 'employee') {
+    if (steps[prevStepIndex]?.id === 'university' && getValues('status') === 'employee') {
         prevStepIndex--;
     }
     if (prevStepIndex >= 0) {
@@ -109,43 +124,50 @@ export default function OnboardingPage() {
     }
   };
   
-  const totalSteps = steps.filter(step => {
+  const getVisibleSteps = () => steps.filter(step => {
     if (step.dependsOn) {
       return getValues(step.dependsOn as keyof OnboardingData) === step.expectedValue;
     }
     return true;
-  }).length;
+  });
+  
+  const visibleSteps = getVisibleSteps();
+  const totalSteps = visibleSteps.length;
+  const currentVisibleStepIndex = visibleSteps.findIndex(s => s.id === steps[currentStep].id);
+  const currentProgress = ((currentVisibleStepIndex + 1) / totalSteps) * 100;
 
-  const currentProgress = (currentStep + 1) / totalSteps * 100;
+  const activeStep = steps[currentStep];
 
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center bg-black text-gray-200">
       <div className="absolute inset-0 -z-10 h-full w-full bg-black bg-[linear-gradient(to_right,#1f2937_1px,transparent_1px),linear-gradient(to_bottom,#1f2937_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
       <div className="absolute inset-0 -z-10 h-full w-full bg-gradient-to-b from-black via-transparent to-black"></div>
 
-      <div className="w-full max-w-xl p-4">
+      <div className="w-full max-w-2xl p-4">
         <FormProvider {...methods}>
           <form onSubmit={handleSubmit(processForm)}>
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentStep}
-                initial={{ opacity: 0, x: 50 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -50 }}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -30 }}
                 transition={{ duration: 0.3 }}
               >
                 <div className="space-y-8">
                   <div className="space-y-2 text-center">
-                    <p className="text-cyan-400 font-semibold">Step {currentStep + 1} of {totalSteps}</p>
-                    <h1 className="text-3xl font-bold font-headline">{steps[currentStep].title}</h1>
+                    <p className="text-cyan-400 font-semibold">Step {currentVisibleStepIndex + 1} of {totalSteps}</p>
+                    <h1 className="text-3xl font-bold font-headline">{activeStep.title}</h1>
                   </div>
 
-                  <div className="min-h-[250px] flex items-center justify-center">
-                    {currentStep === 0 && <StatusStep />}
-                    {currentStep === 1 && <LanguagesStep />}
-                    {currentStep === 2 && watchedStatus === 'student' && <UniversityStep />}
-                    {currentStep === 3 && <SocialsStep />}
-                    {currentStep === 4 && <PhoneStep />}
+                  <div className="min-h-[350px] flex items-center justify-center">
+                    {activeStep.id === 'status' && <StatusStep />}
+                    {activeStep.id === 'languages' && <LanguagesStep />}
+                    {activeStep.id === 'university' && <UniversityStep />}
+                    {activeStep.id === 'careerGoals' && <CareerGoalsStep />}
+                    {activeStep.id === 'timeline' && <TimelineStep />}
+                    {activeStep.id === 'socials' && <SocialsStep />}
+                    {activeStep.id === 'phone' && <PhoneStep />}
                   </div>
                 </div>
               </motion.div>
@@ -216,14 +238,14 @@ const LanguagesStep = () => {
             selectedLanguages.includes(lang.id) ? "bg-cyan-400/20 border-cyan-400" : "bg-gray-800/50 border-gray-700 hover:border-cyan-500"
           )}
         >
-          <Code className="h-6 w-6 text-cyan-400" />
-          <p className="font-semibold">{lang.label}</p>
           <Checkbox 
             id={`lang-${lang.id}`}
             checked={selectedLanguages.includes(lang.id)} 
             onCheckedChange={() => handleLanguageToggle(lang.id)}
-            className="ml-auto h-5 w-5" 
+            className="hidden"
           />
+           <Code className="h-6 w-6 text-cyan-400" />
+          <p className="font-semibold">{lang.label}</p>
         </Label>
       ))}
     </div>
@@ -238,6 +260,55 @@ const UniversityStep = () => {
       <Input id="university" {...register('university')} placeholder="e.g., University of Technology" className="bg-gray-800 border-gray-700 text-gray-200" />
     </div>
   );
+};
+
+const CareerGoalsStep = () => {
+    const { register } = useFormContext<OnboardingData>();
+    return (
+        <div className="w-full max-w-lg space-y-6">
+            <div className="space-y-2">
+                <Label htmlFor="targetCompanies" className="flex items-center gap-2 text-cyan-400">
+                    <Target className="h-5 w-5" /> Target Companies (Optional)
+                </Label>
+                <Textarea 
+                    id="targetCompanies"
+                    {...register('targetCompanies')}
+                    placeholder="e.g., Google, Microsoft, Netflix..."
+                    className="bg-gray-800 border-gray-700 text-gray-200"
+                />
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="targetRole" className="flex items-center gap-2 text-cyan-400">
+                    <CaseSensitive className="h-5 w-5" /> Target Role (Optional)
+                </Label>
+                <Input 
+                    id="targetRole"
+                    {...register('targetRole')}
+                    placeholder="e.g., Senior Frontend Engineer"
+                    className="bg-gray-800 border-gray-700 text-gray-200"
+                />
+            </div>
+        </div>
+    );
+};
+
+const TimelineStep = () => {
+    const { setValue, watch } = useFormContext<OnboardingData>();
+    const interviewDate = watch('interviewDate');
+
+    return (
+        <div className="flex flex-col items-center">
+             <Label className="flex items-center gap-2 text-cyan-400 mb-4">
+                <CalendarDays className="h-5 w-5" /> When do you plan to interview? (Optional)
+            </Label>
+            <Calendar
+                mode="single"
+                selected={interviewDate}
+                onSelect={(date) => setValue('interviewDate', date, { shouldValidate: true })}
+                className="rounded-md border bg-gray-800/50 border-gray-700"
+            />
+        </div>
+    );
 };
 
 const SocialsStep = () => {

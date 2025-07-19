@@ -3,14 +3,15 @@
 
 import { useState, useEffect, useContext, createContext, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
+import type { OnboardingData } from '@/app/(app)/onboarding/page';
 
 // Define a shape for our dummy user
-interface DummyUser {
+// It now includes all the onboarding data fields.
+export interface DummyUser extends Partial<OnboardingData> {
   uid: string;
   email: string;
   displayName?: string | null;
   photoURL?: string | null;
-  // Add any other user properties your app might need
 }
 
 type AuthContextType = {
@@ -18,6 +19,7 @@ type AuthContextType = {
   loading: boolean;
   login: (userData: { email: string; displayName: string }) => void;
   logout: () => void;
+  updateUser: (userData: DummyUser) => void;
 };
 
 const AuthContext = createContext<AuthContextType>({
@@ -25,6 +27,7 @@ const AuthContext = createContext<AuthContextType>({
   loading: true,
   login: () => {},
   logout: () => {},
+  updateUser: () => {},
 });
 
 const DUMMY_USER_STORAGE_KEY = 'dummyUser';
@@ -57,6 +60,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem(DUMMY_USER_STORAGE_KEY, JSON.stringify(dummyUser));
     setUser(dummyUser);
   };
+  
+  const updateUser = (userData: DummyUser) => {
+    localStorage.setItem(DUMMY_USER_STORAGE_KEY, JSON.stringify(userData));
+    setUser(userData);
+  };
 
   const logout = () => {
     localStorage.removeItem(DUMMY_USER_STORAGE_KEY);
@@ -64,7 +72,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );
