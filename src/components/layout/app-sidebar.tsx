@@ -14,9 +14,7 @@ import {
   LayoutDashboard,
   FileText,
   CodeXml,
-  User,
   Rocket,
-  Settings,
   LogOut,
   Video,
 } from "lucide-react";
@@ -68,7 +66,7 @@ export function AppSidebar() {
     <Sidebar>
       <SidebarHeader>
         <div className="flex items-center gap-2">
-           <Button variant="ghost" size="icon" className="shrink-0 lg:hidden" asChild>
+           <Button variant="ghost" size="icon" className="shrink-0 md:hidden" asChild>
              <SidebarTrigger/>
            </Button>
            <Link href="/dashboard" className="flex items-center gap-2">

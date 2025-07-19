@@ -2,11 +2,12 @@
 "use client";
 
 import { AppSidebar } from "@/components/layout/app-sidebar";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { useRequireAuth } from "@/hooks/use-auth";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import { Button } from "@/components/ui/button";
 
 // Define paths that don't need the main app layout
 const NO_LAYOUT_PATHS = ['/onboarding'];
@@ -59,6 +60,11 @@ export default function AppLayout({
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
+        <div className="md:hidden flex items-center p-2 border-b border-gray-800 bg-black sticky top-0 z-30">
+          <Button variant="ghost" size="icon" className="shrink-0" asChild>
+            <SidebarTrigger />
+          </Button>
+        </div>
         <div className="relative min-h-screen lg:p-8 p-4 bg-black text-gray-200">
             {children}
         </div>
