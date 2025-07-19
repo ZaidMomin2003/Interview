@@ -18,6 +18,7 @@ import {
   LogOut,
   Video,
   Target,
+  History,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -51,6 +52,11 @@ const menuItems = [
     href: "/coding-practice",
     label: "Coding Gym",
     icon: CodeXml,
+  },
+  {
+    href: "/history",
+    label: "History",
+    icon: History,
   },
 ];
 
