@@ -23,6 +23,9 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "../ui/button";
+import { auth } from "@/lib/firebase";
+import { signOut } from "firebase/auth";
+import { useRouter } from "next/navigation";
 
 const menuItems = [
   {
@@ -54,6 +57,16 @@ const menuItems = [
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      router.push('/login');
+    } catch (error) {
+      console.error("Error signing out: ", error);
+    }
+  };
 
   return (
     <Sidebar>
@@ -90,7 +103,7 @@ export function AppSidebar() {
 
       <SidebarFooter className="border-t mt-auto p-2">
         <SidebarMenuItem>
-          <SidebarMenuButton tooltip="Log Out" className="bg-transparent hover:bg-destructive/80 text-red-500 hover:text-white border border-red-500/50 hover:border-red-500 transition-colors duration-300">
+          <SidebarMenuButton tooltip="Log Out" onClick={handleLogout} className="bg-transparent hover:bg-destructive/80 text-red-500 hover:text-white border border-red-500/50 hover:border-red-500 transition-colors duration-300">
             <LogOut />
             <span>Log Out</span>
           </SidebarMenuButton>

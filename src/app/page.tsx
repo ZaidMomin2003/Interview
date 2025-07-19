@@ -12,6 +12,8 @@ import { Label } from '@/components/ui/label';
 import { useEffect, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { useInView } from 'react-intersection-observer';
+import { useAuth } from '@/hooks/use-auth';
+import { Skeleton } from '@/components/ui/skeleton';
 
 function AnimatedCounter({ to, label }: { to: number, label: string }) {
   const [count, setCount] = useState(0);
@@ -103,7 +105,7 @@ function SpotlightCard({ children, className }: { children: React.ReactNode, cla
         className="pointer-events-none absolute -inset-px opacity-0 transition duration-300"
         style={{
           opacity,
-          background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, rgba(56, 189, 248, 0.1), transparent 40%)`,
+          background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, rgba(56, 189, 248, 0.2), transparent 40%)`,
         }}
       />
       {children}
@@ -115,6 +117,7 @@ function SpotlightCard({ children, className }: { children: React.ReactNode, cla
 export default function LandingPage() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const { user, loading } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -159,7 +162,7 @@ export default function LandingPage() {
       description: "Get a feel for the platform, on us.",
       features: ["Basic Resume Generation", "3 Coding Questions/day", "Limited Code Feedback"],
       cta: "Get Started Free",
-      href: "/dashboard"
+      href: "/signup"
     },
     {
       name: "Developer",
@@ -168,7 +171,7 @@ export default function LandingPage() {
       description: "The essential toolkit for active job seekers.",
       features: ["Advanced Resume Generation", "Unlimited Coding Questions", "Full Code Analysis", "Resume Optimization"],
       cta: "Choose Developer",
-      href: "/dashboard",
+      href: "/signup",
       popular: true
     },
     {
@@ -178,7 +181,7 @@ export default function LandingPage() {
       description: "For those who want to master their craft.",
       features: ["All Developer Features", "Priority AI Agent Access", "Career Path Analysis", "Mock AI Interviews"],
       cta: "Become Ascendant",
-      href: "/dashboard"
+      href: "/signup"
     }
   ];
 
@@ -201,13 +204,43 @@ export default function LandingPage() {
     }
   ];
 
+  const renderAuthButtons = () => {
+    if (loading) {
+      return (
+        <div className="flex items-center gap-2">
+          <Skeleton className="h-10 w-24" />
+          <Skeleton className="h-10 w-24" />
+        </div>
+      );
+    }
+
+    if (user) {
+      return (
+        <Button className="bg-cyan-400 text-black hover:bg-cyan-300 shadow-[0_0_15px_rgba(56,189,248,0.5)] transition-all duration-300 hover:scale-105 active:scale-95 hover:shadow-[0_0_25px_rgba(56,189,248,0.7)]" asChild>
+          <Link href="/dashboard">Go to Dashboard</Link>
+        </Button>
+      );
+    }
+
+    return (
+      <div className="flex items-center gap-2">
+        <Button variant="outline" className="border-cyan-400 text-cyan-400 hover:bg-cyan-400 hover:text-black transition-all duration-300 hover:scale-105 active:scale-95" asChild>
+            <Link href="/login">Login</Link>
+        </Button>
+        <Button className="bg-cyan-400 text-black hover:bg-cyan-300 shadow-[0_0_15px_rgba(56,189,248,0.5)] transition-all duration-300 hover:scale-105 active:scale-95 hover:shadow-[0_0_25px_rgba(56,189,248,0.7)]" asChild>
+            <Link href="/signup">Sign Up</Link>
+        </Button>
+      </div>
+    );
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-black text-gray-200 font-body">
       {/* Background Grid & Interactive Spotlight */}
       <div
         className="pointer-events-none fixed inset-0 z-0 transition-opacity duration-300"
         style={{
-          background: `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(56, 189, 248, 0.25), transparent 40%)`,
+          background: `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(56, 189, 248, 0.2), transparent 40%)`,
         }}
       />
       <div className="absolute inset-0 -z-10 h-full w-full bg-black bg-[linear-gradient(to_right,#1f2937_1px,transparent_1px),linear-gradient(to_bottom,#1f2937_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
@@ -233,9 +266,7 @@ export default function LandingPage() {
              <Link href="#contact" className="text-sm font-medium text-gray-400 hover:text-cyan-400 transition-colors">Contact</Link>
           </nav>
           <div className="flex items-center gap-2">
-            <Button className="bg-cyan-400 text-black hover:bg-cyan-300 shadow-[0_0_15px_rgba(56,189,248,0.5)] transition-all duration-300 hover:scale-105 active:scale-95 hover:shadow-[0_0_25px_rgba(56,189,248,0.7)]" asChild>
-              <Link href="/dashboard">Get Started</Link>
-            </Button>
+            {renderAuthButtons()}
           </div>
         </div>
       </header>
@@ -253,8 +284,8 @@ export default function LandingPage() {
             </p>
             <div className="mt-10">
               <Button size="lg" className="bg-cyan-400 text-black hover:bg-cyan-300 shadow-[0_0_20px_rgba(56,189,248,0.6)] transition-all duration-300 hover:scale-105 active:scale-95 hover:shadow-[0_0_30px_rgba(56,189,248,0.8)]" asChild>
-                <Link href="/dashboard">
-                  Engage AI Co-Pilot <ArrowRight className="ml-2" />
+                <Link href={user ? "/dashboard" : "/signup"}>
+                  {user ? "Go to Dashboard" : "Engage AI Co-Pilot"} <ArrowRight className="ml-2" />
                 </Link>
               </Button>
             </div>
@@ -347,7 +378,7 @@ export default function LandingPage() {
                        "w-full transition-all duration-300 hover:scale-105 active:scale-95",
                        tier.popular ? 'bg-cyan-400 text-black hover:bg-cyan-300 hover:shadow-[0_0_25px_rgba(56,189,248,0.7)]' : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
                      )} asChild>
-                      <Link href={tier.href}>{tier.cta}</Link>
+                      <Link href={user ? '/dashboard' : tier.href}>{user ? "Go to Dashboard" : tier.cta}</Link>
                     </Button>
                   </div>
                 </Card>
