@@ -2,9 +2,9 @@
 "use client";
 
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ArrowRight, Code, Cpu, Bot, Zap, ShieldCheck, User, Mail, Send } from 'lucide-react';
+import { ArrowRight, Code, Cpu, Bot, Zap, ShieldCheck, User, Mail, Send, Video, FileText, Target, BrainCircuit, LayoutDashboard, CheckCircle, BarChartHorizontalBig, Mic, VideoOff as VideoOffIcon, BotIcon } from 'lucide-react';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -14,6 +14,8 @@ import { cn } from '@/lib/utils';
 import { useInView } from 'react-intersection-observer';
 import { useAuth } from '@/hooks/use-auth';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Badge } from '@/components/ui/badge';
+import Image from 'next/image';
 
 function AnimatedCounter({ to, label }: { to: number, label: string }) {
   const [count, setCount] = useState(0);
@@ -138,19 +140,113 @@ export default function LandingPage() {
 
   const features = [
     {
-      icon: <Bot className="h-8 w-8 text-cyan-400" />,
-      title: 'AI Resume Builder',
-      description: 'Generate optimized resumes tailored to specific job roles using our advanced AI.',
+      icon: <Video className="h-10 w-10 text-cyan-400" />,
+      title: 'AI Mock Interviews',
+      description: 'Face a realistic AI interviewer that asks relevant questions, tracks your speech, and provides instant feedback to sharpen your communication skills.',
+      prototype: (
+         <Card className="w-full max-w-lg mx-auto bg-black border-cyan-500/30 shadow-cyan-400/10 shadow-2xl">
+              <CardContent className="p-4 space-y-3">
+                  <div className="aspect-video bg-gray-900 rounded-lg flex items-center justify-center relative">
+                      <Image 
+                        src="https://placehold.co/600x400.png"
+                        alt="User in a video call"
+                        data-ai-hint="professional headshot"
+                        width={600}
+                        height={400}
+                        className="w-full h-full object-cover rounded-lg"
+                      />
+                       <div className="absolute bottom-2 left-2 p-3 rounded-lg bg-black/50 border border-cyan-500/30 flex flex-col items-center justify-center">
+                         <BotIcon className="h-12 w-12 text-cyan-400/70" />
+                         <p className="mt-2 text-sm text-gray-200">AI Interviewer</p>
+                      </div>
+                  </div>
+                  <div className="p-3 bg-gray-900/50 rounded-lg text-sm text-gray-300">
+                      <p className="font-semibold text-cyan-400 mb-1">Transcript:</p>
+                      <p>&gt; AI: "Can you tell me about a time you faced a difficult challenge?"</p>
+                      <p className="text-white">&gt; You: "Certainly. In my previous role at TechCorp, we had a major project deadline..."</p>
+                  </div>
+              </CardContent>
+          </Card>
+      ),
     },
     {
-      icon: <Code className="h-8 w-8 text-cyan-400" />,
-      title: 'Coding Challenges',
-      description: 'Practice with AI-generated questions and get instant, detailed feedback on your solutions.',
+      icon: <FileText className="h-10 w-10 text-cyan-400" />,
+      title: 'Resume Studio',
+      description: 'Generate a brand-new resume from scratch or optimize your existing one against a specific job description. Our AI helps you bypass ATS filters and catch recruiter attention.',
+      prototype: (
+         <Card className="w-full max-w-lg mx-auto bg-gray-900 border-cyan-500/30 shadow-cyan-400/10 shadow-2xl">
+              <CardHeader>
+                  <CardTitle>Resume Optimization</CardTitle>
+              </CardHeader>
+              <CardContent className="grid grid-cols-2 gap-4">
+                  <div className="p-3 bg-gray-800 rounded-lg space-y-2">
+                      <h4 className="font-semibold text-gray-200">Your Resume</h4>
+                      <p className="text-sm text-gray-400">&bull; Experienced in React and Node.js...</p>
+                      <p className="text-sm text-gray-400">&bull; Managed a team of 3 developers...</p>
+                  </div>
+                   <div className="p-3 bg-green-900/20 border border-green-500/30 rounded-lg space-y-2">
+                      <h4 className="font-semibold text-green-400">AI Suggestions</h4>
+                      <p className="text-sm text-gray-300">&bull; Change "Managed" to "Led" for stronger impact...</p>
+                      <p className="text-sm text-gray-300">&bull; Add quantifiable results like "increased efficiency by 15%".</p>
+                  </div>
+              </CardContent>
+          </Card>
+      ),
     },
-    {
-      icon: <Zap className="h-8 w-8 text-cyan-400" />,
-      title: 'Code Analysis',
-      description: 'Receive deep feedback and optimization suggestions for your code to improve your skills.',
+     {
+      icon: <Code className="h-10 w-10 text-cyan-400" />,
+      title: 'Coding Gym',
+      description: 'Generate personalized coding questions based on your skill level and desired topics. Submit your solution and receive instant, line-by-line feedback from our AI mentor.',
+       prototype: (
+         <Card className="w-full max-w-lg mx-auto bg-gray-900 border-cyan-500/30 shadow-cyan-400/10 shadow-2xl">
+              <CardContent className="p-4 space-y-3">
+                  <div className="p-3 bg-gray-800 rounded-lg">
+                      <p className="text-sm text-cyan-400">Question: Two Sum</p>
+                      <p className="text-sm text-gray-400 mt-1">Given an array of integers, return indices of the two numbers such that they add up to a specific target.</p>
+                  </div>
+                   <div className="p-3 font-code text-sm bg-black rounded-lg text-gray-300">
+                      <span className="text-purple-400">function</span> <span className="text-yellow-300">twoSum</span>(<span className="text-orange-400">nums, target</span>) {'{'}<br/>
+                      {'  '}<span className="text-gray-500">// Your code here...</span><br/>
+                      {'}'}
+                  </div>
+                   <div className="p-3 bg-cyan-900/20 border border-cyan-500/30 rounded-lg">
+                       <p className="text-sm font-semibold text-cyan-300">AI Feedback:</p>
+                       <p className="text-sm text-gray-300 mt-1">"Consider using a hash map for O(n) time complexity."</p>
+                   </div>
+              </CardContent>
+          </Card>
+      ),
+    },
+     {
+      icon: <Target className="h-10 w-10 text-cyan-400" />,
+      title: 'Interview Arena',
+      description: 'Set a target interview date and get a personalized, day-by-day training plan. The Arena unlocks new challenges daily, guiding you from preparation to peak performance.',
+       prototype: (
+         <Card className="w-full max-w-lg mx-auto bg-gray-900/50 border-cyan-500/30 shadow-cyan-400/10 shadow-2xl">
+              <CardHeader>
+                  <CardTitle>Your 14-Day Plan</CardTitle>
+                  <CardDescription>Target: Senior Frontend Engineer</CardDescription>
+              </CardHeader>
+              <CardContent className="grid grid-cols-4 gap-2">
+                  <div className="text-center p-2 rounded-lg bg-green-900/50 border border-green-500/30">
+                      <p className="font-bold">Day 1</p>
+                      <CheckCircle className="mx-auto mt-1 h-5 w-5 text-green-400" />
+                  </div>
+                   <div className="text-center p-2 rounded-lg bg-green-900/50 border border-green-500/30">
+                      <p className="font-bold">Day 2</p>
+                      <CheckCircle className="mx-auto mt-1 h-5 w-5 text-green-400" />
+                  </div>
+                   <div className="text-center p-2 rounded-lg bg-cyan-900/80 border-2 border-cyan-400">
+                      <p className="font-bold">Day 3</p>
+                      <BarChartHorizontalBig className="mx-auto mt-1 h-5 w-5 text-cyan-300" />
+                  </div>
+                  <div className="text-center p-2 rounded-lg bg-gray-800 border border-gray-700 opacity-60">
+                      <p className="font-bold">Day 4</p>
+                       <BrainCircuit className="mx-auto mt-1 h-5 w-5" />
+                  </div>
+              </CardContent>
+          </Card>
+      ),
     },
   ];
 
@@ -291,9 +387,41 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
+        
+        {/* Features Section */}
+        <section id="features" className="py-20 sm:py-24">
+          <div className="container mx-auto px-4 max-w-6xl space-y-24">
+            <div className="text-center max-w-3xl mx-auto">
+              <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline text-cyan-400">Core Matrix</h2>
+              <p className="mt-4 text-lg text-gray-400">
+                Harness cutting-edge tools forged for the modern software engineer.
+              </p>
+            </div>
+
+            {features.map((feature, index) => (
+              <div key={index} className="grid md:grid-cols-2 gap-12 items-center">
+                <div className={cn("space-y-4", index % 2 === 1 && "md:order-2")}>
+                  <div className="inline-flex items-center gap-4">
+                    <div className="p-3 bg-gray-800 border border-cyan-500/30 rounded-lg">
+                      {feature.icon}
+                    </div>
+                    <h3 className="text-3xl font-bold font-headline text-gray-100">{feature.title}</h3>
+                  </div>
+                  <p className="text-lg text-gray-400">{feature.description}</p>
+                   <Button variant="outline" asChild>
+                    <Link href="/signup">Try it now <ArrowRight className="ml-2 h-4 w-4" /></Link>
+                  </Button>
+                </div>
+                <div className={cn(index % 2 === 1 && "md:order-1")}>
+                  {feature.prototype}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
 
         {/* About Us Section */}
-        <section id="about" className="py-20 sm:py-24">
+        <section id="about" className="py-20 sm:py-24 bg-gray-900/50">
           <div className="container mx-auto px-4 max-w-5xl">
             <div className="text-center max-w-3xl mx-auto">
               <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline text-cyan-400">About DevPro Ascent</h2>
@@ -305,37 +433,6 @@ export default function LandingPage() {
               <AnimatedCounter to={15000} label="Resumes Generated" />
               <AnimatedCounter to={25000} label="Coding Problems Solved" />
               <AnimatedCounter to={98} label="User Satisfaction (%)" />
-            </div>
-          </div>
-        </section>
-
-        {/* Features Section */}
-        <section id="features" className="py-20 sm:py-24">
-          <div className="container mx-auto px-4 max-w-5xl">
-            <div className="text-center max-w-3xl mx-auto">
-              <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline text-cyan-400">Core Matrix</h2>
-              <p className="mt-4 text-lg text-gray-400">
-                Harness cutting-edge tools forged for the modern software engineer.
-              </p>
-            </div>
-            <div className="mt-16 grid gap-8 md:grid-cols-3">
-              {features.map((feature, i) => (
-                <SpotlightCard key={i}>
-                  <CardHeader className="items-center text-center">
-                    <div className="p-4 bg-gray-800 border border-cyan-500/30 rounded-lg group-hover:scale-110 transition-transform">
-                       {feature.icon}
-                    </div>
-                    <CardTitle className="text-2xl pt-4 font-headline tracking-wider text-gray-100">
-                      {feature.title}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-400 text-center">
-                      {feature.description}
-                    </p>
-                  </CardContent>
-                </SpotlightCard>
-              ))}
             </div>
           </div>
         </section>
