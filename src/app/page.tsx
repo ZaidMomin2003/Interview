@@ -4,7 +4,7 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ArrowRight, Code, Cpu, Bot, Zap, ShieldCheck, User, Mail, Send, Video, FileText, Target, BrainCircuit, LayoutDashboard, CheckCircle, BarChartHorizontalBig, Mic, VideoOff as VideoOffIcon, BotIcon } from 'lucide-react';
+import { ArrowRight, Code, Cpu, Bot, Zap, ShieldCheck, User, Mail, Send, Video, FileText, Target, BrainCircuit, LayoutDashboard, CheckCircle, BarChartHorizontalBig, Mic, VideoOff as VideoOffIcon, BotIcon, CodeXml } from 'lucide-react';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -16,6 +16,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 function AnimatedCounter({ to, label }: { to: number, label: string }) {
   const [count, setCount] = useState(0);
@@ -369,21 +370,81 @@ export default function LandingPage() {
 
       <main className="flex-1">
         {/* Hero Section */}
-        <section id="hero" className="py-32 sm:py-40 md:py-48">
+        <section id="hero" className="py-20 md:py-24">
           <div className="container mx-auto px-4 text-center">
-             <h1 className="animate-text-gradient bg-gradient-to-r from-cyan-400 via-purple-400 to-cyan-400 bg-clip-text text-5xl font-bold tracking-tighter text-transparent sm:text-6xl md:text-7xl lg:text-8xl font-headline">
+             <h1 className="animate-text-gradient bg-gradient-to-r from-cyan-400 via-purple-400 to-cyan-400 bg-clip-text text-5xl font-bold tracking-tighter text-transparent sm:text-6xl md:text-7xl font-headline">
               Ascend Your Career
             </h1>
             <p className="mt-6 max-w-3xl mx-auto text-lg text-gray-400">
               Your AI-powered career co-pilot. Generate resumes, practice for
               interviews, and accelerate your developer journey into the digital frontier.
             </p>
-            <div className="mt-10">
+            <div className="mt-10 mb-16">
               <Button size="lg" className="bg-cyan-400 text-black hover:bg-cyan-300 shadow-[0_0_20px_rgba(56,189,248,0.6)] transition-all duration-300 hover:scale-105 active:scale-95 hover:shadow-[0_0_30px_rgba(56,189,248,0.8)]" asChild>
                 <Link href={user ? "/dashboard" : "/signup"}>
                   {user ? "Go to Dashboard" : "Engage AI Co-Pilot"} <ArrowRight className="ml-2" />
                 </Link>
               </Button>
+            </div>
+
+            {/* Dashboard Prototype */}
+            <div className="max-w-6xl mx-auto">
+                <Card className="w-full bg-black/50 border-2 border-cyan-500/30 shadow-cyan-400/20 shadow-2xl overflow-hidden">
+                    <div className="p-1.5 bg-gray-900/80 border-b border-cyan-500/30 flex items-center gap-1.5">
+                        <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                        <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                        <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                    </div>
+                    <div className="grid grid-cols-12 gap-6 p-6 bg-black/30 backdrop-blur-sm">
+                        {/* Sidebar Mock */}
+                        <div className="col-span-2 hidden md:flex flex-col gap-2">
+                           {[
+                                { icon: <LayoutDashboard />, label: "Dashboard" },
+                                { icon: <Target />, label: "Arena" },
+                                { icon: <Video />, label: "AI Interview" },
+                                { icon: <FileText />, label: "Resume Studio" },
+                                { icon: <CodeXml />, label: "Coding Gym" },
+                            ].map((item, index) => (
+                                <div key={index} className={cn("flex items-center gap-3 p-2 rounded-lg", index === 0 ? "bg-cyan-400/20 text-cyan-300" : "text-gray-400")}>
+                                    {item.icon}
+                                    <span className="font-medium">{item.label}</span>
+                                </div>
+                            ))}
+                        </div>
+                        {/* Main Content Mock */}
+                        <div className="col-span-12 md:col-span-10">
+                            <h2 className="text-2xl font-bold font-headline text-left mb-4">Welcome back, Developer</h2>
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                               <div className="lg:col-span-2 space-y-4">
+                                     <div className="grid grid-cols-3 gap-4">
+                                        <Card className="bg-gray-900/50"><CardContent className="p-4"><p className="text-sm text-gray-400">Interviews</p><p className="text-2xl font-bold">3</p></CardContent></Card>
+                                        <Card className="bg-gray-900/50"><CardContent className="p-4"><p className="text-sm text-gray-400">Questions Solved</p><p className="text-2xl font-bold">42</p></CardContent></Card>
+                                        <Card className="bg-gray-900/50"><CardContent className="p-4"><p className="text-sm text-gray-400">MCQs</p><p className="text-2xl font-bold">128</p></CardContent></Card>
+                                    </div>
+                                    <Card className="bg-gray-900/50">
+                                        <CardHeader><CardTitle className="text-lg">Weekly Progress</CardTitle></CardHeader>
+                                        <CardContent>
+                                            <Image src="https://placehold.co/600x200.png" data-ai-hint="bar chart" alt="Progress chart" width={600} height={200} className="w-full h-auto rounded-md" />
+                                        </CardContent>
+                                    </Card>
+                               </div>
+                               <div className="space-y-4">
+                                    <Card className="bg-cyan-900/30 border-cyan-500/50 flex flex-col items-center justify-center p-4 text-center h-40">
+                                        <p className="text-cyan-300">Readiness</p>
+                                        <p className="text-5xl font-bold font-headline text-white">78%</p>
+                                    </Card>
+                                    <Card className="bg-gray-900/50">
+                                        <CardHeader><CardTitle className="text-lg">Topics to Improve</CardTitle></CardHeader>
+                                        <CardContent className="space-y-2">
+                                            <div className="p-2 bg-gray-800 rounded-md text-sm">Dynamic Programming</div>
+                                            <div className="p-2 bg-gray-800 rounded-md text-sm">System Design</div>
+                                        </CardContent>
+                                    </Card>
+                               </div>
+                            </div>
+                        </div>
+                    </div>
+                </Card>
             </div>
           </div>
         </section>
