@@ -4,7 +4,7 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ArrowRight, Code, Cpu, Bot, Zap, ShieldCheck, User, Mail, Send, Video, FileText, Target, BrainCircuit, LayoutDashboard, CheckCircle, BarChartHorizontalBig, Mic, VideoOff as VideoOffIcon, BotIcon, CodeXml } from 'lucide-react';
+import { ArrowRight, Code, Cpu, Bot, Zap, ShieldCheck, User, Mail, Send, Video, FileText, Target, BrainCircuit, LayoutDashboard, CheckCircle, BarChartHorizontalBig, Mic, VideoOff as VideoOffIcon, BotIcon, CodeXml, Video as VideoIcon, History as HistoryIcon } from 'lucide-react';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -17,21 +17,30 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
+import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, RadialBar, RadialBarChart } from 'recharts';
 import { ChartContainer } from '@/components/ui/chart';
 
 
 const weeklyProgressData = [
-    { name: "W1", questions: 10, interviews: 1 },
-    { name: "W2", questions: 15, interviews: 1 },
-    { name: "W3", questions: 12, interviews: 0 },
-    { name: "W4", questions: 20, interviews: 1 },
+    { name: "Week 1", questions: 10, interviews: 1 },
+    { name: "Week 2", questions: 15, interviews: 1 },
+    { name: "Week 3", questions: 12, interviews: 0 },
+    { name: "Week 4", questions: 20, interviews: 1 },
 ];
 
 const chartConfig = {
     questions: { label: "Questions Solved", color: "hsl(var(--primary))" },
     interviews: { label: "Interviews", color: "hsl(var(--accent))" },
 };
+
+const readinessData = [{ name: 'readiness', value: 78, fill: 'hsl(var(--primary))' }];
+
+const topicsToImprove = [
+    { name: "Dynamic Programming", area: "Algorithms" },
+    { name: "System Design", area: "Concepts" },
+    { name: "Concurrency", area: "Languages" },
+];
+
 
 function AnimatedCounter({ to, label }: { to: number, label: string }) {
   const [count, setCount] = useState(0);
@@ -412,57 +421,137 @@ export default function LandingPage() {
                     </div>
                     <div className="grid grid-cols-12 gap-6 p-6 bg-black/30 backdrop-blur-sm">
                         {/* Sidebar Mock */}
-                        <div className="col-span-2 hidden md:flex flex-col gap-2">
+                        <div className="col-span-3 hidden md:flex flex-col gap-2">
                            {[
                                 { icon: <LayoutDashboard />, label: "Dashboard" },
                                 { icon: <Target />, label: "Arena" },
-                                { icon: <Video />, label: "AI Interview" },
+                                { icon: <VideoIcon />, label: "AI Interview" },
                                 { icon: <FileText />, label: "Resume Studio" },
                                 { icon: <CodeXml />, label: "Coding Gym" },
+                                { icon: <HistoryIcon />, label: "History"},
+                                { icon: <div className="h-5 w-5" />, label: "" }, // Placeholder for spacing
                             ].map((item, index) => (
-                                <div key={index} className={cn("flex items-center gap-3 p-2 rounded-lg", index === 0 ? "bg-cyan-400/20 text-cyan-300" : "text-gray-400")}>
+                                <div key={index} className={cn("flex items-center gap-3 p-2 rounded-lg text-sm", index === 0 ? "bg-cyan-400/20 text-cyan-300 font-semibold" : "text-gray-400")}>
                                     {item.icon}
                                     <span className="font-medium">{item.label}</span>
                                 </div>
                             ))}
                         </div>
                         {/* Main Content Mock */}
-                        <div className="col-span-12 md:col-span-10">
-                            <h2 className="text-2xl font-bold font-headline text-left mb-4">Welcome back, Developer</h2>
-                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                               <div className="lg:col-span-2 space-y-4">
-                                     <div className="grid grid-cols-3 gap-4">
-                                        <Card className="bg-gray-900/50"><CardContent className="p-4"><p className="text-sm text-gray-400">Interviews</p><p className="text-2xl font-bold">3</p></CardContent></Card>
-                                        <Card className="bg-gray-900/50"><CardContent className="p-4"><p className="text-sm text-gray-400">Questions Solved</p><p className="text-2xl font-bold">42</p></CardContent></Card>
-                                        <Card className="bg-gray-900/50"><CardContent className="p-4"><p className="text-sm text-gray-400">MCQs</p><p className="text-2xl font-bold">128</p></CardContent></Card>
-                                    </div>
-                                    <Card className="bg-gray-900/50">
-                                        <CardHeader><CardTitle className="text-lg">Weekly Progress</CardTitle></CardHeader>
-                                        <CardContent>
-                                            <ChartContainer config={chartConfig} className="h-[200px] w-full">
-                                                <BarChart data={weeklyProgressData} margin={{ top: 20, right: 20, bottom: 5, left: 0 }}>
-                                                    <XAxis dataKey="name" tickLine={false} axisLine={false} tickMargin={8} tick={{ fill: 'hsl(var(--muted-foreground))' }} />
-                                                    <YAxis tickLine={false} axisLine={false} tickMargin={8} tick={{ fill: 'hsl(var(--muted-foreground))' }} />
-                                                    <Bar dataKey="questions" fill="hsl(var(--primary))" radius={4} />
-                                                    <Bar dataKey="interviews" fill="hsl(var(--accent))" radius={4} />
-                                                </BarChart>
-                                            </ChartContainer>
-                                        </CardContent>
-                                    </Card>
-                               </div>
-                               <div className="space-y-4">
-                                    <Card className="bg-cyan-900/30 border-cyan-500/50 flex flex-col items-center justify-center p-4 text-center h-40">
-                                        <p className="text-cyan-300">Readiness</p>
-                                        <p className="text-5xl font-bold font-headline text-white">78%</p>
-                                    </Card>
-                                    <Card className="bg-gray-900/50">
-                                        <CardHeader><CardTitle className="text-lg">Topics to Improve</CardTitle></CardHeader>
-                                        <CardContent className="space-y-2">
-                                            <div className="p-2 bg-gray-800 rounded-md text-sm">Dynamic Programming</div>
-                                            <div className="p-2 bg-gray-800 rounded-md text-sm">System Design</div>
-                                        </CardContent>
-                                    </Card>
-                               </div>
+                        <div className="col-span-12 md:col-span-9">
+                            <h2 className="text-2xl font-bold font-headline text-left mb-1">Welcome back, Developer</h2>
+                            <p className="text-left text-muted-foreground mb-4">Here's your progress overview.</p>
+                             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          
+                              {/* Left Column */}
+                              <div className="lg:col-span-2 space-y-6">
+                                  {/* Stats Cards */}
+                                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                      <Card className="bg-secondary/30 backdrop-blur-sm">
+                                          <CardHeader className="flex flex-row items-center justify-between pb-2">
+                                              <CardTitle className="text-sm font-medium">Interviews Completed</CardTitle>
+                                              <VideoIcon className="h-4 w-4 text-muted-foreground" />
+                                          </CardHeader>
+                                          <CardContent>
+                                              <div className="text-2xl font-bold">3</div>
+                                              <p className="text-xs text-muted-foreground">+1 since last week</p>
+                                          </CardContent>
+                                      </Card>
+                                      <Card className="bg-secondary/30 backdrop-blur-sm">
+                                          <CardHeader className="flex flex-row items-center justify-between pb-2">
+                                              <CardTitle className="text-sm font-medium">Coding Questions Solved</CardTitle>
+                                              <CodeXml className="h-4 w-4 text-muted-foreground" />
+                                          </CardHeader>
+                                          <CardContent>
+                                              <div className="text-2xl font-bold">42</div>
+                                              <p className="text-xs text-muted-foreground">+12 since last week</p>
+                                          </CardContent>
+                                      </Card>
+                                      <Card className="bg-secondary/30 backdrop-blur-sm">
+                                          <CardHeader className="flex flex-row items-center justify-between pb-2">
+                                              <CardTitle className="text-sm font-medium">MCQs Answered</CardTitle>
+                                              <CheckCircle className="h-4 w-4 text-muted-foreground" />
+                                          </CardHeader>
+                                          <CardContent>
+                                              <div className="text-2xl font-bold">128</div>
+                                              <p className="text-xs text-muted-foreground">92% accuracy</p>
+                                          </CardContent>
+                                      </Card>
+                                  </div>
+                                  
+                                  {/* Weekly Progress */}
+                                  <Card className="bg-secondary/30 backdrop-blur-sm">
+                                      <CardHeader>
+                                          <CardTitle>Weekly Progress</CardTitle>
+                                      </CardHeader>
+                                      <CardContent className="pl-2">
+                                        <ResponsiveContainer width="100%" height={250}>
+                                            <BarChart data={weeklyProgressData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                                                <XAxis dataKey="name" stroke="#888888" fontSize={12} tickLine={false} axisLine={false}/>
+                                                <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false}/>
+                                                <Bar dataKey="questions" fill="hsl(var(--primary))" name="Questions" radius={[4, 4, 0, 0]} />
+                                            </BarChart>
+                                        </ResponsiveContainer>
+                                      </CardContent>
+                                  </Card>
+                              </div>
+
+                              {/* Right Column */}
+                              <div className="space-y-6">
+                                  <Card className="bg-secondary/30 backdrop-blur-sm">
+                                    <CardHeader>
+                                      <CardTitle>Interview Readiness</CardTitle>
+                                    </CardHeader>
+                                    <CardContent className="flex items-center justify-center p-0">
+                                      <ResponsiveContainer width="100%" height={160}>
+                                        <RadialBarChart 
+                                            data={readinessData} 
+                                            innerRadius="70%" 
+                                            outerRadius="100%" 
+                                            barSize={20}
+                                            startAngle={90}
+                                            endAngle={-270}
+                                        >
+                                            <RadialBar
+                                                minAngle={15}
+                                                background
+                                                dataKey='value'
+                                                cornerRadius={10}
+                                            />
+                                            <text
+                                                x="50%"
+                                                y="50%"
+                                                textAnchor="middle"
+                                                dominantBaseline="middle"
+                                                className="fill-foreground text-4xl font-bold font-headline"
+                                            >
+                                                {readinessData[0].value}%
+                                            </text>
+                                        </RadialBarChart>
+                                      </ResponsiveContainer>
+                                    </CardContent>
+                                  </Card>
+
+                                  <Card className="bg-secondary/30 backdrop-blur-sm">
+                                      <CardHeader>
+                                          <CardTitle>Topics to Improve</CardTitle>
+                                      </CardHeader>
+                                      <CardContent>
+                                          <div className="space-y-3">
+                                              {topicsToImprove.slice(0, 2).map(topic => (
+                                                  <div key={topic.name} className="flex items-center justify-between p-3 rounded-lg bg-background/50">
+                                                      <div>
+                                                        <span className="font-medium">{topic.name}</span>
+                                                        <p className="text-xs text-muted-foreground">{topic.area}</p>
+                                                      </div>
+                                                      <ArrowRight className="h-4 w-4" />
+                                                  </div>
+                                              ))}
+                                          </div>
+                                      </CardContent>
+                                  </Card>
+                              </div>
+
                             </div>
                         </div>
                     </div>
@@ -651,3 +740,5 @@ export default function LandingPage() {
     </div>
   );
 }
+
+    
