@@ -19,6 +19,7 @@ import {
   Video,
   Target,
   History,
+  GalleryVertical,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -57,6 +58,11 @@ const menuItems = [
     href: "/history",
     label: "History",
     icon: History,
+  },
+  {
+    href: "/portfolio-builder",
+    label: "Portfolio",
+    icon: GalleryVertical,
   },
 ];
 
