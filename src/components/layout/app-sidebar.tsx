@@ -27,6 +27,8 @@ import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { motion } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
 
 const menuItems = [
    {
@@ -70,6 +72,18 @@ export function AppSidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, logout } = useAuth();
+  const [activePillStyle, setActivePillStyle] = useState({});
+  const menuRef = useRef<HTMLUListElement>(null);
+
+  useEffect(() => {
+    const activeItem = menuRef.current?.querySelector(`[data-active="true"]`) as HTMLElement;
+    if (activeItem) {
+      setActivePillStyle({
+        height: activeItem.offsetHeight,
+        top: activeItem.offsetTop,
+      });
+    }
+  }, [pathname]);
 
   const handleLogout = async () => {
     try {
@@ -96,7 +110,12 @@ export function AppSidebar() {
         </div>
       </SidebarHeader>
 
-      <SidebarMenu className="flex-1">
+      <SidebarMenu ref={menuRef} className="flex-1 relative">
+        <motion.div
+          className="absolute left-2 w-[calc(100%-1rem)] bg-primary/20 rounded-lg -z-10"
+          animate={activePillStyle}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        />
         {menuItems.map((item) => (
           <SidebarMenuItem key={item.href}>
             <SidebarMenuButton
