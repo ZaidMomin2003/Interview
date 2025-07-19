@@ -48,11 +48,6 @@ const menuItems = [
     label: "Coding Gym",
     icon: CodeXml,
   },
-  {
-    href: "/profile",
-    label: "Profile",
-    icon: User,
-  },
 ];
 
 export function AppSidebar() {
@@ -90,7 +85,7 @@ export function AppSidebar() {
           <SidebarMenuItem key={item.href}>
             <SidebarMenuButton
               asChild
-              isActive={pathname.startsWith(item.href) && item.href !== '/profile'}
+              isActive={pathname.startsWith(item.href)}
               tooltip={item.label}
             >
               <Link href={item.href}>
@@ -105,7 +100,7 @@ export function AppSidebar() {
       <SidebarFooter className="border-t mt-auto p-2 space-y-2">
         <SidebarMenu>
           <SidebarMenuItem>
-             <SidebarMenuButton tooltip="Profile" asChild isActive={pathname === '/profile'}>
+             <SidebarMenuButton tooltip="Profile" asChild isActive={pathname.startsWith('/profile')}>
                 <Link href="/profile">
                   <Avatar className="size-7">
                     {user?.photoURL && <AvatarImage src={user.photoURL} alt={user.displayName || 'User'} />}
