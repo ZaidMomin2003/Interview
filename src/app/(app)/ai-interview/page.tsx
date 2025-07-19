@@ -167,10 +167,10 @@ export default function AiInterviewPage() {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)] bg-black text-white p-4 gap-4">
+    <div className="flex flex-col h-full bg-black text-white p-4 gap-4 rounded-lg border border-cyan-500/30">
       <div className="flex-grow grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Main Video Panel (User) */}
-        <div className="md:col-span-2 relative w-full h-full bg-gray-900 rounded-lg overflow-hidden flex items-center justify-center">
+        <div className="md:col-span-2 relative w-full h-full bg-gray-900 rounded-lg overflow-hidden flex items-center justify-center min-h-[40vh]">
           <video ref={videoRef} className={cn("w-full h-full object-cover", isCameraOn ? 'block' : 'hidden')} autoPlay muted />
           {!hasCameraPermission && (
             <div className="text-center text-muted-foreground p-4">
