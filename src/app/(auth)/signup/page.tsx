@@ -5,8 +5,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -26,6 +25,7 @@ export default function SignUpPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
+  const { login } = useAuth();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -35,12 +35,13 @@ export default function SignUpPage() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
-      if (userCredential.user) {
-        await updateProfile(userCredential.user, {
-          displayName: values.name,
-        });
-      }
+      // Simulate account creation
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      login({
+        displayName: values.name,
+        email: values.email,
+      });
+      
       toast({
         title: "Account Created",
         description: "Welcome! Let's get you set up.",
@@ -50,7 +51,7 @@ export default function SignUpPage() {
       toast({
         variant: 'destructive',
         title: 'Sign Up Failed',
-        description: error.message || 'An unknown error occurred.',
+        description: 'An unexpected error occurred. Please try again.',
       });
     } finally {
       setIsLoading(false);
