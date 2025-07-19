@@ -32,24 +32,24 @@ const generateTasks = (day: number): DailyTask[] => [
         action: 'Start Interview',
         href: '/ai-interview',
     },
-    ...Array.from({ length: 5 }, (_, i) => ({
-        id: `day${day}-coding-${i + 1}`,
+    {
+        id: `day${day}-coding`,
         type: 'Coding' as const,
-        title: `Coding Challenge #${i + 1}`,
-        description: 'Solve a new data structure or algorithm problem.',
+        title: `Day ${day} Coding Challenges`,
+        description: 'Tackle your daily set of data structure or algorithm problems.',
         icon: <Code className="h-6 w-6 text-cyan-400" />,
         action: 'Go to Gym',
         href: '/coding-practice',
-    })),
-     ...Array.from({ length: 10 }, (_, i) => ({
-        id: `day${day}-mcq-${i + 1}`,
+    },
+    {
+        id: `day${day}-mcq`,
         type: 'MCQ' as const,
-        title: `MCQ #${i + 1}`,
+        title: `Day ${day} MCQs`,
         description: 'Test your knowledge on core computer science concepts.',
         icon: <BrainCircuit className="h-6 w-6 text-amber-400" />,
         action: 'Start Quiz',
         href: '#', // Placeholder for MCQ feature
-    })),
+    },
 ];
 
 
