@@ -70,7 +70,7 @@ export default function ProfilePage() {
         <div className="lg:col-span-2 space-y-6">
             <InfoCard icon={<Briefcase className="w-8 h-8 text-cyan-400/80" />} title="Professional Info">
                 <div className="space-y-4">
-                     {user.status && <p className="flex items-center gap-2"><strong className="font-semibold text-gray-300">Status:</strong> <Badge variant="secondary" className="capitalize">{user.status}</Badge></p>}
+                     {user.status && <div className="flex items-center gap-2"><strong className="font-semibold text-gray-300">Status:</strong> <Badge variant="secondary" className="capitalize">{user.status}</Badge></div>}
                      {user.status === 'student' && user.university && (
                         <p className="flex items-center gap-2">
                            <GraduationCap className="h-5 w-5 text-gray-400" />
