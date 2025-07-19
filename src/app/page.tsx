@@ -17,6 +17,21 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
+import { ChartContainer } from '@/components/ui/chart';
+
+
+const weeklyProgressData = [
+    { name: "W1", questions: 10, interviews: 1 },
+    { name: "W2", questions: 15, interviews: 1 },
+    { name: "W3", questions: 12, interviews: 0 },
+    { name: "W4", questions: 20, interviews: 1 },
+];
+
+const chartConfig = {
+    questions: { label: "Questions Solved", color: "hsl(var(--primary))" },
+    interviews: { label: "Interviews", color: "hsl(var(--accent))" },
+};
 
 function AnimatedCounter({ to, label }: { to: number, label: string }) {
   const [count, setCount] = useState(0);
@@ -424,7 +439,14 @@ export default function LandingPage() {
                                     <Card className="bg-gray-900/50">
                                         <CardHeader><CardTitle className="text-lg">Weekly Progress</CardTitle></CardHeader>
                                         <CardContent>
-                                            <Image src="https://placehold.co/600x200.png" data-ai-hint="bar chart" alt="Progress chart" width={600} height={200} className="w-full h-auto rounded-md" />
+                                            <ChartContainer config={chartConfig} className="h-[200px] w-full">
+                                                <BarChart data={weeklyProgressData} margin={{ top: 20, right: 20, bottom: 5, left: 0 }}>
+                                                    <XAxis dataKey="name" tickLine={false} axisLine={false} tickMargin={8} tick={{ fill: 'hsl(var(--muted-foreground))' }} />
+                                                    <YAxis tickLine={false} axisLine={false} tickMargin={8} tick={{ fill: 'hsl(var(--muted-foreground))' }} />
+                                                    <Bar dataKey="questions" fill="hsl(var(--primary))" radius={4} />
+                                                    <Bar dataKey="interviews" fill="hsl(var(--accent))" radius={4} />
+                                                </BarChart>
+                                            </ChartContainer>
                                         </CardContent>
                                     </Card>
                                </div>
