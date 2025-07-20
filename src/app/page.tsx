@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import { Button } from '@/components/ui/button';
@@ -180,7 +179,7 @@ export default function LandingPage() {
                         width={600}
                         height={338}
                         className="w-full h-full object-cover rounded-lg"
-                        unoptimized
+                        unoptimized={true}
                       />
                        <div className="absolute bottom-2 left-2 p-3 rounded-lg bg-black/50 border border-cyan-500/30 flex flex-col items-center justify-center">
                          <BotIcon className="h-12 w-12 text-cyan-400/70" />
@@ -606,9 +605,8 @@ export default function LandingPage() {
                 </div>
                 <div className="flex items-center justify-center">
                    <Image 
-                        src="https://placehold.co/400x400.png"
+                        src="/about.jpg"
                         alt="AI Bot Illustration"
-                        data-ai-hint="robot illustration"
                         width={400}
                         height={400}
                         className="rounded-full shadow-cyan-400/20 shadow-2xl"
@@ -775,3 +773,5 @@ export default function LandingPage() {
     </div>
   );
 }
+
+    
