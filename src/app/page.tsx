@@ -171,19 +171,23 @@ export default function LandingPage() {
       prototype: (
          <Card className="w-full max-w-lg mx-auto bg-black border-cyan-500/30 shadow-cyan-400/10 shadow-2xl">
               <CardContent className="p-4 space-y-3">
-                  <div className="aspect-video bg-gray-900 rounded-lg flex items-center justify-center relative">
-                      <Image 
-                        src="https://placehold.co/600x338.gif"
-                        alt="Animated GIF of an AI mock interview"
-                        data-ai-hint="person talking animated"
-                        width={600}
-                        height={338}
-                        className="w-full h-full object-cover rounded-lg"
-                        unoptimized={true}
-                      />
-                       <div className="absolute bottom-2 left-2 p-3 rounded-lg bg-black/50 border border-cyan-500/30 flex flex-col items-center justify-center">
-                         <BotIcon className="h-12 w-12 text-cyan-400/70" />
-                         <p className="mt-2 text-sm text-gray-200">AI Interviewer</p>
+                  <div className="aspect-video bg-gray-900 rounded-lg flex items-center justify-center relative overflow-hidden">
+                      {/* Main user view */}
+                      <div className="w-full h-full flex items-center justify-center bg-gray-800">
+                          <User className="w-24 h-24 text-gray-600"/>
+                      </div>
+                      
+                      {/* AI Interviewer inset view */}
+                      <div className="absolute top-4 right-4 w-1/4 h-1/4 bg-gray-900 rounded-lg border-2 border-cyan-500/50 flex flex-col items-center justify-center p-2">
+                         <BotIcon className="h-8 w-8 text-cyan-400/70" />
+                         <p className="mt-1 text-xs text-gray-200 text-center">AI Interviewer</p>
+                      </div>
+
+                       {/* Controls */}
+                      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-3 p-2 bg-black/50 rounded-full border border-gray-700">
+                          <Button variant="destructive" size="icon" className="w-10 h-10 rounded-full"><Mic className="w-5 h-5"/></Button>
+                          <Button variant="secondary" size="icon" className="w-10 h-10 rounded-full"><VideoOffIcon className="w-5 h-5"/></Button>
+                          <Button variant="secondary" size="icon" className="w-10 h-10 rounded-full"><Phone className="w-5 h-5"/></Button>
                       </div>
                   </div>
                   <div className="p-3 bg-gray-900/50 rounded-lg text-sm text-gray-300">
