@@ -361,36 +361,36 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-white text-gray-800 font-body">
+    <div className="flex flex-col min-h-screen bg-black text-gray-200 font-body">
       {/* Background Grid & Interactive Spotlight */}
       <div
         className="pointer-events-none fixed inset-0 z-0 transition-opacity duration-300"
         style={{
-          background: `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(100, 180, 255, 0.1), transparent 40%)`,
+          background: `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(56, 189, 248, 0.2), transparent 40%)`,
         }}
       />
-      <div className="absolute inset-0 -z-10 h-full w-full bg-white bg-[linear-gradient(to_right,#e5e7eb_1px,transparent_1px),linear-gradient(to_bottom,#e5e7eb_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
-      <div className="absolute inset-0 -z-10 h-full w-full bg-gradient-to-b from-white via-transparent to-white"></div>
+      <div className="absolute inset-0 -z-10 h-full w-full bg-black bg-[linear-gradient(to_right,#1f2937_1px,transparent_1px),linear-gradient(to_bottom,#1f2937_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
+      <div className="absolute inset-0 -z-10 h-full w-full bg-gradient-to-b from-black via-transparent to-black"></div>
 
 
       {/* Header */}
       <header className={cn(
           "sticky top-0 z-50 w-full transition-all duration-300",
-          isScrolled ? "border-b border-gray-200 bg-white/80 backdrop-blur-lg" : "bg-transparent"
+          isScrolled ? "border-b border-gray-800 bg-black/80 backdrop-blur-lg" : "bg-transparent"
         )}>
         <div className="container mx-auto flex h-20 items-center justify-between px-4">
           <Link href="/" className="flex items-center gap-2">
-            <Cpu className="h-8 w-8 text-cyan-500" />
-            <span className="font-headline text-2xl font-bold tracking-widest text-gray-900 uppercase">
+            <Cpu className="h-8 w-8 text-cyan-400" />
+            <span className="font-headline text-2xl font-bold tracking-widest text-gray-100 uppercase">
               Talxify
             </span>
           </Link>
           <nav className="hidden md:flex items-center gap-6">
-            <Link href="#about" className="text-sm font-medium text-gray-500 hover:text-cyan-500 transition-colors">About</Link>
-            <Link href="#features" className="text-sm font-medium text-gray-500 hover:text-cyan-500 transition-colors">Features</Link>
-            <Link href="#pricing" className="text-sm font-medium text-gray-500 hover:text-cyan-500 transition-colors">Pricing</Link>
-            <Link href="#faq" className="text-sm font-medium text-gray-500 hover:text-cyan-500 transition-colors">FAQ</Link>
-             <Link href="#contact" className="text-sm font-medium text-gray-500 hover:text-cyan-500 transition-colors">Contact</Link>
+            <Link href="#about" className="text-sm font-medium text-gray-400 hover:text-cyan-400 transition-colors">About</Link>
+            <Link href="#features" className="text-sm font-medium text-gray-400 hover:text-cyan-400 transition-colors">Features</Link>
+            <Link href="#pricing" className="text-sm font-medium text-gray-400 hover:text-cyan-400 transition-colors">Pricing</Link>
+            <Link href="#faq" className="text-sm font-medium text-gray-400 hover:text-cyan-400 transition-colors">FAQ</Link>
+             <Link href="#contact" className="text-sm font-medium text-gray-400 hover:text-cyan-400 transition-colors">Contact</Link>
           </nav>
           <div className="flex items-center gap-2">
             {renderAuthButtons()}
@@ -402,15 +402,15 @@ export default function LandingPage() {
         {/* Hero Section */}
         <section id="hero" className="py-20 md:py-24">
           <div className="container mx-auto px-4 text-center">
-             <h1 className="animate-text-gradient bg-gradient-to-r from-cyan-500 via-purple-500 to-cyan-500 bg-clip-text text-5xl font-bold tracking-tighter text-transparent sm:text-6xl md:text-7xl font-headline">
+             <h1 className="animate-text-gradient bg-gradient-to-r from-cyan-400 via-purple-400 to-cyan-400 bg-clip-text text-5xl font-bold tracking-tighter text-transparent sm:text-6xl md:text-7xl font-headline">
               Ascend Your Career
             </h1>
-            <p className="mt-6 max-w-3xl mx-auto text-lg text-gray-600">
+            <p className="mt-6 max-w-3xl mx-auto text-lg text-gray-400">
               Your AI-powered career co-pilot. Generate resumes, practice for
               interviews, and accelerate your developer journey into the digital frontier.
             </p>
             <div className="mt-10 mb-16">
-              <Button size="lg" className="bg-cyan-500 text-white hover:bg-cyan-600 shadow-[0_0_20px_rgba(56,189,248,0.6)] transition-all duration-300 hover:scale-105 active:scale-95 hover:shadow-[0_0_30px_rgba(56,189,248,0.8)]" asChild>
+              <Button size="lg" className="bg-cyan-400 text-black hover:bg-cyan-300 shadow-[0_0_20px_rgba(56,189,248,0.6)] transition-all duration-300 hover:scale-105 active:scale-95 hover:shadow-[0_0_30px_rgba(56,189,248,0.8)]" asChild>
                 <Link href={user ? "/dashboard" : "/signup"}>
                   {user ? "Go to Dashboard" : "Engage AI Co-Pilot"} <ArrowRight className="ml-2" />
                 </Link>
@@ -570,8 +570,8 @@ export default function LandingPage() {
         <section id="features" className="py-20 sm:py-24">
           <div className="container mx-auto px-4 max-w-6xl space-y-24">
             <div className="text-center max-w-3xl mx-auto">
-              <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline text-cyan-500">Core Matrix</h2>
-              <p className="mt-4 text-lg text-gray-600">
+              <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline text-cyan-400">Core Matrix</h2>
+              <p className="mt-4 text-lg text-gray-400">
                 Harness cutting-edge tools forged for the modern software engineer.
               </p>
             </div>
@@ -580,12 +580,12 @@ export default function LandingPage() {
               <div key={index} className="grid md:grid-cols-2 gap-12 items-center">
                 <div className={cn("space-y-4", index % 2 === 1 && "md:order-2")}>
                   <div className="inline-flex items-center gap-4">
-                    <div className="p-3 bg-gray-100 border border-gray-200 rounded-lg">
+                    <div className="p-3 bg-gray-800 border border-gray-700 rounded-lg">
                       {feature.icon}
                     </div>
-                    <h3 className="text-3xl font-bold font-headline text-gray-900">{feature.title}</h3>
+                    <h3 className="text-3xl font-bold font-headline text-gray-100">{feature.title}</h3>
                   </div>
-                  <p className="text-lg text-gray-600">{feature.description}</p>
+                  <p className="text-lg text-gray-400">{feature.description}</p>
                    <Button variant="outline" asChild>
                     <Link href="/signup">Try it now <ArrowRight className="ml-2 h-4 w-4" /></Link>
                   </Button>
@@ -599,12 +599,12 @@ export default function LandingPage() {
         </section>
 
         {/* About Us Section */}
-        <section id="about" className="py-20 sm:py-24 bg-gray-50/50">
+        <section id="about" className="py-20 sm:py-24 bg-gray-900/50">
           <div className="container mx-auto px-4 max-w-5xl">
             <div className="grid md:grid-cols-2 gap-12 items-center">
                 <div className="text-left">
-                  <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline text-cyan-500">About The Developer</h2>
-                  <p className="mt-4 text-lg text-gray-600">
+                  <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline text-cyan-400">About The Developer</h2>
+                  <p className="mt-4 text-lg text-gray-400">
                     Meet Zaid, a passionate programmer from Bijapur, Karnataka. With a B.Tech in CSE specializing in Data Science, he is dedicated to building innovative tools that empower the developer community.
                   </p>
                   <div className="mt-6 flex gap-4">
@@ -647,8 +647,8 @@ export default function LandingPage() {
         <section id="pricing" className="py-20 sm:py-24">
           <div className="container mx-auto px-4 max-w-5xl">
             <div className="text-center max-w-3xl mx-auto">
-              <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline text-cyan-500">Access Protocols</h2>
-              <p className="mt-4 text-lg text-gray-600">
+              <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline text-cyan-400">Access Protocols</h2>
+              <p className="mt-4 text-lg text-gray-400">
                 Choose your level of engagement. No hidden fees. Upgrade or cancel anytime.
               </p>
             </div>
@@ -694,18 +694,18 @@ export default function LandingPage() {
         <section id="faq" className="py-20 sm:py-24">
           <div className="container mx-auto px-4 max-w-3xl">
             <div className="text-center">
-              <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline text-cyan-500">System Knowledge Base</h2>
-              <p className="mt-4 text-lg text-gray-600">
+              <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline text-cyan-400">System Knowledge Base</h2>
+              <p className="mt-4 text-lg text-gray-400">
                 Frequently accessed data nodes. If your query is not here, please connect to a support channel.
               </p>
             </div>
             <Accordion type="single" collapsible className="w-full mt-12">
               {faqs.map((faq, i) => (
-                 <AccordionItem key={i} value={`item-${i}`} className="border-gray-200">
-                  <AccordionTrigger className="text-lg text-left font-semibold text-gray-800 hover:text-cyan-500 transition-colors duration-300">
+                 <AccordionItem key={i} value={`item-${i}`} className="border-gray-700">
+                  <AccordionTrigger className="text-lg text-left font-semibold text-gray-100 hover:text-cyan-400 transition-colors duration-300">
                     {faq.question}
                   </AccordionTrigger>
-                  <AccordionContent className="text-gray-600 text-base">
+                  <AccordionContent className="text-gray-400 text-base">
                     {faq.answer}
                   </AccordionContent>
                 </AccordionItem>
@@ -718,8 +718,8 @@ export default function LandingPage() {
         <section id="contact" className="py-20 sm:py-24">
           <div className="container mx-auto px-4 max-w-6xl">
             <div className="text-center max-w-3xl mx-auto">
-              <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline text-cyan-500">Establish Connection</h2>
-              <p className="mt-4 text-lg text-gray-600">
+              <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline text-cyan-400">Establish Connection</h2>
+              <p className="mt-4 text-lg text-gray-400">
                 Have a question, feedback, or a partnership inquiry? We'd love to hear from you.
               </p>
             </div>
@@ -777,19 +777,19 @@ export default function LandingPage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-gray-200">
+      <footer className="border-t border-gray-800">
         <div className="container mx-auto py-8 flex flex-col sm:flex-row items-center justify-between gap-4 px-4">
           <p className="text-sm text-gray-500">
             Made with 💓 By Zaid
           </p>
           <div className="flex gap-4">
-            <Link href="https://github.com/ZaidMomin2003" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-cyan-500 transition-colors">
+            <Link href="https://github.com/ZaidMomin2003" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-cyan-400 transition-colors">
               <Github className="h-6 w-6" />
             </Link>
-             <Link href="https://www.linkedin.com/in/arshad-momin-a3139b21b/" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-cyan-500 transition-colors">
+             <Link href="https://www.linkedin.com/in/arshad-momin-a3139b21b/" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-cyan-400 transition-colors">
               <Linkedin className="h-6 w-6" />
             </Link>
-             <Link href="https://www.instagram.com/zaidwontdo/" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-cyan-500 transition-colors">
+             <Link href="https://www.instagram.com/zaidwontdo/" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-cyan-400 transition-colors">
               <Instagram className="h-6 w-6" />
             </Link>
           </div>
