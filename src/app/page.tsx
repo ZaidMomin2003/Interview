@@ -308,8 +308,8 @@ export default function LandingPage() {
 
   const faqs = [
     {
-      question: "What is DevPro Ascent?",
-      answer: "DevPro Ascent is an AI-powered platform designed to help developers accelerate their careers. We provide tools for resume building, coding practice, and interview preparation, all tailored to your specific needs and goals."
+      question: "What is Talxify?",
+      answer: "Talxify is an AI-powered platform designed to help developers accelerate their careers. We provide tools for resume building, coding practice, and interview preparation, all tailored to your specific needs and goals."
     },
     {
       question: "How does the AI resume builder work?",
@@ -376,7 +376,7 @@ export default function LandingPage() {
           <Link href="/" className="flex items-center gap-2">
             <Cpu className="h-8 w-8 text-cyan-400" />
             <span className="font-headline text-2xl font-bold tracking-widest text-gray-100 uppercase">
-              DevPro Ascent
+              Talxify
             </span>
           </Link>
           <nav className="hidden md:flex items-center gap-6">
@@ -597,7 +597,7 @@ export default function LandingPage() {
           <div className="container mx-auto px-4 max-w-5xl">
             <div className="grid md:grid-cols-2 gap-12 items-center">
                 <div className="text-left">
-                  <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline text-cyan-400">About DevPro Ascent</h2>
+                  <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline text-cyan-400">About Talxify</h2>
                   <p className="mt-4 text-lg text-gray-400">
                     We are a collective of engineers and AI researchers dedicated to building the future of career development. We believe in empowering developers with the tools they need to navigate the complexities of the tech industry and achieve their highest potential.
                   </p>
@@ -710,9 +710,9 @@ export default function LandingPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4 text-gray-300">
-                   <a href="mailto:contact@devproascent.com" className="flex items-center gap-3 hover:text-cyan-400 transition-colors">
+                   <a href="mailto:contact@talxify.com" className="flex items-center gap-3 hover:text-cyan-400 transition-colors">
                      <Mail className="h-5 w-5"/>
-                     <span>contact@devproascent.com</span>
+                     <span>contact@talxify.com</span>
                    </a>
                     <div className="flex items-center gap-3">
                      <Phone className="h-5 w-5"/>
@@ -758,7 +758,7 @@ export default function LandingPage() {
       <footer className="border-t border-cyan-500/30">
         <div className="container mx-auto py-8 flex flex-col sm:flex-row items-center justify-between gap-4 px-4">
           <p className="text-sm text-gray-500">
-            &copy; {new Date().getFullYear()} DevPro Ascent // All rights reserved.
+            &copy; {new Date().getFullYear()} Talxify // All rights reserved.
           </p>
           <div className="flex gap-4">
             <Link href="#" className="text-sm text-gray-500 hover:text-cyan-400 transition-colors">

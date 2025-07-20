@@ -18,7 +18,7 @@ const spaceGrotesk = Space_Grotesk({
 
 
 export const metadata: Metadata = {
-  title: 'DevPro Ascent',
+  title: 'Talxify',
   description: 'AI-powered career development platform for developers.',
 };
 

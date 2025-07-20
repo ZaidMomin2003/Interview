@@ -67,7 +67,7 @@ export default function SignUpPage() {
         <Link href="/" className="flex items-center gap-2 justify-center mb-4">
             <Cpu className="h-10 w-10 text-cyan-400" />
             <span className="font-headline text-4xl font-bold tracking-widest text-gray-100 uppercase">
-              DevPro Ascent
+              Talxify
             </span>
           </Link>
           <p className="text-gray-400">Join the ascent. Create your developer co-pilot account.</p>

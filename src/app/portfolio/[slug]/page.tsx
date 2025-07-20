@@ -16,7 +16,7 @@ import { useParams } from 'next/navigation';
 const portfolioData = {
   user: {
     displayName: 'Ada Lovelace',
-    email: 'ada@devproascent.com',
+    email: 'ada@talxify.com',
     photoURL: 'https://placehold.co/128x128.png',
     bio: 'Pioneering computer programmer and mathematician, known for my work on Charles Babbage\'s proposed mechanical general-purpose computer, the Analytical Engine.',
     languages: ['Assembly', 'Calculus', 'Logic'],
@@ -235,7 +235,7 @@ export default function PortfolioPage() {
                 </aside>
             </main>
              <footer className="text-center text-sm text-gray-500 pt-8">
-                <p>Powered by <Link href="/" className="font-bold text-cyan-400 hover:underline">DevPro Ascent</Link></p>
+                <p>Powered by <Link href="/" className="font-bold text-cyan-400 hover:underline">Talxify</Link></p>
             </footer>
        </div>
     </div>

@@ -117,7 +117,7 @@ export default function PortfolioBuilderPage() {
         <CardContent>
           <div className="flex flex-col sm:flex-row gap-2">
             <div className="flex items-center gap-2 p-2 rounded-md bg-gray-800 border border-gray-700">
-               <span className="text-muted-foreground hidden sm:block">devpro-ascent.com/portfolio/</span>
+               <span className="text-muted-foreground hidden sm:block">talxify.com/portfolio/</span>
                <Input 
                 className="bg-transparent border-none focus-visible:ring-0 p-0 h-auto" 
                 value={portfolio.slug} 

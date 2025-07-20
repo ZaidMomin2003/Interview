@@ -104,7 +104,7 @@ export function AppSidebar() {
            <Link href="/dashboard" className="flex items-center gap-2">
             <Rocket className="h-6 w-6 text-primary" />
             <span className="font-bold font-headline text-lg group-data-[collapsible=icon]:hidden">
-              DevPro Ascent
+              Talxify
             </span>
           </Link>
         </div>
