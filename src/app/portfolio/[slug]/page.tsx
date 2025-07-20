@@ -10,6 +10,7 @@ import { Code, GitBranch, Github, Linkedin, Globe, Trophy, Award, BarChartHorizo
 import Link from 'next/link';
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 import { Bar, BarChart, XAxis, YAxis, Tooltip } from 'recharts';
+import { useParams } from 'next/navigation';
 
 // Dummy data mirroring the builder and dashboard
 const portfolioData = {
@@ -68,7 +69,9 @@ const Section = ({ icon, title, children }: { icon: React.ReactNode, title: stri
 );
 
 
-export default function PortfolioPage({ params }: { params: { slug: string } }) {
+export default function PortfolioPage() {
+  const params = useParams();
+  const slug = params?.slug;
   // In a real app, you would fetch portfolio data based on the slug
   // For now, we'll use the dummy data.
   const { user, projects, hackathons, certificates, dashboard } = portfolioData;
