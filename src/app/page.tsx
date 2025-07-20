@@ -4,7 +4,7 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ArrowRight, Code, Cpu, Bot, Zap, ShieldCheck, User, Mail, Send, Video, FileText, Target, BrainCircuit, LayoutDashboard, CheckCircle, BarChartHorizontalBig, Mic, VideoOff as VideoOffIcon, BotIcon, CodeXml, Video as VideoIcon, History as HistoryIcon } from 'lucide-react';
+import { ArrowRight, Code, Cpu, Bot, Zap, ShieldCheck, User, Mail, Send, Video, FileText, Target, BrainCircuit, LayoutDashboard, CheckCircle, BarChartHorizontalBig, Mic, VideoOff as VideoOffIcon, BotIcon, CodeXml, Video as VideoIcon, History as HistoryIcon, Phone } from 'lucide-react';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -682,14 +682,35 @@ export default function LandingPage() {
 
         {/* Contact Us Section */}
         <section id="contact" className="py-20 sm:py-24">
-           <div className="container mx-auto px-4 max-w-3xl">
-             <div className="text-center max-w-3xl mx-auto">
+          <div className="container mx-auto px-4 max-w-6xl">
+            <div className="text-center max-w-3xl mx-auto">
               <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline text-cyan-400">Establish Connection</h2>
               <p className="mt-4 text-lg text-gray-400">
-                Have a question or want to work together? Drop us a line.
+                Have a question, feedback, or a partnership inquiry? We'd love to hear from you.
               </p>
             </div>
-            <div className="mt-16 max-w-2xl mx-auto">
+            <div className="mt-16 grid lg:grid-cols-2 gap-12 items-start">
+              <SpotlightCard>
+                <CardHeader>
+                  <CardTitle className="text-cyan-400 font-headline text-2xl">Get in Touch</CardTitle>
+                  <CardDescription>
+                    Our team is available to help with any questions you might have. We look forward to hearing from you.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4 text-gray-300">
+                   <a href="mailto:contact@devproascent.com" className="flex items-center gap-3 hover:text-cyan-400 transition-colors">
+                     <Mail className="h-5 w-5"/>
+                     <span>contact@devproascent.com</span>
+                   </a>
+                    <div className="flex items-center gap-3">
+                     <Phone className="h-5 w-5"/>
+                     <span>+1 (555) 123-4567</span>
+                   </div>
+                   <p className="text-sm text-gray-500 pt-4">
+                     We typically respond to inquiries within 24-48 business hours.
+                   </p>
+                </CardContent>
+              </SpotlightCard>
               <Card className="bg-gray-900/50 border border-cyan-500/30 backdrop-blur-sm">
                 <CardContent className="p-6 sm:p-8">
                   <form className="space-y-6">
@@ -740,5 +761,3 @@ export default function LandingPage() {
     </div>
   );
 }
-
-    
