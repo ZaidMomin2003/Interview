@@ -602,15 +602,32 @@ export default function LandingPage() {
           <div className="container mx-auto px-4 max-w-5xl">
             <div className="grid md:grid-cols-2 gap-12 items-center">
                 <div className="text-left">
-                  <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline text-cyan-400">About Talxify</h2>
+                  <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline text-cyan-400">About The Developer</h2>
                   <p className="mt-4 text-lg text-gray-400">
-                    We are a collective of engineers and AI researchers dedicated to building the future of career development. We believe in empowering developers with the tools they need to navigate the complexities of the tech industry and achieve their highest potential.
+                    Meet Zaid, a passionate programmer from Bijapur, Karnataka. With a B.Tech in CSE specializing in Data Science, he is dedicated to building innovative tools that empower the developer community.
                   </p>
+                  <div className="mt-6 flex gap-4">
+                     <Button asChild variant="outline">
+                        <Link href="https://github.com/ZaidMomin2003" target="_blank">
+                            <Github className="mr-2 h-4 w-4" /> GitHub
+                        </Link>
+                     </Button>
+                      <Button asChild variant="outline">
+                        <Link href="https://www.linkedin.com/in/arshad-momin-a3139b21b/" target="_blank">
+                            <Linkedin className="mr-2 h-4 w-4" /> LinkedIn
+                        </Link>
+                     </Button>
+                      <Button asChild variant="outline">
+                        <Link href="https://www.instagram.com/zaidwontdo/" target="_blank">
+                            <Instagram className="mr-2 h-4 w-4" /> Instagram
+                        </Link>
+                     </Button>
+                  </div>
                 </div>
                 <div className="flex items-center justify-center">
                    <Image 
                         src="/about.jpg"
-                        alt="AI Bot Illustration"
+                        alt="Developer Zaid"
                         width={400}
                         height={400}
                         className="rounded-full shadow-cyan-400/20 shadow-2xl"
