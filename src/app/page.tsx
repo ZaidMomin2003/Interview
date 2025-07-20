@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { Button } from '@/components/ui/button';
@@ -179,7 +180,7 @@ export default function LandingPage() {
                         width={600}
                         height={338}
                         className="w-full h-full object-cover rounded-lg"
-                        unoptimized // Add this for animated GIFs
+                        unoptimized
                       />
                        <div className="absolute bottom-2 left-2 p-3 rounded-lg bg-black/50 border border-cyan-500/30 flex flex-col items-center justify-center">
                          <BotIcon className="h-12 w-12 text-cyan-400/70" />
