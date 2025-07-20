@@ -11,7 +11,7 @@ export interface DummyUser extends Partial<OnboardingData> {
   uid: string;
   email: string;
   displayName?: string | null;
-  photoURL?: string | null;
+  photoURL?: string | null; // Can be a URL or a Data URI
 }
 
 type AuthContextType = {

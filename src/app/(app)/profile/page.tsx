@@ -5,9 +5,12 @@ import { useAuth } from '@/hooks/use-auth';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Building, Briefcase, Code, GraduationCap, Link as LinkIcon, Mail, Phone, Target, CalendarDays, CaseSensitive } from 'lucide-react';
+import { Building, Briefcase, Code, GraduationCap, Link as LinkIcon, Mail, Phone, Target, CalendarDays, CaseSensitive, Pencil } from 'lucide-react';
 import Link from 'next/link';
 import { format } from 'date-fns';
+import { useRef } from 'react';
+import { useToast } from '@/hooks/use-toast';
+import { Button } from '@/components/ui/button';
 
 const InfoCard = ({ icon, title, children }: { icon: React.ReactNode, title: string, children: React.ReactNode }) => (
     <Card className="bg-gray-900/50 border border-cyan-500/20">
@@ -29,11 +32,42 @@ const SocialLink = ({ href, icon, label }: { href: string; icon: React.ReactNode
 );
 
 export default function ProfilePage() {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
 
   if (!user) {
     return null; // Or a loading spinner
   }
+
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) { // 2MB limit
+        toast({
+          variant: 'destructive',
+          title: 'Image too large',
+          description: 'Please select an image smaller than 2MB.',
+        });
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const result = e.target?.result as string;
+        updateUser({ ...user, photoURL: result });
+        toast({
+          title: 'Avatar updated!',
+          description: 'Your new profile picture has been saved.',
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
   
   const socialLinks = [
     { href: user.linkedin, icon: <LinkIcon className="h-5 w-5" />, label: "LinkedIn" },
@@ -45,12 +79,30 @@ export default function ProfilePage() {
   return (
     <div className="space-y-8">
       <div className="flex flex-col sm:flex-row items-center gap-6">
-        <Avatar className="h-24 w-24 border-4 border-cyan-400">
-            {user.photoURL && <AvatarImage src={user.photoURL} alt={user.displayName || 'User'} />}
-            <AvatarFallback className="text-4xl font-bold bg-gray-800 text-cyan-300">
-                {user.displayName?.charAt(0).toUpperCase() || 'U'}
-            </AvatarFallback>
-        </Avatar>
+        <div className="relative group">
+           <Avatar className="h-24 w-24 border-4 border-cyan-400">
+              {user.photoURL && <AvatarImage src={user.photoURL} alt={user.displayName || 'User'} />}
+              <AvatarFallback className="text-4xl font-bold bg-gray-800 text-cyan-300">
+                  {user.displayName?.charAt(0).toUpperCase() || 'U'}
+              </AvatarFallback>
+          </Avatar>
+          <input 
+            type="file" 
+            ref={fileInputRef} 
+            onChange={handleImageUpload} 
+            className="hidden" 
+            accept="image/png, image/jpeg, image/gif"
+          />
+          <Button 
+            onClick={handleAvatarClick}
+            variant="outline"
+            size="icon"
+            className="absolute bottom-0 right-0 rounded-full h-8 w-8 bg-background/70 backdrop-blur-sm border-cyan-400 text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity"
+          >
+            <Pencil className="h-4 w-4" />
+            <span className="sr-only">Edit avatar</span>
+          </Button>
+        </div>
         <div>
             <h1 className="text-4xl font-bold font-headline">{user.displayName}</h1>
             <p className="text-gray-400 flex items-center gap-2 mt-1">
