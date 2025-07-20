@@ -595,13 +595,25 @@ export default function LandingPage() {
         {/* About Us Section */}
         <section id="about" className="py-20 sm:py-24 bg-gray-900/50">
           <div className="container mx-auto px-4 max-w-5xl">
-            <div className="text-center max-w-3xl mx-auto">
-              <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline text-cyan-400">About DevPro Ascent</h2>
-              <p className="mt-4 text-lg text-gray-400">
-                We are a collective of engineers and AI researchers dedicated to building the future of career development. We believe in empowering developers with the tools they need to navigate the complexities of the tech industry and achieve their highest potential.
-              </p>
+            <div className="grid md:grid-cols-2 gap-12 items-center">
+                <div className="text-left">
+                  <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline text-cyan-400">About DevPro Ascent</h2>
+                  <p className="mt-4 text-lg text-gray-400">
+                    We are a collective of engineers and AI researchers dedicated to building the future of career development. We believe in empowering developers with the tools they need to navigate the complexities of the tech industry and achieve their highest potential.
+                  </p>
+                </div>
+                <div className="flex items-center justify-center">
+                   <Image 
+                        src="https://placehold.co/400x400.png"
+                        alt="AI Bot Illustration"
+                        data-ai-hint="robot illustration"
+                        width={400}
+                        height={400}
+                        className="rounded-full shadow-cyan-400/20 shadow-2xl"
+                    />
+                </div>
             </div>
-             <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+             <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8">
               <AnimatedCounter to={15000} label="Resumes Generated" />
               <AnimatedCounter to={25000} label="Coding Problems Solved" />
               <AnimatedCounter to={98} label="User Satisfaction (%)" />
