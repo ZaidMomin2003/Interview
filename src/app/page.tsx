@@ -173,12 +173,13 @@ export default function LandingPage() {
               <CardContent className="p-4 space-y-3">
                   <div className="aspect-video bg-gray-900 rounded-lg flex items-center justify-center relative">
                       <Image 
-                        src="https://placehold.co/600x400.png"
-                        alt="User in a video call"
-                        data-ai-hint="professional headshot"
+                        src="https://placehold.co/600x338.gif"
+                        alt="Animated GIF of an AI mock interview"
+                        data-ai-hint="person talking animated"
                         width={600}
-                        height={400}
+                        height={338}
                         className="w-full h-full object-cover rounded-lg"
+                        unoptimized // Add this for animated GIFs
                       />
                        <div className="absolute bottom-2 left-2 p-3 rounded-lg bg-black/50 border border-cyan-500/30 flex flex-col items-center justify-center">
                          <BotIcon className="h-12 w-12 text-cyan-400/70" />
@@ -364,7 +365,7 @@ export default function LandingPage() {
           background: `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(56, 189, 248, 0.2), transparent 40%)`,
         }}
       />
-      <div className="absolute inset-0 -z-10 h-full w-full bg-black bg-[linear-gradient(to_right,#1f2937_1px,transparent_1px),linear-gradient(to_bottom,#1f2937_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
+      <div className="absolute inset-0 -z-10 h-full w-full bg-black bg-[linear-gradient(to_right,#000000_1px,transparent_1px),linear-gradient(to_bottom,#000000_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
       <div className="absolute inset-0 -z-10 h-full w-full bg-gradient-to-b from-black via-transparent to-black"></div>
 
       {/* Header */}
