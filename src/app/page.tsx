@@ -4,7 +4,7 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ArrowRight, Code, Cpu, Bot, Zap, ShieldCheck, User, Mail, Send, Video, FileText, Target, BrainCircuit, LayoutDashboard, CheckCircle, BarChartHorizontalBig, Mic, VideoOff as VideoOffIcon, BotIcon, CodeXml, Video as VideoIcon, History as HistoryIcon, Phone } from 'lucide-react';
+import { ArrowRight, Code, Cpu, Bot, Zap, ShieldCheck, User, Mail, Send, Video, FileText, Target, BrainCircuit, LayoutDashboard, CheckCircle, BarChartHorizontalBig, Mic, VideoOff as VideoOffIcon, BotIcon, CodeXml, Video as VideoIcon, History as HistoryIcon, Phone, Github, Linkedin, Instagram } from 'lucide-react';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -762,14 +762,17 @@ export default function LandingPage() {
       <footer className="border-t border-cyan-500/30">
         <div className="container mx-auto py-8 flex flex-col sm:flex-row items-center justify-between gap-4 px-4">
           <p className="text-sm text-gray-500">
-            &copy; {new Date().getFullYear()} Talxify // All rights reserved.
+            Made with 💓 By Zaid
           </p>
           <div className="flex gap-4">
-            <Link href="#" className="text-sm text-gray-500 hover:text-cyan-400 transition-colors">
-              Privacy Policy
+            <Link href="https://github.com/ZaidMomin2003" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-cyan-400 transition-colors">
+              <Github className="h-6 w-6" />
             </Link>
-            <Link href="#" className="text-sm text-gray-500 hover:text-cyan-400 transition-colors">
-              Terms of Service
+             <Link href="https://www.linkedin.com/in/arshad-momin-a3139b21b/" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-cyan-400 transition-colors">
+              <Linkedin className="h-6 w-6" />
+            </Link>
+             <Link href="https://www.instagram.com/zaidwontdo/" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-cyan-400 transition-colors">
+              <Instagram className="h-6 w-6" />
             </Link>
           </div>
         </div>
@@ -777,5 +780,3 @@ export default function LandingPage() {
     </div>
   );
 }
-
-    
