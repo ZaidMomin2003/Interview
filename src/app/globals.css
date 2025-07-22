@@ -4,25 +4,25 @@
 
 @layer base {
   :root, .theme-default {
-    --background: 180 50% 5%; /* #030f0f */
-    --foreground: 210 40% 98%;
-    --card: 222 47% 14%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222 47% 11%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 158 100% 44%; /* #00df82 */
-    --primary-foreground: 180 50% 5%;
-    --secondary: 164 95% 20%; /* #03624c */
-    --secondary-foreground: 210 40% 98%;
-    --muted: 164 95% 15%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 164 95% 25%;
-    --accent-foreground: 210 40% 98%;
+    --background: 0 0% 6%; /* #0F0F0F */
+    --foreground: 0 0% 97%; /* #F8F8F8 */
+    --card: 0 0% 13%; /* #202020 */
+    --card-foreground: 0 0% 97%;
+    --popover: 0 0% 6%;
+    --popover-foreground: 0 0% 97%;
+    --primary: 81 69% 51%; /* #5DD62C */
+    --primary-foreground: 0 0% 6%;
+    --secondary: 100 65% 27%; /* #337418 */
+    --secondary-foreground: 0 0% 97%;
+    --muted: 0 0% 13%;
+    --muted-foreground: 0 0% 60%;
+    --accent: 81 69% 41%;
+    --accent-foreground: 0 0% 97%;
     --destructive: 0 63% 31%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 164 95% 15%;
-    --input: 164 95% 15%;
-    --ring: 158 100% 44%;
+    --destructive-foreground: 0 0% 97%;
+    --border: 0 0% 13%;
+    --input: 0 0% 13%;
+    --ring: 81 69% 51%;
     --radius: 0.75rem;
   }
 
