@@ -21,6 +21,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Area, AreaChart, Bar, BarChart, ResponsiveContainer, XAxis, YAxis, RadialBar, RadialBarChart } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+import Autoplay from "embla-carousel-autoplay";
 
 
 const weeklyProgressData = [
@@ -147,6 +148,10 @@ export default function LandingPage() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const { user, loading } = useAuth();
+  
+  const autoplayPlugin = useRef(
+    Autoplay({ delay: 2000, stopOnInteraction: true, stopOnMouseEnter: true })
+  );
 
   useEffect(() => {
     const handleScroll = () => {
@@ -760,6 +765,7 @@ export default function LandingPage() {
             </div>
             <Carousel
               opts={{ align: "start", loop: true, }}
+              plugins={[autoplayPlugin.current]}
               className="w-full mt-16 max-w-6xl mx-auto"
             >
               <CarouselContent className="-ml-4">
@@ -1044,4 +1050,3 @@ export default function LandingPage() {
     </div>
   );
 }
-
