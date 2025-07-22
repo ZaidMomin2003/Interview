@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CodeXml, FileText, ArrowRight, Video, Target, CheckCircle, PercentCircle, BarChartHorizontalBig, Info } from "lucide-react";
 import Link from "next/link";
-import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, RadialBarChart, RadialBar, LabelList } from "recharts";
+import { ChartContainer, ChartTooltipContent, ChartLegend, ChartLegendContent } from "@/components/ui/chart";
+import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, RadialBarChart, RadialBar, LabelList, LineChart, Line, CartesianGrid } from "recharts";
 
 
 // Placeholder data
@@ -97,15 +97,59 @@ export default function DashboardPage() {
                       <CardDescription>Your activity over the last 4 weeks.</CardDescription>
                   </CardHeader>
                   <CardContent className="pl-2">
-                     <ResponsiveContainer width="100%" height={250}>
-                        <BarChart data={weeklyProgress} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                            <XAxis dataKey="name" stroke="#888888" fontSize={12} tickLine={false} axisLine={false}/>
-                            <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false}/>
-                            <Tooltip contentStyle={{ backgroundColor: 'hsl(var(--secondary))', border: '1px solid hsl(var(--border))', borderRadius: 'var(--radius)' }} cursor={{fill: 'hsl(var(--accent) / 0.2)'}}/>
-                            <Bar dataKey="questions" fill="hsl(var(--primary))" name="Questions" radius={[4, 4, 0, 0]} />
-                            <Bar dataKey="interviews" fill="hsl(var(--accent))" name="Interviews" radius={[4, 4, 0, 0]} />
-                        </BarChart>
-                    </ResponsiveContainer>
+                     <ChartContainer config={chartConfig} className="h-[250px] w-full">
+                        <LineChart
+                          accessibilityLayer
+                          data={weeklyProgress}
+                          margin={{
+                            top: 20,
+                            right: 20,
+                            bottom: 20,
+                            left: 20,
+                          }}
+                        >
+                          <CartesianGrid vertical={false} />
+                          <XAxis
+                            dataKey="name"
+                            tickLine={false}
+                            axisLine={false}
+                            tickMargin={8}
+                          />
+                           <YAxis
+                            tickLine={false}
+                            axisLine={false}
+                            tickMargin={8}
+                            />
+                          <ChartTooltip
+                            cursor={false}
+                            content={<ChartTooltipContent indicator="line" />}
+                          />
+                          <Line
+                            dataKey="questions"
+                            type="natural"
+                            stroke="hsl(var(--primary))"
+                            strokeWidth={2}
+                            dot={{
+                              fill: "hsl(var(--primary))",
+                            }}
+                            activeDot={{
+                              r: 6,
+                            }}
+                          />
+                           <Line
+                            dataKey="interviews"
+                            type="natural"
+                            stroke="hsl(var(--accent))"
+                            strokeWidth={2}
+                            dot={{
+                              fill: "hsl(var(--accent))",
+                            }}
+                            activeDot={{
+                              r: 6,
+                            }}
+                          />
+                        </LineChart>
+                      </ChartContainer>
                   </CardContent>
               </Card>
 
