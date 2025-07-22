@@ -5,7 +5,7 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ArrowRight, Code, Cpu, Bot, Zap, ShieldCheck, User, Mail, Send, Video, FileText, Target, BrainCircuit, LayoutDashboard, CheckCircle, BarChartHorizontalBig, Mic, VideoOff as VideoOffIcon, BotIcon, CodeXml, Video as VideoIcon, History as HistoryIcon, Phone, Github, Linkedin, Instagram, TrendingUp, GalleryVertical } from 'lucide-react';
+import { ArrowRight, Code, Cpu, Bot, Zap, ShieldCheck, User, Mail, Send, Video, FileText, Target, BrainCircuit, LayoutDashboard, CheckCircle, BarChartHorizontalBig, Mic, VideoOff as VideoOffIcon, BotIcon, CodeXml, Video as VideoIcon, History as HistoryIcon, Phone, Github, Linkedin, Instagram, TrendingUp, GalleryVertical, Plus } from 'lucide-react';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -339,20 +339,28 @@ export default function LandingPage() {
 
   const faqs = [
     {
-      question: "What is Talxify?",
-      answer: "Talxify is an AI-powered platform designed to help developers accelerate their careers. We provide tools for resume building, coding practice, and interview preparation, all tailored to your specific needs and goals."
+        question: "What is Talxify?",
+        answer: "Talxify is an AI-powered platform designed to help developers accelerate their careers. We provide tools for resume building, coding practice, interview preparation, and portfolio showcasing, all tailored to your specific needs and goals."
     },
     {
-      question: "How does the AI resume builder work?",
-      answer: "Our AI resume builder takes your work experience, skills, and the job description you're targeting, and generates a professional, optimized resume designed to get past applicant tracking systems and catch the eye of recruiters."
+        question: "Who is this platform for?",
+        answer: "Talxify is for any developer looking to level up—from students preparing for their first internship to senior engineers aiming for top-tier companies. If you're looking to improve your skills, ace interviews, and manage your career, Talxify is for you."
     },
     {
-      question: "Can I use my own code for feedback?",
-      answer: "Absolutely. The Coding Gym allows you to solve AI-generated problems or paste your own code solutions to get instant, comprehensive feedback on correctness, efficiency, and style."
+        question: "How does the AI resume optimizer work?",
+        answer: "Our AI resume builder takes your work experience, skills, and the job description you're targeting. It then analyzes the content to suggest stronger action verbs, quantify your achievements, and align your resume with what recruiters and Applicant Tracking Systems (ATS) are looking for."
     },
     {
-      question: "What payment methods do you accept?",
-      answer: "We accept all major credit cards, including Visa, Mastercard, and American Express, processed securely through our payment provider."
+        question: "What kind of feedback does the Coding Gym provide?",
+        answer: "The AI mentor in the Coding Gym provides line-by-line analysis of your code. It checks for correctness, time and space complexity (Big O), and suggests more efficient algorithms or data structures. It also offers advice on code style and best practices for the given language."
+    },
+    {
+        question: "Is my data secure?",
+        answer: "Yes, data security is our top priority. All personal information and code submissions are encrypted and handled securely. We do not share your data with third parties. Your portfolio is only public if you choose to share the link."
+    },
+    {
+        question: "Can I cancel my subscription anytime?",
+        answer: "Absolutely. You have full control over your subscription. You can upgrade, downgrade, or cancel your plan at any time through your account settings. If you cancel, you will retain access until the end of your current billing period."
     }
   ];
 
@@ -742,27 +750,52 @@ export default function LandingPage() {
 
         {/* FAQ Section */}
         <section id="faq" className="py-20 sm:py-24">
-          <div className="container mx-auto px-4 max-w-3xl">
-            <div className="text-center">
-              <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline text-cyan-400">System Knowledge Base</h2>
-              <p className="mt-4 text-lg text-gray-400">
-                Frequently accessed data nodes. If your query is not here, please connect to a support channel.
-              </p>
+            <div className="container mx-auto px-4 max-w-5xl">
+                <div className="text-center">
+                    <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline text-cyan-400">System Knowledge Base</h2>
+                    <p className="mt-4 text-lg text-gray-400">
+                        Frequently accessed data nodes. If your query is not here, please connect to a support channel.
+                    </p>
+                </div>
+                <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+                    <Accordion type="single" collapsible className="w-full">
+                        {faqs.slice(0, Math.ceil(faqs.length / 2)).map((faq, i) => (
+                            <AccordionItem key={i} value={`item-${i}`} className="bg-gray-900/50 border-cyan-500/20 border-b-0 rounded-lg mb-4 p-2 transition-all hover:bg-gray-800/60">
+                                <AccordionTrigger className="text-lg text-left font-semibold text-gray-100 hover:text-cyan-400 transition-colors duration-300 p-4 [&[data-state=open]>svg:last-child]:-rotate-90">
+                                    <div className="flex items-center gap-4">
+                                        <div className="p-2 bg-gray-800 border border-gray-700 rounded-full">
+                                            <Plus className="h-5 w-5 text-cyan-400 transition-transform duration-300"/>
+                                        </div>
+                                        {faq.question}
+                                    </div>
+                                </AccordionTrigger>
+                                <AccordionContent className="text-gray-400 text-base p-4 pt-0">
+                                    {faq.answer}
+                                </AccordionContent>
+                            </AccordionItem>
+                        ))}
+                    </Accordion>
+                    <Accordion type="single" collapsible className="w-full">
+                         {faqs.slice(Math.ceil(faqs.length / 2)).map((faq, i) => (
+                            <AccordionItem key={i} value={`item-${i + Math.ceil(faqs.length / 2)}`} className="bg-gray-900/50 border-cyan-500/20 border-b-0 rounded-lg mb-4 p-2 transition-all hover:bg-gray-800/60">
+                                <AccordionTrigger className="text-lg text-left font-semibold text-gray-100 hover:text-cyan-400 transition-colors duration-300 p-4 [&[data-state=open]>svg:last-child]:-rotate-90">
+                                     <div className="flex items-center gap-4">
+                                        <div className="p-2 bg-gray-800 border border-gray-700 rounded-full">
+                                            <Plus className="h-5 w-5 text-cyan-400 transition-transform duration-300"/>
+                                        </div>
+                                        {faq.question}
+                                    </div>
+                                </AccordionTrigger>
+                                <AccordionContent className="text-gray-400 text-base p-4 pt-0">
+                                    {faq.answer}
+                                </AccordionContent>
+                            </AccordionItem>
+                        ))}
+                    </Accordion>
+                </div>
             </div>
-            <Accordion type="single" collapsible className="w-full mt-12">
-              {faqs.map((faq, i) => (
-                 <AccordionItem key={i} value={`item-${i}`} className="border-gray-700">
-                  <AccordionTrigger className="text-lg text-left font-semibold text-gray-100 hover:text-cyan-400 transition-colors duration-300">
-                    {faq.question}
-                  </AccordionTrigger>
-                  <AccordionContent className="text-gray-400 text-base">
-                    {faq.answer}
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </div>
         </section>
+
 
         {/* Contact Us Section */}
         <section id="contact" className="py-20 sm:py-24">
