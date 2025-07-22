@@ -27,8 +27,6 @@ import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { motion } from "framer-motion";
-import { useState, useEffect, useRef } from "react";
 
 const menuItems = [
    {
@@ -62,18 +60,6 @@ export function AppSidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, logout } = useAuth();
-  const [activePillStyle, setActivePillStyle] = useState({});
-  const menuRef = useRef<HTMLUListElement>(null);
-
-  useEffect(() => {
-    const activeItem = menuRef.current?.querySelector(`[data-active="true"]`) as HTMLElement;
-    if (activeItem) {
-      setActivePillStyle({
-        height: activeItem.offsetHeight,
-        top: activeItem.offsetTop,
-      });
-    }
-  }, [pathname]);
 
   const handleLogout = async () => {
     try {
@@ -100,23 +86,7 @@ export function AppSidebar() {
         </div>
       </SidebarHeader>
 
-      <SidebarMenu ref={menuRef} className="flex-1 relative" style={{ filter: "url(#gooey)"}}>
-        {/* SVG filter for the gooey effect */}
-        <svg className="absolute w-0 h-0">
-          <defs>
-            <filter id="gooey">
-              <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
-              <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="goo" />
-              <feBlend in="SourceGraphic" in2="goo" />
-            </filter>
-          </defs>
-        </svg>
-
-        <motion.div
-          className="absolute left-2 w-[calc(100%-1rem)] bg-primary rounded-lg -z-10"
-          animate={activePillStyle}
-          transition={{ type: "spring", stiffness: 300, damping: 25 }}
-        />
+      <SidebarMenu className="flex-1">
         {menuItems.map((item) => (
           <SidebarMenuItem key={item.href}>
             <SidebarMenuButton
