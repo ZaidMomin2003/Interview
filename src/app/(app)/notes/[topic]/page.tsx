@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ClipboardList, BookOpen, Check, Circle, ThumbsDown, ThumbsUp } from 'lucide-react';
 import { NoteCodeBlock } from '@/components/feature/note-code-block';
+import { marked } from 'marked';
 
 // This is a server component that fetches data on the server.
 export default async function NotesPage({ params }: { params: { topic: string } }) {
@@ -64,7 +65,7 @@ export default async function NotesPage({ params }: { params: { topic: string } 
               <CardContent className="space-y-4">
                 <div 
                   className="prose prose-invert max-w-none text-muted-foreground prose-headings:text-foreground prose-strong:text-foreground"
-                  dangerouslySetInnerHTML={{ __html: section.content.replace(/\n/g, '<br />') }}
+                  dangerouslySetInnerHTML={{ __html: marked(section.content) as string }}
                 />
 
                 {section.example && (
@@ -90,7 +91,7 @@ export default async function NotesPage({ params }: { params: { topic: string } 
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="text-muted-foreground">
-                    <div className="prose prose-invert prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: notes.summary.replace(/\n/g, '<br />') }} />
+                    <div className="prose prose-invert prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: marked(notes.summary) as string }} />
                 </CardContent>
             </Card>
             <Card className="bg-secondary/30">
