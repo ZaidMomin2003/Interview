@@ -2,7 +2,7 @@
 import { handleGenerateNotes } from '@/lib/actions';
 import { notFound } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ClipboardList, BookOpen, Check, Circle, ThumbsDown, ThumbsUp } from 'lucide-react';
+import { ClipboardList, BookOpen, ThumbsDown, ThumbsUp } from 'lucide-react';
 import { NoteCodeBlock } from '@/components/feature/note-code-block';
 import { marked } from 'marked';
 
@@ -21,10 +21,10 @@ export default async function NotesPage({ params }: { params: { topic: string } 
     console.error('Failed to generate notes:', error);
     // Render an error state, or you could redirect
     return (
-      <div className="space-y-8">
-        <h1 className="text-3xl md:text-4xl font-bold font-headline text-destructive">Error</h1>
-        <p className="text-muted-foreground">
-          Could not generate notes for the topic: "{topic}". Please try another topic or check back later.
+      <div className="space-y-8 text-center">
+        <h1 className="text-3xl md:text-4xl font-bold font-headline text-destructive">Unable to Generate Notes</h1>
+        <p className="text-muted-foreground max-w-lg mx-auto">
+          The AI service is currently experiencing high demand and could not generate notes for the topic: "{topic}". Please try again in a few moments.
         </p>
       </div>
     );
