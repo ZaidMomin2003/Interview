@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm, useFieldArray, FieldErrors } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
@@ -141,6 +141,21 @@ export function ResumeGenerator() {
     }
   }
 
+  function onFormError(errors: FieldErrors<ResumeFormData>) {
+    // Find the first error and scroll to it.
+    const firstErrorField = Object.keys(errors)[0];
+    if (firstErrorField) {
+      const element = document.getElementsByName(firstErrorField as keyof ResumeFormData)[0];
+      element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    toast({
+        variant: 'destructive',
+        title: 'Please fix the errors',
+        description: 'Check the form for highlighted fields with error messages.'
+    });
+  }
+
+
   const handleDownload = async () => {
     if (!resumePreviewRef.current) return;
     setIsDownloading(true);
@@ -203,7 +218,7 @@ export function ResumeGenerator() {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <form onSubmit={form.handleSubmit(onSubmit, onFormError)} className="space-y-8">
               {/* Personal Details */}
               <Section title="Personal Details">
                 <div className="grid md:grid-cols-2 gap-4">
@@ -310,7 +325,7 @@ export function ResumeGenerator() {
         </CardHeader>
         <CardContent className="flex-grow relative min-h-[300px] overflow-auto bg-gray-200">
           {isLoading && (
-            <div className="absolute inset-0 flex items-center justify-center bg-card/50 rounded-md">
+            <div className="absolute inset-0 flex items-center justify-center bg-card/50 rounded-md backdrop-blur-sm z-10">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
           )}
@@ -376,3 +391,5 @@ const EnhancedTextArea = ({ control, name, placeholder, sectionType = "text", on
         />
     )
 };
+
+    
