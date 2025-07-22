@@ -489,7 +489,7 @@ export default function LandingPage() {
                                   <Card className="bg-secondary/30 backdrop-blur-sm">
                                       <CardHeader>
                                           <CardTitle className="text-gray-200">Weekly Progress</CardTitle>
-                                      </Header>
+                                      </CardHeader>
                                       <CardContent className="pl-2">
                                         <ResponsiveContainer width="100%" height={250}>
                                             <BarChart data={weeklyProgressData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
