@@ -763,40 +763,32 @@ export default function LandingPage() {
                 See how developers like you have accelerated their careers with Talxify.
               </p>
             </div>
-            <Carousel
-              opts={{ align: "start", loop: true, }}
-              plugins={[autoplayPlugin.current]}
-              className="w-full mt-16 max-w-6xl mx-auto"
-            >
-              <CarouselContent className="-ml-4">
-                {testimonials.map((item, index) => (
-                  <CarouselItem key={index} className="pl-4 md:basis-1/2 lg:basis-1/3">
-                    <div className="p-1 h-full">
-                      <Card className="bg-secondary/30 border-border h-full flex flex-col justify-between">
-                          <CardContent className="p-6 flex-grow">
-                             <Quote className="w-12 h-12 text-primary/20 mb-4" />
-                            <blockquote className="text-foreground text-lg leading-relaxed">
-                              {item.testimonial}
-                            </blockquote>
-                          </CardContent>
-                          <CardHeader className="p-6 pt-0 flex-row items-center gap-4">
-                             <Avatar className="w-12 h-12 border-2 border-primary/50">
-                                <AvatarImage src={`https://placehold.co/128x128.png`} data-ai-hint="person portrait" alt={item.name} />
-                                <AvatarFallback>{item.name.charAt(0)}</AvatarFallback>
-                              </Avatar>
-                              <div>
-                                <h4 className="font-bold text-foreground">{item.name}</h4>
-                                <p className="text-sm text-muted-foreground">{item.role}</p>
-                              </div>
-                          </CardHeader>
-                      </Card>
-                    </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselPrevious className="-left-4 md:-left-12" />
-              <CarouselNext className="-right-4 md:-right-12" />
-            </Carousel>
+            <div className="mt-16 w-full overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_128px,_black_calc(100%-128px),transparent_100%)]">
+                <div className="flex w-max animate-scroll hover:[animation-play-state:paused]">
+                    {[...testimonials, ...testimonials].map((item, index) => (
+                        <div key={index} className="w-[450px] flex-shrink-0 p-4">
+                            <Card className="bg-secondary/30 border-border h-full flex flex-col justify-between">
+                                <CardContent className="p-6 flex-grow">
+                                    <Quote className="w-12 h-12 text-primary/20 mb-4" />
+                                    <blockquote className="text-foreground text-lg leading-relaxed">
+                                    {item.testimonial}
+                                    </blockquote>
+                                </CardContent>
+                                <CardHeader className="p-6 pt-0 flex-row items-center gap-4">
+                                    <Avatar className="w-12 h-12 border-2 border-primary/50">
+                                        <AvatarImage src={`https://placehold.co/128x128.png`} data-ai-hint="person portrait" alt={item.name} />
+                                        <AvatarFallback>{item.name.charAt(0)}</AvatarFallback>
+                                    </Avatar>
+                                    <div>
+                                        <h4 className="font-bold text-foreground">{item.name}</h4>
+                                        <p className="text-sm text-muted-foreground">{item.role}</p>
+                                    </div>
+                                </CardHeader>
+                            </Card>
+                        </div>
+                    ))}
+                </div>
+            </div>
           </div>
         </section>
 
