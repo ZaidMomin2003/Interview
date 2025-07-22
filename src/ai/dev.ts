@@ -6,3 +6,4 @@ import '@/ai/flows/get-code-feedback.ts';
 import '@/ai/flows/generate-coding-question.ts';
 import '@/ai/flows/optimize-resume.ts';
 import '@/ai/flows/calculate-salary.ts';
+import '@/ai/flows/enhance-resume-section.ts';

@@ -7,17 +7,53 @@ import { generateCodingQuestion, GenerateCodingQuestionInput } from "@/ai/flows/
 import { getCodeFeedback, GetCodeFeedbackInput } from "@/ai/flows/get-code-feedback";
 import { calculateSalary } from "@/ai/flows/calculate-salary";
 import { CalculateSalaryInput, CalculateSalaryInputSchema } from "@/ai/types/salary-types";
+import { enhanceResumeSection, EnhanceResumeSectionInput } from "@/ai/flows/enhance-resume-section";
+
+const experienceSchema = z.object({
+  jobTitle: z.string().min(2, "Job title is required"),
+  company: z.string().min(2, "Company name is required"),
+  location: z.string().min(2, "Location is required"),
+  startDate: z.string().min(4, "Start date is required"),
+  endDate: z.string().min(4, "End date is required"),
+  description: z.string().min(20, "Description must be at least 20 characters."),
+});
+
+const projectSchema = z.object({
+    name: z.string().min(2, "Project name is required"),
+    description: z.string().min(10, "Description is required"),
+    technologies: z.string().min(2, "Technologies are required"),
+    link: z.string().url("Must be a valid URL").optional().or(z.literal('')),
+});
+
+const educationSchema = z.object({
+    institution: z.string().min(3, "Institution name is required"),
+    degree: z.string().min(3, "Degree is required"),
+    graduationDate: z.string().min(4, "Graduation date is required"),
+});
 
 const resumeGeneratorSchema = z.object({
-  workExperience: z.string().min(50, "Please provide more details about your work experience."),
-  desiredJob: z.string().min(3, "Please specify a desired job."),
+  fullName: z.string().min(2, "Full name is required."),
+  email: z.string().email(),
+  phone: z.string().min(10, "Phone number is required."),
+  linkedin: z.string().url().optional().or(z.literal('')),
+  github: z.string().url().optional().or(z.literal('')),
+  portfolio: z.string().url().optional().or(z.literal('')),
+  summary: z.string().min(20, "Summary must be at least 20 characters."),
+  experiences: z.array(experienceSchema).min(1, "At least one work experience is required."),
+  projects: z.array(projectSchema).optional(),
+  education: z.array(educationSchema).min(1, "At least one education entry is required."),
+  skills: z.string().min(2, "Please list some skills."),
+  desiredJob: z.string().min(3, "Desired job must be at least 3 characters."),
 });
+
 
 export async function handleGenerateResume(data: GenerateResumeInput) {
   const validatedFields = resumeGeneratorSchema.safeParse(data);
 
   if (!validatedFields.success) {
-    throw new Error("Invalid input.");
+    // Construct a more detailed error message
+    const errorMessages = validatedFields.error.issues.map(issue => `${issue.path.join('.')} - ${issue.message}`).join('; ');
+    throw new Error(`Invalid input: ${errorMessages}`);
   }
 
   try {
@@ -27,6 +63,27 @@ export async function handleGenerateResume(data: GenerateResumeInput) {
     console.error(error);
     throw new Error("Failed to generate resume. Please try again.");
   }
+}
+
+const enhanceResumeSectionSchema = z.object({
+  sectionType: z.string(),
+  text: z.string().min(20, "Text must be at least 20 characters to enhance."),
+});
+
+export async function handleEnhanceResumeSection(data: EnhanceResumeSectionInput) {
+    const validatedFields = enhanceResumeSectionSchema.safeParse(data);
+
+    if (!validatedFields.success) {
+        throw new Error("Invalid input for enhancement.");
+    }
+
+    try {
+        const result = await enhanceResumeSection(validatedFields.data);
+        return result;
+    } catch (error) {
+        console.error(error);
+        throw new Error("Failed to enhance section. Please try again.");
+    }
 }
 
 const resumeOptimizerSchema = z.object({
