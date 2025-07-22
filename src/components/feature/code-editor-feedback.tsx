@@ -1,3 +1,4 @@
+// src/components/feature/code-editor-feedback.tsx
 "use client";
 
 import { useState } from "react";
@@ -10,7 +11,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { handleGetCodeFeedback } from "@/lib/actions";
-import { Loader2 } from "lucide-react";
+import { Loader2, Bookmark } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { GenerateCodingQuestionOutput } from "@/ai/flows/generate-coding-question";
 import type { GetCodeFeedbackOutput } from "@/ai/flows/get-code-feedback";
@@ -55,18 +56,31 @@ export function CodeEditorFeedback({ question, language }: CodeEditorFeedbackPro
     }
   }
 
+  const handleBookmark = () => {
+    toast({
+      title: "Question Bookmarked!",
+      description: "You can find it in your bookmarks section."
+    });
+  }
+
   return (
     <div className="space-y-8">
       <Card>
         <CardHeader>
-          <div className="flex justify-between items-start">
-            <div>
+          <div className="flex justify-between items-start gap-4">
+            <div className="flex-grow">
               <CardTitle className="font-headline text-2xl">{question.topic}</CardTitle>
               <CardDescription>
                 {question.question}
               </CardDescription>
             </div>
-            <Badge variant="outline" className="capitalize">{question.difficulty}</Badge>
+            <div className="flex-shrink-0 flex items-center gap-2">
+                <Badge variant="outline" className="capitalize">{question.difficulty}</Badge>
+                <Button variant="ghost" size="icon" onClick={handleBookmark}>
+                    <Bookmark className="h-5 w-5" />
+                    <span className="sr-only">Bookmark Question</span>
+                </Button>
+            </div>
           </div>
         </CardHeader>
         <CardContent>

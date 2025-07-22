@@ -2,9 +2,10 @@
 import { handleGenerateNotes } from '@/lib/actions';
 import { notFound } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ClipboardList, BookOpen, ThumbsDown, ThumbsUp } from 'lucide-react';
+import { ClipboardList, BookOpen, ThumbsDown, ThumbsUp, Bookmark } from 'lucide-react';
 import { NoteCodeBlock } from '@/components/feature/note-code-block';
 import { marked } from 'marked';
+import { Button } from '@/components/ui/button';
 
 // This is a server component that fetches data on the server.
 export default async function NotesPage({ params }: { params: { topic: string } }) {
@@ -45,8 +46,16 @@ export default async function NotesPage({ params }: { params: { topic: string } 
     <div className="space-y-12">
       {/* Header */}
       <div className="border-b border-border pb-8">
-        <h1 className="text-4xl md:text-5xl font-bold font-headline text-primary">{notes.title}</h1>
-        <p className="mt-4 text-lg text-muted-foreground max-w-3xl">{notes.introduction}</p>
+        <div className="flex justify-between items-start">
+            <div>
+                <h1 className="text-4xl md:text-5xl font-bold font-headline text-primary">{notes.title}</h1>
+                <p className="mt-4 text-lg text-muted-foreground max-w-3xl">{notes.introduction}</p>
+            </div>
+            <Button variant="outline" size="sm">
+                <Bookmark className="mr-2 h-4 w-4"/>
+                Bookmark Note
+            </Button>
+        </div>
       </div>
 
       {/* Main Content */}

@@ -4,8 +4,8 @@
 
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertCircle, Bot } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { AlertCircle, Bot, Bookmark } from 'lucide-react';
 import { Mic, MicOff, Video, VideoOff, PhoneOff } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -182,6 +182,13 @@ export default function AiInterviewPage() {
       }
     }
   };
+  
+  const handleBookmark = () => {
+    toast({
+        title: "Summary Bookmarked!",
+        description: "You can find it in your bookmarks section."
+    });
+  }
 
   return (
     <div className="max-w-6xl mx-auto w-full p-0 sm:p-4">
@@ -237,6 +244,29 @@ export default function AiInterviewPage() {
               </p>
             </CardContent>
           </Card>
+          
+        {/* Interview Summary section */}
+        <Card className="mx-4 sm:mx-0">
+            <CardHeader>
+                <div className="flex justify-between items-center">
+                    <div>
+                        <CardTitle className="font-headline">Interview Summary</CardTitle>
+                        <CardDescription>AI-generated feedback on your performance.</CardDescription>
+                    </div>
+                    <Button variant="outline" size="sm" onClick={handleBookmark}>
+                        <Bookmark className="mr-2 h-4 w-4"/>
+                        Bookmark Summary
+                    </Button>
+                </div>
+            </CardHeader>
+            <CardContent>
+                <p className="text-muted-foreground">
+                    Overall, a strong performance. You demonstrated good problem-solving skills when discussing the technical challenge.
+                    Consider using the STAR method more explicitly for behavioral questions to add more structure.
+                    Your pace was good, but remember to pause briefly before answering complex questions.
+                </p>
+            </CardContent>
+        </Card>
 
 
         {/* Controls */}

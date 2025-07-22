@@ -13,13 +13,12 @@ import {
 import {
   LayoutDashboard,
   FileText,
-  CodeXml,
   LogOut,
-  Video,
   Target,
   History,
   GalleryVertical,
   Cpu,
+  Bookmark,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -48,6 +47,11 @@ const menuItems = [
     href: "/history",
     label: "History",
     icon: History,
+  },
+   {
+    href: "/bookmarks",
+    label: "Bookmarks",
+    icon: Bookmark,
   },
   {
     href: "/portfolio-builder",
