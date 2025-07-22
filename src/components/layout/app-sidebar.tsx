@@ -100,7 +100,6 @@ export function AppSidebar() {
               asChild
               isActive={pathname.startsWith(item.href)}
               tooltip={item.label}
-              variant="ghost"
               className="justify-start group-data-[collapsible=icon]:justify-center"
             >
               <Link href={item.href}>
@@ -119,7 +118,7 @@ export function AppSidebar() {
               isActive={pathname.startsWith('/pricing')}
               tooltip="Upgrade"
               variant="default"
-              className="justify-start group-data-[collapsible=icon]:justify-center bg-primary/90 text-primary-foreground hover:bg-primary"
+              className="justify-start group-data-[collapsible=icon]:justify-center bg-primary text-primary-foreground hover:bg-primary/90"
             >
               <Link href="/pricing">
                 <Rocket />
