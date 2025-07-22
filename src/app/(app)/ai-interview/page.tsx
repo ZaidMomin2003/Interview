@@ -185,10 +185,10 @@ export default function AiInterviewPage() {
 
   return (
     <div className="max-w-6xl mx-auto w-full p-0 sm:p-4">
-      <div className="flex flex-col h-full bg-black text-white sm:p-4 gap-4 rounded-none sm:rounded-lg border-y sm:border border-cyan-500/30">
+      <div className="flex flex-col h-full bg-background text-foreground sm:p-4 gap-4 rounded-none sm:rounded-lg border-y sm:border border-border">
         <div className="flex-grow grid grid-cols-1 md:grid-cols-3 gap-4 p-4 sm:p-0">
           {/* Main Video Panel (User) */}
-          <div className="md:col-span-2 relative w-full h-full bg-gray-900 rounded-lg overflow-hidden flex items-center justify-center min-h-[30vh] md:min-h-0 md:aspect-video">
+          <div className="md:col-span-2 relative w-full h-full bg-secondary rounded-lg overflow-hidden flex items-center justify-center min-h-[30vh] md:min-h-0 md:aspect-video">
             <video ref={videoRef} className={cn("w-full h-full object-cover", isCameraOn ? 'block' : 'hidden')} autoPlay muted />
             {!hasCameraPermission && (
               <div className="text-center text-muted-foreground p-4">
@@ -197,7 +197,7 @@ export default function AiInterviewPage() {
               </div>
             )}
              {!isCameraOn && hasCameraPermission && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-900">
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-secondary">
                   <VideoOff className="h-16 w-16 text-muted-foreground"/>
                   <p className="mt-4 text-muted-foreground">Camera is off</p>
               </div>
@@ -206,19 +206,19 @@ export default function AiInterviewPage() {
 
           {/* Right Panel (AI Interviewer & Transcript) */}
           <div className="flex flex-col gap-4">
-            <Card className="w-full h-48 md:h-full bg-gray-900 border-cyan-500/30 flex flex-col items-center justify-center">
+            <Card className="w-full h-48 md:h-full bg-secondary border-border flex flex-col items-center justify-center">
                <CardContent className="p-6 text-center">
-                 <Bot className="h-16 md:h-24 w-16 md:w-24 text-cyan-400/70 mx-auto" />
-                 <p className="mt-4 font-headline text-lg text-gray-200">AI Interviewer</p>
+                 <Bot className="h-16 md:h-24 w-16 md:w-24 text-primary/70 mx-auto" />
+                 <p className="mt-4 font-headline text-lg text-foreground">AI Interviewer</p>
                  <p className="text-sm text-muted-foreground">Ready when you are.</p>
               </CardContent>
             </Card>
-            <Card className="flex-grow bg-gray-900 border-cyan-500/30 flex flex-col min-h-[20vh] md:hidden">
+            <Card className="flex-grow bg-secondary border-border flex flex-col min-h-[20vh] md:hidden">
               <CardHeader>
-                <CardTitle className="text-cyan-400 font-headline">Transcript</CardTitle>
+                <CardTitle className="text-primary font-headline">Transcript</CardTitle>
               </CardHeader>
               <CardContent className="flex-grow overflow-y-auto">
-                <p className="text-gray-300 whitespace-pre-wrap">
+                <p className="text-foreground whitespace-pre-wrap">
                   {transcript || (isListening ? 'Listening...' : 'Click the mic to start speaking.')}
                 </p>
               </CardContent>
@@ -227,12 +227,12 @@ export default function AiInterviewPage() {
         </div>
 
         {/* Transcript for larger screens */}
-        <Card className="hidden md:flex flex-grow bg-gray-900 border-cyan-500/30 flex-col min-h-[20vh] mx-4 sm:mx-0">
+        <Card className="hidden md:flex flex-grow bg-secondary border-border flex-col min-h-[20vh] mx-4 sm:mx-0">
             <CardHeader>
-              <CardTitle className="text-cyan-400 font-headline">Transcript</CardTitle>
+              <CardTitle className="text-primary font-headline">Transcript</CardTitle>
             </CardHeader>
             <CardContent className="flex-grow overflow-y-auto">
-              <p className="text-gray-300 whitespace-pre-wrap">
+              <p className="text-foreground whitespace-pre-wrap">
                 {transcript || (isListening ? 'Listening...' : 'Click the mic to start speaking.')}
               </p>
             </CardContent>
@@ -240,7 +240,7 @@ export default function AiInterviewPage() {
 
 
         {/* Controls */}
-        <div className="flex justify-center items-center p-4 bg-gray-900/50 border-t border-cyan-500/30 rounded-b-lg">
+        <div className="flex justify-center items-center p-4 bg-background/50 border-t border-border rounded-b-lg">
           <div className="flex items-center gap-4">
             <Button onClick={toggleMic} variant={isListening ? 'destructive' : 'secondary'} size="lg" className="rounded-full w-16 h-16">
               {isListening ? <Mic className="h-6 w-6" /> : <MicOff className="h-6 w-6" />}

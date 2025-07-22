@@ -13,10 +13,10 @@ import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 
 const InfoCard = ({ icon, title, children }: { icon: React.ReactNode, title: string, children: React.ReactNode }) => (
-    <Card className="bg-gray-900/50 border border-cyan-500/20">
+    <Card className="bg-secondary/30 border-border">
         <CardHeader className="flex flex-row items-center gap-4 pb-4">
             {icon}
-            <CardTitle className="text-xl text-cyan-400">{title}</CardTitle>
+            <CardTitle className="text-xl text-primary">{title}</CardTitle>
         </CardHeader>
         <CardContent>
             {children}
@@ -25,7 +25,7 @@ const InfoCard = ({ icon, title, children }: { icon: React.ReactNode, title: str
 );
 
 const SocialLink = ({ href, icon, label }: { href: string; icon: React.ReactNode, label: string }) => (
-    <Link href={href} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-gray-300 hover:text-cyan-400 transition-colors">
+    <Link href={href} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-muted-foreground hover:text-primary transition-colors">
         {icon}
         <span className="truncate">{label}</span>
     </Link>
@@ -80,9 +80,9 @@ export default function ProfilePage() {
     <div className="space-y-8">
       <div className="flex flex-col sm:flex-row items-center gap-6">
         <div className="relative group">
-           <Avatar className="h-24 w-24 border-4 border-cyan-400">
+           <Avatar className="h-24 w-24 border-4 border-primary">
               {user.photoURL && <AvatarImage src={user.photoURL} alt={user.displayName || 'User'} />}
-              <AvatarFallback className="text-4xl font-bold bg-gray-800 text-cyan-300">
+              <AvatarFallback className="text-4xl font-bold bg-secondary text-primary">
                   {user.displayName?.charAt(0).toUpperCase() || 'U'}
               </AvatarFallback>
           </Avatar>
@@ -97,7 +97,7 @@ export default function ProfilePage() {
             onClick={handleAvatarClick}
             variant="outline"
             size="icon"
-            className="absolute bottom-0 right-0 rounded-full h-8 w-8 bg-background/70 backdrop-blur-sm border-cyan-400 text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity"
+            className="absolute bottom-0 right-0 rounded-full h-8 w-8 bg-background/70 backdrop-blur-sm border-primary text-primary opacity-0 group-hover:opacity-100 transition-opacity"
           >
             <Pencil className="h-4 w-4" />
             <span className="sr-only">Edit avatar</span>
@@ -105,12 +105,12 @@ export default function ProfilePage() {
         </div>
         <div>
             <h1 className="text-4xl font-bold font-headline">{user.displayName}</h1>
-            <p className="text-gray-400 flex items-center gap-2 mt-1">
+            <p className="text-muted-foreground flex items-center gap-2 mt-1">
                 <Mail className="h-4 w-4" />
                 {user.email}
             </p>
              {user.phone && (
-                <p className="text-gray-400 flex items-center gap-2 mt-1">
+                <p className="text-muted-foreground flex items-center gap-2 mt-1">
                     <Phone className="h-4 w-4" />
                     {user.phone}
                 </p>
@@ -120,42 +120,42 @@ export default function ProfilePage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
-            <InfoCard icon={<Briefcase className="w-8 h-8 text-cyan-400/80" />} title="Professional Info">
+            <InfoCard icon={<Briefcase className="w-8 h-8 text-primary/80" />} title="Professional Info">
                 <div className="space-y-4">
-                     {user.status && <div className="flex items-center gap-2"><strong className="font-semibold text-gray-300">Status:</strong> <Badge variant="secondary" className="capitalize">{user.status}</Badge></div>}
+                     {user.status && <div className="flex items-center gap-2"><strong className="font-semibold text-foreground">Status:</strong> <Badge variant="secondary" className="capitalize">{user.status}</Badge></div>}
                      {user.status === 'student' && user.university && (
                         <p className="flex items-center gap-2">
-                           <GraduationCap className="h-5 w-5 text-gray-400" />
-                           <strong className="font-semibold text-gray-300">University:</strong> {user.university}
+                           <GraduationCap className="h-5 w-5 text-muted-foreground" />
+                           <strong className="font-semibold text-foreground">University:</strong> {user.university}
                         </p>
                      )}
                      {user.languages && user.languages.length > 0 && (
                         <div>
-                            <strong className="font-semibold text-gray-300 flex items-center gap-2 mb-2"><Code className="h-5 w-5" /> Proficient Languages:</strong>
+                            <strong className="font-semibold text-foreground flex items-center gap-2 mb-2"><Code className="h-5 w-5" /> Proficient Languages:</strong>
                             <div className="flex flex-wrap gap-2">
-                                {user.languages.map((lang: string) => <Badge key={lang} className="capitalize bg-cyan-900/50 text-cyan-300 border-cyan-500/30">{lang}</Badge>)}
+                                {user.languages.map((lang: string) => <Badge key={lang} className="capitalize bg-primary/20 text-primary border-primary/30">{lang}</Badge>)}
                             </div>
                         </div>
                      )}
                 </div>
             </InfoCard>
 
-            <InfoCard icon={<Target className="w-8 h-8 text-cyan-400/80" />} title="Career Goals">
+            <InfoCard icon={<Target className="w-8 h-8 text-primary/80" />} title="Career Goals">
                  <div className="space-y-4">
-                     {user.targetRole && <p className="flex items-center gap-2"><CaseSensitive className="h-5 w-5 text-gray-400" /> <strong className="font-semibold text-gray-300">Target Role:</strong> {user.targetRole}</p>}
+                     {user.targetRole && <p className="flex items-center gap-2"><CaseSensitive className="h-5 w-5 text-muted-foreground" /> <strong className="font-semibold text-foreground">Target Role:</strong> {user.targetRole}</p>}
                      {user.targetCompanies && (
                         <div>
-                            <strong className="font-semibold text-gray-300 flex items-center gap-2 mb-2"><Building className="h-5 w-5" /> Target Companies:</strong>
-                            <p className="text-gray-400 whitespace-pre-wrap">{user.targetCompanies}</p>
+                            <strong className="font-semibold text-foreground flex items-center gap-2 mb-2"><Building className="h-5 w-5" /> Target Companies:</strong>
+                            <p className="text-muted-foreground whitespace-pre-wrap">{user.targetCompanies}</p>
                         </div>
                      )}
-                     {user.interviewDate && <p className="flex items-center gap-2"><CalendarDays className="h-5 w-5 text-gray-400" /> <strong className="font-semibold text-gray-300">Target Interview Date:</strong> {format(new Date(user.interviewDate), 'PPP')}</p>}
+                     {user.interviewDate && <p className="flex items-center gap-2"><CalendarDays className="h-5 w-5 text-muted-foreground" /> <strong className="font-semibold text-foreground">Target Interview Date:</strong> {format(new Date(user.interviewDate), 'PPP')}</p>}
                 </div>
             </InfoCard>
         </div>
 
         <div className="space-y-6">
-             <InfoCard icon={<LinkIcon className="w-8 h-8 text-cyan-400/80" />} title="Social Links">
+             <InfoCard icon={<LinkIcon className="w-8 h-8 text-primary/80" />} title="Social Links">
                 {socialLinks.length > 0 ? (
                     <div className="space-y-3">
                         {socialLinks.map(link => (
@@ -163,7 +163,7 @@ export default function ProfilePage() {
                         ))}
                     </div>
                 ) : (
-                    <p className="text-gray-500">No social links provided.</p>
+                    <p className="text-muted-foreground">No social links provided.</p>
                 )}
             </InfoCard>
         </div>

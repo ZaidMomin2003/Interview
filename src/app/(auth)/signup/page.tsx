@@ -59,24 +59,24 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center bg-black">
-      <div className="absolute inset-0 -z-10 h-full w-full bg-black bg-[linear-gradient(to_right,#1f2937_1px,transparent_1px),linear-gradient(to_bottom,#1f2937_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
-      <div className="absolute inset-0 -z-10 h-full w-full bg-gradient-to-b from-black via-transparent to-black"></div>
+    <div className="relative flex min-h-screen flex-col items-center justify-center bg-background">
+      <div className="absolute inset-0 -z-10 h-full w-full bg-background bg-[linear-gradient(to_right,#1f2937_1px,transparent_1px),linear-gradient(to_bottom,#1f2937_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
+      <div className="absolute inset-0 -z-10 h-full w-full bg-gradient-to-b from-background via-transparent to-background"></div>
       
       <div className="mb-8 text-center">
         <Link href="/" className="flex items-center gap-2 justify-center mb-4">
-            <Cpu className="h-10 w-10 text-cyan-400" />
-            <span className="font-headline text-4xl font-bold tracking-widest text-gray-100 uppercase">
+            <Cpu className="h-10 w-10 text-primary" />
+            <span className="font-headline text-4xl font-bold tracking-widest text-foreground uppercase">
               Talxify
             </span>
           </Link>
-          <p className="text-gray-400">Join the ascent. Create your developer co-pilot account.</p>
+          <p className="text-muted-foreground">Join the ascent. Create your developer co-pilot account.</p>
       </div>
 
-      <Card className="w-full max-w-md bg-gray-900/50 border border-cyan-500/30 backdrop-blur-sm">
+      <Card className="w-full max-w-md bg-secondary/30 border-border backdrop-blur-sm">
         <CardHeader>
-          <CardTitle className="text-gray-100">Create Account</CardTitle>
-          <CardDescription className="text-gray-400">Enter your details to get started.</CardDescription>
+          <CardTitle className="text-foreground">Create Account</CardTitle>
+          <CardDescription className="text-muted-foreground">Enter your details to get started.</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -86,13 +86,13 @@ export default function SignUpPage() {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-cyan-400">Name</FormLabel>
+                    <FormLabel className="text-primary">Name</FormLabel>
                     <FormControl>
                       <Input 
                         type="text" 
                         placeholder="Ada Lovelace" 
                         {...field} 
-                        className="bg-gray-800 border-gray-700 text-gray-200 focus:ring-cyan-400"
+                        className="bg-background/50 border-border"
                         />
                     </FormControl>
                     <FormMessage />
@@ -104,13 +104,13 @@ export default function SignUpPage() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-cyan-400">Email</FormLabel>
+                    <FormLabel className="text-primary">Email</FormLabel>
                     <FormControl>
                       <Input 
                         type="email" 
                         placeholder="you@example.com" 
                         {...field} 
-                        className="bg-gray-800 border-gray-700 text-gray-200 focus:ring-cyan-400"
+                        className="bg-background/50 border-border"
                         />
                     </FormControl>
                     <FormMessage />
@@ -122,29 +122,29 @@ export default function SignUpPage() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-cyan-400">Password</FormLabel>
+                    <FormLabel className="text-primary">Password</FormLabel>
                     <FormControl>
                       <Input 
                         type="password" 
                         placeholder="••••••••" 
                         {...field} 
-                        className="bg-gray-800 border-gray-700 text-gray-200 focus:ring-cyan-400"
+                        className="bg-background/50 border-border"
                       />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <Button type="submit" disabled={isLoading} className="w-full bg-cyan-400 text-black hover:bg-cyan-300 shadow-[0_0_15px_rgba(56,189,248,0.5)]">
+              <Button type="submit" disabled={isLoading} className="w-full">
                 {isLoading ? <Loader2 className="animate-spin" /> : 'Sign Up'}
               </Button>
             </form>
           </Form>
         </CardContent>
         <CardFooter className="flex justify-center">
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-muted-foreground">
                 Already have an account?{' '}
-                <Link href="/login" className="font-medium text-cyan-400 hover:underline">
+                <Link href="/login" className="font-medium text-primary hover:underline">
                     Sign in
                 </Link>
             </p>

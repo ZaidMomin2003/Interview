@@ -79,8 +79,8 @@ function AnimatedCounter({ to, label }: { to: number, label: string }) {
 
   return (
     <div ref={ref} className="text-center">
-      <p className="text-5xl font-bold font-headline text-cyan-400">{count.toLocaleString()}+</p>
-      <p className="text-gray-400 mt-2">{label}</p>
+      <p className="text-5xl font-bold font-headline text-primary">{count.toLocaleString()}+</p>
+      <p className="text-muted-foreground mt-2">{label}</p>
     </div>
   );
 }
@@ -127,13 +127,13 @@ function SpotlightCard({ children, className }: { children: React.ReactNode, cla
       onBlur={handleBlur}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className={cn("relative overflow-hidden rounded-lg border bg-gray-900/50 border-cyan-500/30 backdrop-blur-sm transition-colors duration-300 group", className)}
+      className={cn("relative overflow-hidden rounded-lg border bg-secondary/30 border-border backdrop-blur-sm transition-colors duration-300 group", className)}
     >
       <div
         className="pointer-events-none absolute -inset-px opacity-0 transition duration-300"
         style={{
           opacity,
-          background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, rgba(56, 189, 248, 0.2), transparent 40%)`,
+          background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, hsl(var(--primary) / 0.1), transparent 40%)`,
         }}
       />
       {children}
@@ -166,22 +166,22 @@ export default function LandingPage() {
 
   const features = [
     {
-      icon: <Video className="h-10 w-10 text-cyan-400" />,
+      icon: <Video className="h-10 w-10 text-primary" />,
       title: 'AI Mock Interviews',
       description: 'Face a realistic AI interviewer that asks relevant questions, tracks your speech, and provides instant feedback to sharpen your communication skills.',
       prototype: (
-         <Card className="w-full max-w-lg mx-auto bg-black border-cyan-500/30 shadow-cyan-400/10 shadow-2xl">
+         <Card className="w-full max-w-lg mx-auto bg-background border-border shadow-primary/10 shadow-2xl">
               <CardContent className="p-4 space-y-3">
-                  <div className="aspect-video bg-gray-900 rounded-lg flex items-center justify-center relative overflow-hidden">
+                  <div className="aspect-video bg-secondary rounded-lg flex items-center justify-center relative overflow-hidden">
                       {/* Main user view */}
-                      <div className="w-full h-full flex items-center justify-center bg-gray-800">
-                          <User className="w-24 h-24 text-gray-600"/>
+                      <div className="w-full h-full flex items-center justify-center bg-muted">
+                          <User className="w-24 h-24 text-muted-foreground"/>
                       </div>
                       
                       {/* AI Interviewer inset view */}
-                      <div className="absolute top-4 right-4 w-1/4 h-1/4 bg-gray-900 rounded-lg border-2 border-cyan-500/50 flex flex-col items-center justify-center p-2">
-                         <BotIcon className="h-8 w-8 text-cyan-400/70" />
-                         <p className="mt-1 text-xs text-gray-200 text-center">AI Interviewer</p>
+                      <div className="absolute top-4 right-4 w-1/4 h-1/4 bg-secondary rounded-lg border-2 border-primary/50 flex flex-col items-center justify-center p-2">
+                         <BotIcon className="h-8 w-8 text-primary/70" />
+                         <p className="mt-1 text-xs text-foreground text-center">AI Interviewer</p>
                       </div>
 
                        {/* Controls */}
@@ -191,69 +191,69 @@ export default function LandingPage() {
                           <Button variant="secondary" size="icon" className="w-10 h-10 rounded-full"><Phone className="w-5 h-5"/></Button>
                       </div>
                   </div>
-                  <div className="p-3 bg-gray-900/50 rounded-lg text-sm text-gray-300">
-                      <p className="font-semibold text-cyan-400 mb-1">Transcript:</p>
+                  <div className="p-3 bg-secondary/50 rounded-lg text-sm text-muted-foreground">
+                      <p className="font-semibold text-primary mb-1">Transcript:</p>
                       <p>&gt; AI: "Can you tell me about a time you faced a difficult challenge?"</p>
-                      <p className="text-white">&gt; You: "Certainly. In my previous role at TechCorp, we had a major project deadline..."</p>
+                      <p className="text-foreground">&gt; You: "Certainly. In my previous role at TechCorp, we had a major project deadline..."</p>
                   </div>
               </CardContent>
           </Card>
       ),
     },
     {
-      icon: <FileText className="h-10 w-10 text-cyan-400" />,
+      icon: <FileText className="h-10 w-10 text-primary" />,
       title: 'Resume Studio',
       description: 'Generate a brand-new resume from scratch or optimize your existing one against a specific job description. Our AI helps you bypass ATS filters and catch recruiter attention.',
       prototype: (
-         <Card className="w-full max-w-lg mx-auto bg-gray-900 border-cyan-500/30 shadow-cyan-400/10 shadow-2xl">
+         <Card className="w-full max-w-lg mx-auto bg-background border-border shadow-primary/10 shadow-2xl">
               <CardHeader>
                   <CardTitle>Resume Optimization</CardTitle>
               </CardHeader>
               <CardContent className="grid grid-cols-2 gap-4">
-                  <div className="p-3 bg-gray-800 rounded-lg space-y-2">
-                      <h4 className="font-semibold text-gray-200">Your Resume</h4>
-                      <p className="text-sm text-gray-400">&bull; Experienced in React and Node.js...</p>
-                      <p className="text-sm text-gray-400">&bull; Managed a team of 3 developers...</p>
+                  <div className="p-3 bg-secondary rounded-lg space-y-2">
+                      <h4 className="font-semibold text-foreground">Your Resume</h4>
+                      <p className="text-sm text-muted-foreground">&bull; Experienced in React and Node.js...</p>
+                      <p className="text-sm text-muted-foreground">&bull; Managed a team of 3 developers...</p>
                   </div>
-                   <div className="p-3 bg-green-900/20 border border-green-500/30 rounded-lg space-y-2">
-                      <h4 className="font-semibold text-green-400">AI Suggestions</h4>
-                      <p className="text-sm text-gray-300">&bull; Change "Managed" to "Led" for stronger impact...</p>
-                      <p className="text-sm text-gray-300">&bull; Add quantifiable results like "increased efficiency by 15%".</p>
+                   <div className="p-3 bg-primary/10 border border-primary/30 rounded-lg space-y-2">
+                      <h4 className="font-semibold text-primary">AI Suggestions</h4>
+                      <p className="text-sm text-foreground">&bull; Change "Managed" to "Led" for stronger impact...</p>
+                      <p className="text-sm text-foreground">&bull; Add quantifiable results like "increased efficiency by 15%".</p>
                   </div>
               </CardContent>
           </Card>
       ),
     },
      {
-      icon: <Code className="h-10 w-10 text-cyan-400" />,
+      icon: <Code className="h-10 w-10 text-primary" />,
       title: 'Coding Gym',
       description: 'Generate personalized coding questions based on your skill level and desired topics. Submit your solution and receive instant, line-by-line feedback from our AI mentor.',
        prototype: (
-         <Card className="w-full max-w-lg mx-auto bg-gray-900 border-cyan-500/30 shadow-cyan-400/10 shadow-2xl">
+         <Card className="w-full max-w-lg mx-auto bg-background border-border shadow-primary/10 shadow-2xl">
               <CardContent className="p-4 space-y-3">
-                  <div className="p-3 bg-gray-800 rounded-lg">
-                      <p className="text-sm text-cyan-400">Question: Two Sum</p>
-                      <p className="text-sm text-gray-400 mt-1">Given an array of integers, return indices of the two numbers such that they add up to a specific target.</p>
+                  <div className="p-3 bg-secondary rounded-lg">
+                      <p className="text-sm text-primary">Question: Two Sum</p>
+                      <p className="text-sm text-muted-foreground mt-1">Given an array of integers, return indices of the two numbers such that they add up to a specific target.</p>
                   </div>
                    <div className="p-3 font-code text-sm bg-black rounded-lg text-gray-300">
                       <span className="text-purple-400">function</span> <span className="text-yellow-300">twoSum</span>(<span className="text-orange-400">nums, target</span>) {'{'}<br/>
                       {'  '}<span className="text-gray-500">// Your code here...</span><br/>
                       {'}'}
                   </div>
-                   <div className="p-3 bg-cyan-900/20 border border-cyan-500/30 rounded-lg">
-                       <p className="text-sm font-semibold text-cyan-300">AI Feedback:</p>
-                       <p className="text-sm text-gray-300 mt-1">"Consider using a hash map for O(n) time complexity."</p>
+                   <div className="p-3 bg-primary/10 border border-primary/20 rounded-lg">
+                       <p className="text-sm font-semibold text-primary">AI Feedback:</p>
+                       <p className="text-sm text-foreground mt-1">"Consider using a hash map for O(n) time complexity."</p>
                    </div>
               </CardContent>
           </Card>
       ),
     },
      {
-      icon: <Target className="h-10 w-10 text-cyan-400" />,
+      icon: <Target className="h-10 w-10 text-primary" />,
       title: 'Interview Arena',
       description: 'Set a target interview date and get a personalized, day-by-day training plan. The Arena unlocks new challenges daily, guiding you from preparation to peak performance.',
        prototype: (
-         <Card className="w-full max-w-lg mx-auto bg-gray-900/50 border-cyan-500/30 shadow-cyan-400/10 shadow-2xl">
+         <Card className="w-full max-w-lg mx-auto bg-background/50 border-border shadow-primary/10 shadow-2xl">
               <CardHeader>
                   <CardTitle>Your 14-Day Plan</CardTitle>
                   <CardDescription>Target: Senior Frontend Engineer</CardDescription>
@@ -267,11 +267,11 @@ export default function LandingPage() {
                       <p className="font-bold">Day 2</p>
                       <CheckCircle className="mx-auto mt-1 h-5 w-5 text-green-400" />
                   </div>
-                   <div className="text-center p-2 rounded-lg bg-cyan-900/80 border-2 border-cyan-400">
+                   <div className="text-center p-2 rounded-lg bg-primary/20 border-2 border-primary">
                       <p className="font-bold">Day 3</p>
-                      <BarChartHorizontalBig className="mx-auto mt-1 h-5 w-5 text-cyan-300" />
+                      <BarChartHorizontalBig className="mx-auto mt-1 h-5 w-5 text-primary/80" />
                   </div>
-                  <div className="text-center p-2 rounded-lg bg-gray-800 border border-gray-700 opacity-60">
+                  <div className="text-center p-2 rounded-lg bg-secondary border border-border opacity-60">
                       <p className="font-bold">Day 4</p>
                        <BrainCircuit className="mx-auto mt-1 h-5 w-5" />
                   </div>
@@ -280,25 +280,25 @@ export default function LandingPage() {
       ),
     },
     {
-      icon: <GalleryVertical className="h-10 w-10 text-cyan-400" />,
+      icon: <GalleryVertical className="h-10 w-10 text-primary" />,
       title: 'Public Portfolio',
       description: 'Showcase your skills and projects with a personalized, public-facing portfolio. Automatically syncs with your dashboard stats and projects.',
        prototype: (
-         <Card className="w-full max-w-lg mx-auto bg-gray-900 border-cyan-500/30 shadow-cyan-400/10 shadow-2xl">
+         <Card className="w-full max-w-lg mx-auto bg-background border-border shadow-primary/10 shadow-2xl">
               <CardContent className="p-4 space-y-3">
                   <div className="flex items-center gap-4">
-                      <Avatar className="h-20 w-20 border-2 border-cyan-400">
+                      <Avatar className="h-20 w-20 border-2 border-primary">
                           <AvatarFallback>JD</AvatarFallback>
                       </Avatar>
                       <div>
-                          <h3 className="text-xl font-bold text-white">Jane Doe</h3>
+                          <h3 className="text-xl font-bold text-foreground">Jane Doe</h3>
                           <p className="text-sm text-muted-foreground">Software Engineer</p>
                       </div>
                   </div>
-                  <div className="p-3 bg-gray-800 rounded-lg">
-                       <h4 className="font-semibold text-cyan-400 mb-2">Top Project</h4>
-                       <p className="font-bold text-gray-200">AI-Powered Code Analyzer</p>
-                       <p className="text-xs text-gray-400">Next.js, Tailwind CSS, Genkit AI</p>
+                  <div className="p-3 bg-secondary rounded-lg">
+                       <h4 className="font-semibold text-primary mb-2">Top Project</h4>
+                       <p className="font-bold text-foreground">AI-Powered Code Analyzer</p>
+                       <p className="text-xs text-muted-foreground">Next.js, Tailwind CSS, Genkit AI</p>
                   </div>
               </CardContent>
           </Card>
@@ -376,7 +376,7 @@ export default function LandingPage() {
 
     if (user) {
       return (
-        <Button className="bg-cyan-400 text-black hover:bg-cyan-300 shadow-[0_0_15px_rgba(56,189,248,0.5)] transition-all duration-300 hover:scale-105 active:scale-95 hover:shadow-[0_0_25px_rgba(56,189,248,0.7)]" asChild>
+        <Button asChild>
           <Link href="/dashboard">Go to Dashboard</Link>
         </Button>
       );
@@ -384,10 +384,10 @@ export default function LandingPage() {
 
     return (
       <div className="flex items-center gap-2">
-        <Button variant="outline" className="border-cyan-400 text-cyan-400 hover:bg-cyan-400 hover:text-black transition-all duration-300 hover:scale-105 active:scale-95" asChild>
+        <Button variant="outline" asChild>
             <Link href="/login">Login</Link>
         </Button>
-        <Button className="bg-cyan-400 text-black hover:bg-cyan-300 shadow-[0_0_15px_rgba(56,189,248,0.5)] transition-all duration-300 hover:scale-105 active:scale-95 hover:shadow-[0_0_25px_rgba(56,189,248,0.7)]" asChild>
+        <Button asChild>
             <Link href="/signup">Sign Up</Link>
         </Button>
       </div>
@@ -395,36 +395,36 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-black text-gray-200 font-body">
+    <div className="flex flex-col min-h-screen bg-background text-foreground font-body">
       {/* Background Grid & Interactive Spotlight */}
       <div
         className="pointer-events-none fixed inset-0 z-0 transition-opacity duration-300"
         style={{
-          background: `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(56, 189, 248, 0.2), transparent 40%)`,
+          background: `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, hsl(var(--primary) / 0.1), transparent 40%)`,
         }}
       />
-      <div className="absolute inset-0 -z-10 h-full w-full bg-black bg-[linear-gradient(to_right,#1f2937_1px,transparent_1px),linear-gradient(to_bottom,#1f2937_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
-      <div className="absolute inset-0 -z-10 h-full w-full bg-gradient-to-b from-black via-transparent to-black"></div>
+      <div className="absolute inset-0 -z-10 h-full w-full bg-background bg-[linear-gradient(to_right,#1f2937_1px,transparent_1px),linear-gradient(to_bottom,#1f2937_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
+      <div className="absolute inset-0 -z-10 h-full w-full bg-gradient-to-b from-background via-transparent to-background"></div>
 
 
       {/* Header */}
       <header className={cn(
           "sticky top-0 z-50 w-full transition-all duration-300",
-          isScrolled ? "border-b border-gray-800 bg-black/80 backdrop-blur-lg" : "bg-transparent"
+          isScrolled ? "border-b border-border bg-background/80 backdrop-blur-lg" : "bg-transparent"
         )}>
         <div className="container mx-auto flex h-20 items-center justify-between px-4">
           <Link href="/" className="flex items-center gap-2">
-            <Cpu className="h-8 w-8 text-cyan-400" />
-            <span className="font-headline text-2xl font-bold tracking-widest text-gray-100 uppercase">
+            <Cpu className="h-8 w-8 text-primary" />
+            <span className="font-headline text-2xl font-bold tracking-widest text-foreground uppercase">
               Talxify
             </span>
           </Link>
           <nav className="hidden md:flex items-center gap-6">
-            <Link href="#about" className="text-sm font-medium text-gray-400 hover:text-cyan-400 transition-colors">About</Link>
-            <Link href="#features" className="text-sm font-medium text-gray-400 hover:text-cyan-400 transition-colors">Features</Link>
-            <Link href="#pricing" className="text-sm font-medium text-gray-400 hover:text-cyan-400 transition-colors">Pricing</Link>
-            <Link href="#faq" className="text-sm font-medium text-gray-400 hover:text-cyan-400 transition-colors">FAQ</Link>
-             <Link href="#contact" className="text-sm font-medium text-gray-400 hover:text-cyan-400 transition-colors">Contact</Link>
+            <Link href="#about" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">About</Link>
+            <Link href="#features" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Features</Link>
+            <Link href="#pricing" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Pricing</Link>
+            <Link href="#faq" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">FAQ</Link>
+             <Link href="#contact" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Contact</Link>
           </nav>
           <div className="flex items-center gap-2">
             {renderAuthButtons()}
@@ -436,15 +436,15 @@ export default function LandingPage() {
         {/* Hero Section */}
         <section id="hero" className="py-20 md:py-24">
           <div className="container mx-auto px-4 text-center">
-             <h1 className="animate-text-gradient bg-gradient-to-r from-cyan-400 via-purple-400 to-cyan-400 bg-clip-text text-5xl font-bold tracking-tighter text-transparent sm:text-6xl md:text-7xl font-headline">
+             <h1 className="animate-text-gradient bg-gradient-to-r from-primary via-purple-400 to-primary bg-clip-text text-5xl font-bold tracking-tighter text-transparent sm:text-6xl md:text-7xl font-headline">
               Ascend Your Career
             </h1>
-            <p className="mt-6 max-w-3xl mx-auto text-lg text-gray-400">
+            <p className="mt-6 max-w-3xl mx-auto text-lg text-muted-foreground">
               Your AI-powered career co-pilot. Generate resumes, practice for
               interviews, and accelerate your developer journey into the digital frontier.
             </p>
             <div className="mt-10 mb-16">
-              <Button size="lg" className="bg-cyan-400 text-black hover:bg-cyan-300 shadow-[0_0_20px_rgba(56,189,248,0.6)] transition-all duration-300 hover:scale-105 active:scale-95 hover:shadow-[0_0_30px_rgba(56,189,248,0.8)]" asChild>
+              <Button size="lg" asChild>
                 <Link href={user ? "/dashboard" : "/signup"}>
                   {user ? "Go to Dashboard" : "Engage AI Co-Pilot"} <ArrowRight className="ml-2" />
                 </Link>
@@ -453,13 +453,13 @@ export default function LandingPage() {
 
             {/* Dashboard Prototype */}
             <div className="max-w-6xl mx-auto">
-                <Card className="w-full bg-black/50 border-2 border-cyan-500/30 shadow-cyan-400/20 shadow-2xl overflow-hidden">
-                    <div className="p-1.5 bg-gray-900/80 border-b border-cyan-500/30 flex items-center gap-1.5">
+                <Card className="w-full bg-background/50 border-2 border-border shadow-primary/20 shadow-2xl overflow-hidden">
+                    <div className="p-1.5 bg-secondary/80 border-b border-border flex items-center gap-1.5">
                         <div className="w-3 h-3 rounded-full bg-red-500"></div>
                         <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
                         <div className="w-3 h-3 rounded-full bg-green-500"></div>
                     </div>
-                    <div className="grid grid-cols-12 gap-6 p-6 bg-black/30 backdrop-blur-sm">
+                    <div className="grid grid-cols-12 gap-6 p-6 bg-background/30 backdrop-blur-sm">
                         {/* Sidebar Mock */}
                         <div className="col-span-3 hidden md:flex flex-col gap-2">
                            {[
@@ -471,7 +471,7 @@ export default function LandingPage() {
                                 { icon: <HistoryIcon />, label: "History"},
                                 { icon: <div className="h-5 w-5" />, label: "" }, // Placeholder for spacing
                             ].map((item, index) => (
-                                <div key={index} className={cn("flex items-center gap-3 p-2 rounded-lg text-sm", index === 0 ? "bg-cyan-400/20 text-cyan-300 font-semibold" : "text-gray-400")}>
+                                <div key={index} className={cn("flex items-center gap-3 p-2 rounded-lg text-sm", index === 0 ? "bg-primary/20 text-primary font-semibold" : "text-muted-foreground")}>
                                     {item.icon}
                                     <span className="font-medium">{item.label}</span>
                                 </div>
@@ -479,7 +479,7 @@ export default function LandingPage() {
                         </div>
                         {/* Main Content Mock */}
                         <div className="col-span-12 md:col-span-9">
-                            <h2 className="text-2xl font-bold font-headline text-left mb-1 text-white">Welcome back, Developer</h2>
+                            <h2 className="text-2xl font-bold font-headline text-left mb-1 text-foreground">Welcome back, Developer</h2>
                             <p className="text-left text-muted-foreground mb-4">Here's your progress overview.</p>
                              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           
@@ -489,31 +489,31 @@ export default function LandingPage() {
                                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                       <Card className="bg-secondary/30 backdrop-blur-sm">
                                           <CardHeader className="flex flex-row items-center justify-between pb-2">
-                                              <CardTitle className="text-sm font-medium text-gray-200">Interviews Completed</CardTitle>
+                                              <CardTitle className="text-sm font-medium text-foreground">Interviews Completed</CardTitle>
                                               <VideoIcon className="h-4 w-4 text-muted-foreground" />
                                           </CardHeader>
                                           <CardContent>
-                                              <div className="text-2xl font-bold text-white">3</div>
+                                              <div className="text-2xl font-bold text-foreground">3</div>
                                               <p className="text-xs text-muted-foreground">+1 since last week</p>
                                           </CardContent>
                                       </Card>
                                       <Card className="bg-secondary/30 backdrop-blur-sm">
                                           <CardHeader className="flex flex-row items-center justify-between pb-2">
-                                              <CardTitle className="text-sm font-medium text-gray-200">Coding Questions Solved</CardTitle>
+                                              <CardTitle className="text-sm font-medium text-foreground">Coding Questions Solved</CardTitle>
                                               <CodeXml className="h-4 w-4 text-muted-foreground" />
                                           </CardHeader>
                                           <CardContent>
-                                              <div className="text-2xl font-bold text-white">42</div>
+                                              <div className="text-2xl font-bold text-foreground">42</div>
                                               <p className="text-xs text-muted-foreground">+12 since last week</p>
                                           </CardContent>
                                       </Card>
                                       <Card className="bg-secondary/30 backdrop-blur-sm">
                                           <CardHeader className="flex flex-row items-center justify-between pb-2">
-                                              <CardTitle className="text-sm font-medium text-gray-200">MCQs Answered</CardTitle>
+                                              <CardTitle className="text-sm font-medium text-foreground">MCQs Answered</CardTitle>
                                               <CheckCircle className="h-4 w-4 text-muted-foreground" />
                                           </CardHeader>
                                           <CardContent>
-                                              <div className="text-2xl font-bold text-white">128</div>
+                                              <div className="text-2xl font-bold text-foreground">128</div>
                                               <p className="text-xs text-muted-foreground">92% accuracy</p>
                                           </CardContent>
                                       </Card>
@@ -522,13 +522,13 @@ export default function LandingPage() {
                                   {/* Weekly Progress */}
                                   <Card className="bg-secondary/30 backdrop-blur-sm">
                                       <CardHeader>
-                                          <CardTitle className="text-gray-200">Weekly Progress</CardTitle>
+                                          <CardTitle className="text-foreground">Weekly Progress</CardTitle>
                                       </CardHeader>
                                       <CardContent className="pl-2">
                                         <ResponsiveContainer width="100%" height={250}>
                                             <BarChart data={weeklyProgressData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                                                <XAxis dataKey="name" stroke="#888888" fontSize={12} tickLine={false} axisLine={false}/>
-                                                <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false}/>
+                                                <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false}/>
+                                                <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false}/>
                                                 <Bar dataKey="questions" fill="hsl(var(--primary))" name="Questions" radius={[4, 4, 0, 0]} />
                                             </BarChart>
                                         </ResponsiveContainer>
@@ -540,7 +540,7 @@ export default function LandingPage() {
                               <div className="space-y-6">
                                   <Card className="bg-secondary/30 backdrop-blur-sm">
                                     <CardHeader>
-                                      <CardTitle className="text-gray-200">Interview Readiness</CardTitle>
+                                      <CardTitle className="text-foreground">Interview Readiness</CardTitle>
                                     </CardHeader>
                                     <CardContent className="flex items-center justify-center p-0">
                                       <ResponsiveContainer width="100%" height={160}>
@@ -563,7 +563,7 @@ export default function LandingPage() {
                                                 y="50%"
                                                 textAnchor="middle"
                                                 dominantBaseline="middle"
-                                                className="fill-white text-4xl font-bold font-headline"
+                                                className="fill-foreground text-4xl font-bold font-headline"
                                             >
                                                 {readinessData[0].value}%
                                             </text>
@@ -574,17 +574,17 @@ export default function LandingPage() {
 
                                   <Card className="bg-secondary/30 backdrop-blur-sm">
                                       <CardHeader>
-                                          <CardTitle className="text-gray-200">Topics to Improve</CardTitle>
+                                          <CardTitle className="text-foreground">Topics to Improve</CardTitle>
                                       </CardHeader>
                                       <CardContent>
                                           <div className="space-y-3">
                                               {topicsToImprove.slice(0, 2).map(topic => (
                                                   <div key={topic.name} className="flex items-center justify-between p-3 rounded-lg bg-background/50">
                                                       <div>
-                                                        <span className="font-medium text-white">{topic.name}</span>
+                                                        <span className="font-medium text-foreground">{topic.name}</span>
                                                         <p className="text-xs text-muted-foreground">{topic.area}</p>
                                                       </div>
-                                                      <ArrowRight className="h-4 w-4 text-white" />
+                                                      <ArrowRight className="h-4 w-4 text-foreground" />
                                                   </div>
                                               ))}
                                           </div>
@@ -604,8 +604,8 @@ export default function LandingPage() {
         <section id="features" className="py-20 sm:py-24">
           <div className="container mx-auto px-4 max-w-6xl space-y-24">
             <div className="text-center max-w-3xl mx-auto">
-              <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline text-cyan-400">Core Matrix</h2>
-              <p className="mt-4 text-lg text-gray-400">
+              <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline text-primary">Core Matrix</h2>
+              <p className="mt-4 text-lg text-muted-foreground">
                 Harness cutting-edge tools forged for the modern software engineer.
               </p>
             </div>
@@ -614,12 +614,12 @@ export default function LandingPage() {
               <div key={index} className="grid md:grid-cols-2 gap-12 items-center">
                 <div className={cn("space-y-4", index % 2 === 1 && "md:order-2")}>
                   <div className="inline-flex items-center gap-4">
-                    <div className="p-3 bg-gray-800 border border-gray-700 rounded-lg">
+                    <div className="p-3 bg-secondary border border-border rounded-lg">
                       {feature.icon}
                     </div>
-                    <h3 className="text-3xl font-bold font-headline text-gray-100">{feature.title}</h3>
+                    <h3 className="text-3xl font-bold font-headline text-foreground">{feature.title}</h3>
                   </div>
-                  <p className="text-lg text-gray-400">{feature.description}</p>
+                  <p className="text-lg text-muted-foreground">{feature.description}</p>
                    <Button variant="outline" asChild>
                     <Link href="/signup">Try it now <ArrowRight className="ml-2 h-4 w-4" /></Link>
                   </Button>
@@ -640,8 +640,8 @@ export default function LandingPage() {
                          <div className="inline-block p-4 bg-primary/20 rounded-full mb-4">
                             <TrendingUp className="h-12 w-12 text-primary" />
                         </div>
-                        <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline text-cyan-400">Know Your Worth</h2>
-                        <p className="mt-4 text-lg text-gray-400 max-w-2xl mx-auto">
+                        <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline text-primary">Know Your Worth</h2>
+                        <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
                             Use our AI-powered salary estimator to understand your market value. Get a personalized salary range based on your skills, experience, and location.
                         </p>
                         <div className="mt-8">
@@ -657,12 +657,12 @@ export default function LandingPage() {
         </section>
 
         {/* About Us Section */}
-        <section id="about" className="py-20 sm:py-24 bg-gray-900/50">
+        <section id="about" className="py-20 sm:py-24 bg-secondary/30">
           <div className="container mx-auto px-4 max-w-5xl">
             <div className="grid md:grid-cols-2 gap-12 items-center">
                 <div className="text-left">
-                  <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline text-cyan-400">About The Developer</h2>
-                  <p className="mt-4 text-lg text-gray-400">
+                  <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline text-primary">About The Developer</h2>
+                  <p className="mt-4 text-lg text-muted-foreground">
                     Meet Zaid, a passionate programmer from Bijapur, Karnataka. With a B.Tech in CSE specializing in Data Science, he is dedicated to building innovative tools that empower the developer community.
                   </p>
                   <div className="mt-6 flex flex-wrap gap-4">
@@ -689,7 +689,7 @@ export default function LandingPage() {
                         alt="Developer Zaid"
                         width={400}
                         height={400}
-                        className="rounded-full shadow-cyan-500/20 shadow-2xl w-64 h-64 md:w-96 md:h-96 object-cover"
+                        className="rounded-full shadow-primary/20 shadow-2xl w-64 h-64 md:w-96 md:h-96 object-cover"
                     />
                 </div>
             </div>
@@ -705,31 +705,31 @@ export default function LandingPage() {
         <section id="pricing" className="py-20 sm:py-24">
           <div className="container mx-auto px-4 max-w-5xl">
             <div className="text-center max-w-3xl mx-auto">
-              <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline text-cyan-400">Access Protocols</h2>
-              <p className="mt-4 text-lg text-gray-400">
+              <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline text-primary">Access Protocols</h2>
+              <p className="mt-4 text-lg text-muted-foreground">
                 Choose your level of engagement. No hidden fees. Upgrade or cancel anytime.
               </p>
             </div>
             <div className="mt-16 grid gap-8 md:grid-cols-3">
               {pricingTiers.map((tier) => (
                 <Card key={tier.name} className={cn(
-                  "bg-gray-900/50 border border-cyan-500/30 flex flex-col transition-all duration-300 hover:border-cyan-400 hover:shadow-cyan-400/20 hover:shadow-2xl hover:-translate-y-2 text-white",
-                  tier.popular ? 'border-cyan-400 shadow-[0_0_25px_rgba(56,189,248,0.4)]' : ''
+                  "bg-secondary/30 border-border flex flex-col transition-all duration-300 hover:border-primary hover:shadow-primary/20 hover:shadow-2xl hover:-translate-y-2",
+                  tier.popular ? 'border-primary shadow-[0_0_25px_hsl(var(--primary)_/_0.4)]' : ''
                 )}>
                    {tier.popular && (
-                    <div className="text-center py-1 bg-cyan-400 text-black font-bold text-sm">MOST POPULAR</div>
+                    <div className="text-center py-1 bg-primary text-primary-foreground font-bold text-sm">MOST POPULAR</div>
                   )}
                   <CardHeader className="text-center">
-                    <CardTitle className="text-3xl font-headline text-gray-100">{tier.name}</CardTitle>
-                    <p className="text-gray-400">{tier.description}</p>
-                    <div className="text-5xl font-bold text-cyan-400 pt-4">{tier.price} <span className="text-xl font-normal text-gray-400">{tier.period}</span></div>
+                    <CardTitle className="text-3xl font-headline text-foreground">{tier.name}</CardTitle>
+                    <p className="text-muted-foreground">{tier.description}</p>
+                    <div className="text-5xl font-bold text-primary pt-4">{tier.price} <span className="text-xl font-normal text-muted-foreground">{tier.period}</span></div>
                   </CardHeader>
                   <CardContent className="flex-grow">
                     <ul className="space-y-3">
                       {tier.features.map((feature, i) => (
                         <li key={i} className="flex items-center gap-3">
-                          <ShieldCheck className="h-5 w-5 text-cyan-400" />
-                          <span className="text-gray-300">{feature}</span>
+                          <ShieldCheck className="h-5 w-5 text-primary" />
+                          <span className="text-foreground">{feature}</span>
                         </li>
                       ))}
                     </ul>
@@ -737,7 +737,7 @@ export default function LandingPage() {
                   <div className="p-6 pt-0">
                      <Button className={cn(
                        "w-full transition-all duration-300 hover:scale-105 active:scale-95",
-                       tier.popular ? 'bg-cyan-400 text-black hover:bg-cyan-300 hover:shadow-[0_0_25px_rgba(56,189,248,0.7)]' : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
+                       !tier.popular && 'bg-secondary hover:bg-secondary/80'
                      )} asChild>
                       <Link href={user ? '/dashboard' : tier.href}>{user ? "Go to Dashboard" : tier.cta}</Link>
                     </Button>
@@ -752,24 +752,24 @@ export default function LandingPage() {
         <section id="faq" className="py-20 sm:py-24">
             <div className="container mx-auto px-4 max-w-5xl">
                 <div className="text-center">
-                    <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline text-cyan-400">System Knowledge Base</h2>
-                    <p className="mt-4 text-lg text-gray-400">
+                    <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline text-primary">System Knowledge Base</h2>
+                    <p className="mt-4 text-lg text-muted-foreground">
                         Frequently accessed data nodes. If your query is not here, please connect to a support channel.
                     </p>
                 </div>
                 <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
                     <Accordion type="single" collapsible className="w-full">
                         {faqs.slice(0, Math.ceil(faqs.length / 2)).map((faq, i) => (
-                            <AccordionItem key={i} value={`item-${i}`} className="bg-gray-900/50 border-cyan-500/20 border-b-0 rounded-lg mb-4 p-2 transition-all hover:bg-gray-800/60">
-                                <AccordionTrigger className="text-lg text-left font-semibold text-gray-100 hover:text-cyan-400 transition-colors duration-300 p-4 [&[data-state=open]>svg:last-child]:-rotate-90">
+                            <AccordionItem key={i} value={`item-${i}`} className="bg-secondary/30 border-border/50 rounded-lg mb-4 p-2 transition-all hover:bg-secondary/50">
+                                <AccordionTrigger className="text-lg text-left font-semibold text-foreground hover:text-primary transition-colors duration-300 p-4 [&[data-state=open]>svg:last-child]:-rotate-90">
                                     <div className="flex items-center gap-4">
-                                        <div className="p-2 bg-gray-800 border border-gray-700 rounded-full">
-                                            <Plus className="h-5 w-5 text-cyan-400 transition-transform duration-300"/>
+                                        <div className="p-2 bg-secondary border border-border rounded-full">
+                                            <Plus className="h-5 w-5 text-primary transition-transform duration-300"/>
                                         </div>
                                         {faq.question}
                                     </div>
                                 </AccordionTrigger>
-                                <AccordionContent className="text-gray-400 text-base p-4 pt-0">
+                                <AccordionContent className="text-muted-foreground text-base p-4 pt-0">
                                     {faq.answer}
                                 </AccordionContent>
                             </AccordionItem>
@@ -777,16 +777,16 @@ export default function LandingPage() {
                     </Accordion>
                     <Accordion type="single" collapsible className="w-full">
                          {faqs.slice(Math.ceil(faqs.length / 2)).map((faq, i) => (
-                            <AccordionItem key={i} value={`item-${i + Math.ceil(faqs.length / 2)}`} className="bg-gray-900/50 border-cyan-500/20 border-b-0 rounded-lg mb-4 p-2 transition-all hover:bg-gray-800/60">
-                                <AccordionTrigger className="text-lg text-left font-semibold text-gray-100 hover:text-cyan-400 transition-colors duration-300 p-4 [&[data-state=open]>svg:last-child]:-rotate-90">
+                            <AccordionItem key={i} value={`item-${i + Math.ceil(faqs.length / 2)}`} className="bg-secondary/30 border-border/50 rounded-lg mb-4 p-2 transition-all hover:bg-secondary/50">
+                                <AccordionTrigger className="text-lg text-left font-semibold text-foreground hover:text-primary transition-colors duration-300 p-4 [&[data-state=open]>svg:last-child]:-rotate-90">
                                      <div className="flex items-center gap-4">
-                                        <div className="p-2 bg-gray-800 border border-gray-700 rounded-full">
-                                            <Plus className="h-5 w-5 text-cyan-400 transition-transform duration-300"/>
+                                        <div className="p-2 bg-secondary border border-border rounded-full">
+                                            <Plus className="h-5 w-5 text-primary transition-transform duration-300"/>
                                         </div>
                                         {faq.question}
                                     </div>
                                 </AccordionTrigger>
-                                <AccordionContent className="text-gray-400 text-base p-4 pt-0">
+                                <AccordionContent className="text-muted-foreground text-base p-4 pt-0">
                                     {faq.answer}
                                 </AccordionContent>
                             </AccordionItem>
@@ -801,21 +801,21 @@ export default function LandingPage() {
         <section id="contact" className="py-20 sm:py-24">
           <div className="container mx-auto px-4 max-w-6xl">
             <div className="text-center max-w-3xl mx-auto">
-              <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline text-cyan-400">Establish Connection</h2>
-              <p className="mt-4 text-lg text-gray-400">
+              <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline text-primary">Establish Connection</h2>
+              <p className="mt-4 text-lg text-muted-foreground">
                 Have a question, feedback, or a partnership inquiry? We'd love to hear from you.
               </p>
             </div>
             <div className="mt-16 grid lg:grid-cols-2 gap-12 items-start">
               <SpotlightCard>
                 <CardHeader>
-                  <CardTitle className="text-cyan-400 font-headline text-2xl">Get in Touch</CardTitle>
+                  <CardTitle className="text-primary font-headline text-2xl">Get in Touch</CardTitle>
                   <CardDescription>
                     Our team is available to help with any questions you might have. We look forward to hearing from you.
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4 text-gray-300">
-                   <a href="mailto:contact@talxify.com" className="flex items-center gap-3 hover:text-cyan-400 transition-colors">
+                <CardContent className="space-y-4 text-muted-foreground">
+                   <a href="mailto:contact@talxify.com" className="flex items-center gap-3 hover:text-primary transition-colors">
                      <Mail className="h-5 w-5"/>
                      <span>contact@talxify.com</span>
                    </a>
@@ -823,30 +823,30 @@ export default function LandingPage() {
                      <Phone className="h-5 w-5"/>
                      <span>+1 (555) 123-4567</span>
                    </div>
-                   <p className="text-sm text-gray-500 pt-4">
+                   <p className="text-sm text-muted-foreground/50 pt-4">
                      We typically respond to inquiries within 24-48 business hours.
                    </p>
                 </CardContent>
               </SpotlightCard>
-              <Card className="bg-gray-900/50 border border-cyan-500/30 backdrop-blur-sm">
+              <Card className="bg-secondary/30 border-border backdrop-blur-sm">
                 <CardContent className="p-6 sm:p-8">
                   <form className="space-y-6">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                       <div className="space-y-2">
-                        <Label htmlFor="name" className="text-cyan-400">Name</Label>
-                        <Input id="name" type="text" placeholder="Your name" className="bg-gray-800 border-gray-700 text-gray-200 focus:ring-cyan-400" />
+                        <Label htmlFor="name" className="text-primary">Name</Label>
+                        <Input id="name" type="text" placeholder="Your name" />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="email" className="text-cyan-400">Email</Label>
-                        <Input id="email" type="email" placeholder="Your email" className="bg-gray-800 border-gray-700 text-gray-200 focus:ring-cyan-400" />
+                        <Label htmlFor="email" className="text-primary">Email</Label>
+                        <Input id="email" type="email" placeholder="Your email" />
                       </div>
                     </div>
                      <div className="space-y-2">
-                        <Label htmlFor="message" className="text-cyan-400">Message</Label>
-                        <Textarea id="message" placeholder="Your message" rows={5} className="bg-gray-800 border-gray-700 text-gray-200 focus:ring-cyan-400" />
+                        <Label htmlFor="message" className="text-primary">Message</Label>
+                        <Textarea id="message" placeholder="Your message" rows={5} />
                       </div>
                       <div className="text-right">
-                        <Button type="submit" className="bg-cyan-400 text-black hover:bg-cyan-300 shadow-[0_0_15px_rgba(56,189,248,0.5)] transition-all duration-300 hover:scale-105 active:scale-95">
+                        <Button type="submit">
                           Send Message <Send className="ml-2 h-4 w-4" />
                         </Button>
                       </div>
@@ -860,19 +860,19 @@ export default function LandingPage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-gray-800">
+      <footer className="border-t border-border">
         <div className="container mx-auto py-8 flex flex-col sm:flex-row items-center justify-between gap-4 px-4">
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-muted-foreground">
             Made with 💓 By Zaid
           </p>
           <div className="flex gap-4">
-            <Link href="https://github.com/ZaidMomin2003" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-cyan-400 transition-colors">
+            <Link href="https://github.com/ZaidMomin2003" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
               <Github className="h-6 w-6" />
             </Link>
-             <Link href="https://www.linkedin.com/in/arshad-momin-a3139b21b/" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-cyan-400 transition-colors">
+             <Link href="https://www.linkedin.com/in/arshad-momin-a3139b21b/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
               <Linkedin className="h-6 w-6" />
             </Link>
-             <Link href="https://www.instagram.com/zaidwontdo/" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-cyan-400 transition-colors">
+             <Link href="https://www.instagram.com/zaidwontdo/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
               <Instagram className="h-6 w-6" />
             </Link>
           </div>

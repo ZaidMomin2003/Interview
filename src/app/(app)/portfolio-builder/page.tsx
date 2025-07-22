@@ -60,7 +60,7 @@ function ThemeSwitcher() {
 
   return (
     <div className="space-y-2">
-      <div className="flex items-center gap-2 text-cyan-400">
+      <div className="flex items-center gap-2 text-primary">
         <Palette className="w-5 h-5"/>
         <h3 className="text-lg font-headline">Color Palette</h3>
       </div>
@@ -116,7 +116,7 @@ export default function PortfolioBuilderPage() {
         </CardHeader>
         <CardContent>
           <div className="flex flex-col sm:flex-row gap-2">
-            <div className="flex items-center gap-2 p-2 rounded-md bg-gray-800 border border-gray-700">
+            <div className="flex items-center gap-2 p-2 rounded-md bg-secondary/50 border border-border">
                <span className="text-muted-foreground hidden sm:block">talxify.com/portfolio/</span>
                <Input 
                 className="bg-transparent border-none focus-visible:ring-0 p-0 h-auto" 
@@ -150,7 +150,7 @@ export default function PortfolioBuilderPage() {
             <div className="space-y-4">
                 <h3 className="text-xl font-bold font-headline">Projects</h3>
                 {portfolio.projects.map((proj, index) => (
-                    <Card key={proj.id} className="bg-gray-800/50 p-4">
+                    <Card key={proj.id} className="bg-secondary/30 p-4">
                         <div className="flex justify-between items-start">
                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-grow">
                                 <Input defaultValue={proj.title} placeholder="Project Title" />
@@ -169,7 +169,7 @@ export default function PortfolioBuilderPage() {
             <div className="space-y-4">
                  <h3 className="text-xl font-bold font-headline">Hackathons</h3>
                  {portfolio.hackathons.map((hack, index) => (
-                    <Card key={hack.id} className="bg-gray-800/50 p-4">
+                    <Card key={hack.id} className="bg-secondary/30 p-4">
                        <div className="flex justify-between items-start">
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 flex-grow">
                                 <Input defaultValue={hack.name} placeholder="Hackathon Name" />
@@ -187,7 +187,7 @@ export default function PortfolioBuilderPage() {
             <div className="space-y-4">
                  <h3 className="text-xl font-bold font-headline">Certificates</h3>
                  {portfolio.certificates.map((cert, index) => (
-                    <Card key={cert.id} className="bg-gray-800/50 p-4">
+                    <Card key={cert.id} className="bg-secondary/30 p-4">
                        <div className="flex justify-between items-start">
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 flex-grow">
                                 <Input defaultValue={cert.name} placeholder="Certificate Name" />

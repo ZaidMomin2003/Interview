@@ -95,10 +95,10 @@ export default function CalculateSalaryPage() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gray-900 text-white flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen w-full bg-background text-foreground flex flex-col items-center justify-center p-4">
         <Link href="/" className="flex items-center gap-2 justify-center mb-8">
-            <Cpu className="h-10 w-10 text-cyan-400" />
-            <span className="font-headline text-4xl font-bold tracking-widest text-gray-100 uppercase">
+            <Cpu className="h-10 w-10 text-primary" />
+            <span className="font-headline text-4xl font-bold tracking-widest text-foreground uppercase">
               Talxify
             </span>
         </Link>
@@ -112,9 +112,9 @@ export default function CalculateSalaryPage() {
 
 function SalaryForm({ form, onSubmit, isLoading }: { form: any, onSubmit: (values: any) => void, isLoading: boolean }) {
     return (
-        <Card className="w-full max-w-2xl mx-auto bg-gray-900/50 border border-cyan-500/30 backdrop-blur-sm">
+        <Card className="w-full max-w-2xl mx-auto bg-secondary/30 border border-border backdrop-blur-sm">
             <CardHeader>
-                <CardTitle className="font-headline text-3xl flex items-center gap-2 text-cyan-400">
+                <CardTitle className="font-headline text-3xl flex items-center gap-2 text-primary">
                     <TrendingUp /> AI Salary Estimator
                 </CardTitle>
                 <CardDescription>
@@ -231,7 +231,7 @@ function SalaryForm({ form, onSubmit, isLoading }: { form: any, onSubmit: (value
 
 function LeadCaptureForm({ form, onSubmit, result }: { form: any, onSubmit: (values: any) => void, result: CalculateSalaryOutput | null }) {
     return (
-        <Card className="w-full max-w-lg mx-auto text-center animate-in fade-in-50 duration-500 bg-gray-900/50 border border-cyan-500/30 backdrop-blur-sm">
+        <Card className="w-full max-w-lg mx-auto text-center animate-in fade-in-50 duration-500 bg-secondary/30 border border-border backdrop-blur-sm">
             <CardHeader className="items-center">
                  <div className="p-4 bg-primary/20 rounded-full w-fit">
                     <Cpu className="h-12 w-12 text-primary" />
@@ -284,18 +284,18 @@ function LeadCaptureForm({ form, onSubmit, result }: { form: any, onSubmit: (val
 
 function ResultDisplay({ result }: { result: CalculateSalaryOutput }) {
     return (
-        <Card className="w-full max-w-2xl mx-auto animate-in fade-in-50 duration-500 bg-gray-900/50 border-cyan-500/30 backdrop-blur-sm">
+        <Card className="w-full max-w-2xl mx-auto animate-in fade-in-50 duration-500 bg-secondary/30 border-border backdrop-blur-sm">
              <CardHeader className="text-center items-center">
-                <div className="p-4 bg-green-500/20 rounded-full w-fit">
-                    <DollarSign className="h-12 w-12 text-green-400" />
+                <div className="p-4 bg-primary/20 rounded-full w-fit">
+                    <DollarSign className="h-12 w-12 text-primary" />
                 </div>
-                <CardTitle className="font-headline text-5xl text-green-400 mt-4">{result.estimatedSalaryRange}</CardTitle>
+                <CardTitle className="font-headline text-5xl text-primary mt-4">{result.estimatedSalaryRange}</CardTitle>
                 <CardDescription className="text-lg">
                     This is our AI's estimated salary range based on the information you provided.
                 </CardDescription>
             </CardHeader>
             <CardContent>
-                <Card className="bg-secondary/50">
+                <Card className="bg-background/50">
                     <CardHeader>
                          <CardTitle className="font-headline text-xl flex items-center gap-2">
                             <BrainCircuit /> AI Reasoning
