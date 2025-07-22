@@ -4,25 +4,25 @@
 
 @layer base {
   :root, .theme-default {
-    --background: 0 0% 6%; /* #0F0F0F */
-    --foreground: 0 0% 97%; /* #F8F8F8 */
-    --card: 0 0% 13%; /* #202020 */
-    --card-foreground: 0 0% 97%;
-    --popover: 0 0% 6%;
-    --popover-foreground: 0 0% 97%;
-    --primary: 81 69% 51%; /* #5DD62C */
-    --primary-foreground: 0 0% 6%;
-    --secondary: 100 65% 27%; /* #337418 */
-    --secondary-foreground: 0 0% 97%;
-    --muted: 0 0% 13%;
-    --muted-foreground: 0 0% 60%;
-    --accent: 81 69% 41%;
-    --accent-foreground: 0 0% 97%;
+    --background: 208 33% 10%; /* #111a21 */
+    --foreground: 60 67% 92%; /* #f5f5dc */
+    --card: 208 33% 12%; /* A slightly lighter dark blue */
+    --card-foreground: 60 67% 92%;
+    --popover: 208 33% 10%;
+    --popover-foreground: 60 67% 92%;
+    --primary: 21 99% 54%; /* #fe5516 */
+    --primary-foreground: 60 67% 92%; /* Light text on orange */
+    --secondary: 208 33% 15%; /* Dark blue from card */
+    --secondary-foreground: 60 67% 92%;
+    --muted: 208 33% 15%;
+    --muted-foreground: 39 44% 83%; /* #e8d9bb for muted text */
+    --accent: 21 99% 48%; /* A slightly darker orange */
+    --accent-foreground: 60 67% 92%;
     --destructive: 0 63% 31%;
     --destructive-foreground: 0 0% 97%;
-    --border: 0 0% 13%;
-    --input: 0 0% 13%;
-    --ring: 81 69% 51%;
+    --border: 208 33% 18%; /* Border slightly lighter than secondary */
+    --input: 208 33% 18%;
+    --ring: 21 99% 54%;
     --radius: 0.75rem;
   }
 
