@@ -5,7 +5,7 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ArrowRight, Code, Cpu, Bot, Zap, ShieldCheck, User, Mail, Send, Video, FileText, Target, BrainCircuit, LayoutDashboard, CheckCircle, BarChartHorizontalBig, Mic, VideoOff as VideoOffIcon, BotIcon, CodeXml, Video as VideoIcon, History as HistoryIcon, Phone, Github, Linkedin, Instagram, TrendingUp } from 'lucide-react';
+import { ArrowRight, Code, Cpu, Bot, Zap, ShieldCheck, User, Mail, Send, Video, FileText, Target, BrainCircuit, LayoutDashboard, CheckCircle, BarChartHorizontalBig, Mic, VideoOff as VideoOffIcon, BotIcon, CodeXml, Video as VideoIcon, History as HistoryIcon, Phone, Github, Linkedin, Instagram, TrendingUp, GalleryVertical } from 'lucide-react';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -274,6 +274,31 @@ export default function LandingPage() {
                   <div className="text-center p-2 rounded-lg bg-gray-800 border border-gray-700 opacity-60">
                       <p className="font-bold">Day 4</p>
                        <BrainCircuit className="mx-auto mt-1 h-5 w-5" />
+                  </div>
+              </CardContent>
+          </Card>
+      ),
+    },
+    {
+      icon: <GalleryVertical className="h-10 w-10 text-cyan-400" />,
+      title: 'Public Portfolio',
+      description: 'Showcase your skills and projects with a personalized, public-facing portfolio. Automatically syncs with your dashboard stats and projects.',
+       prototype: (
+         <Card className="w-full max-w-lg mx-auto bg-gray-900 border-cyan-500/30 shadow-cyan-400/10 shadow-2xl">
+              <CardContent className="p-4 space-y-3">
+                  <div className="flex items-center gap-4">
+                      <Avatar className="h-20 w-20 border-2 border-cyan-400">
+                          <AvatarFallback>JD</AvatarFallback>
+                      </Avatar>
+                      <div>
+                          <h3 className="text-xl font-bold text-white">Jane Doe</h3>
+                          <p className="text-sm text-muted-foreground">Software Engineer</p>
+                      </div>
+                  </div>
+                  <div className="p-3 bg-gray-800 rounded-lg">
+                       <h4 className="font-semibold text-cyan-400 mb-2">Top Project</h4>
+                       <p className="font-bold text-gray-200">AI-Powered Code Analyzer</p>
+                       <p className="text-xs text-gray-400">Next.js, Tailwind CSS, Genkit AI</p>
                   </div>
               </CardContent>
           </Card>
