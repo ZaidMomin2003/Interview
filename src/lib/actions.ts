@@ -8,6 +8,7 @@ import { getCodeFeedback, GetCodeFeedbackInput } from "@/ai/flows/get-code-feedb
 import { calculateSalary } from "@/ai/flows/calculate-salary";
 import { CalculateSalaryInput, CalculateSalaryInputSchema } from "@/ai/types/salary-types";
 import { enhanceResumeSection, EnhanceResumeSectionInput } from "@/ai/flows/enhance-resume-section";
+import { generateNotes, GenerateNotesInput } from "@/ai/flows/generate-notes";
 
 const experienceSchema = z.object({
   jobTitle: z.string().min(2, "Job title is required"),
@@ -165,5 +166,25 @@ export async function handleCalculateSalary(data: CalculateSalaryInput) {
     } catch (error) {
         console.error(error);
         throw new Error("Failed to calculate salary. Please try again.");
+    }
+}
+
+const generateNotesSchema = z.object({
+    topic: z.string().min(2, "Topic must be at least 2 characters."),
+});
+
+export async function handleGenerateNotes(data: GenerateNotesInput) {
+    const validatedFields = generateNotesSchema.safeParse(data);
+
+    if (!validatedFields.success) {
+        throw new Error("Invalid input for generating notes.");
+    }
+
+    try {
+        const result = await generateNotes(validatedFields.data);
+        return result;
+    } catch (error) {
+        console.error(error);
+        throw new Error("Failed to generate notes. Please try again.");
     }
 }

@@ -31,7 +31,7 @@ const generateTasks = (day: number): DailyTask[] => [
         description: 'Review your study notes and prepare for the day.',
         icon: <ClipboardList className="h-6 w-6 text-amber-400" />,
         action: 'Open Notes',
-        href: '#', // Placeholder for Notes feature
+        href: '/notes/data-structures', // Default topic
     },
     {
         id: `day${day}-coding`,
