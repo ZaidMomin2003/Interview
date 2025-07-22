@@ -5,7 +5,8 @@ import { generateResume, GenerateResumeInput } from "@/ai/flows/generate-resume"
 import { optimizeResume, OptimizeResumeInput } from "@/ai/flows/optimize-resume";
 import { generateCodingQuestion, GenerateCodingQuestionInput } from "@/ai/flows/generate-coding-question";
 import { getCodeFeedback, GetCodeFeedbackInput } from "@/ai/flows/get-code-feedback";
-import { calculateSalary, CalculateSalaryInput, CalculateSalaryInputSchema } from "@/ai/flows/calculate-salary";
+import { calculateSalary } from "@/ai/flows/calculate-salary";
+import { CalculateSalaryInput, CalculateSalaryInputSchema } from "@/ai/types/salary-types";
 
 const resumeGeneratorSchema = z.object({
   workExperience: z.string().min(50, "Please provide more details about your work experience."),

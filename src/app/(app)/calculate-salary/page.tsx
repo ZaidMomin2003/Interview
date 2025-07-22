@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { handleCalculateSalary } from '@/lib/actions';
 import { Loader2, DollarSign, BrainCircuit, ArrowRight, TrendingUp, Cpu } from 'lucide-react';
-import { CalculateSalaryInput, CalculateSalaryOutput } from '@/ai/flows/calculate-salary';
+import { CalculateSalaryInput, CalculateSalaryOutput } from '@/ai/types/salary-types';
 import { useAuth } from '@/hooks/use-auth';
 import Link from 'next/link';
 
