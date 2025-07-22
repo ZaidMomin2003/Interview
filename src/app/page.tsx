@@ -18,8 +18,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, RadialBar, RadialBarChart } from 'recharts';
-import { ChartContainer } from '@/components/ui/chart';
+import { Area, AreaChart, Bar, BarChart, ResponsiveContainer, XAxis, YAxis, RadialBar, RadialBarChart } from 'recharts';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 
 
 const weeklyProgressData = [
@@ -526,11 +526,32 @@ export default function LandingPage() {
                                       </CardHeader>
                                       <CardContent className="pl-2">
                                         <ResponsiveContainer width="100%" height={250}>
-                                            <BarChart data={weeklyProgressData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                                             <AreaChart
+                                                accessibilityLayer
+                                                data={weeklyProgressData}
+                                                margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                                              >
+                                                <defs>
+                                                  <linearGradient id="fillQuestionsLanding" x1="0" y1="0" x2="0" y2="1">
+                                                    <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.8}/>
+                                                    <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0.1}/>
+                                                  </linearGradient>
+                                                </defs>
                                                 <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false}/>
                                                 <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false}/>
-                                                <Bar dataKey="questions" fill="hsl(var(--primary))" name="Questions" radius={[4, 4, 0, 0]} />
-                                            </BarChart>
+                                                <ChartTooltip
+                                                    cursor={false}
+                                                    content={<ChartTooltipContent indicator="line" />}
+                                                />
+                                                <Area 
+                                                    dataKey="questions" 
+                                                    type="natural" 
+                                                    fill="url(#fillQuestionsLanding)"
+                                                    stroke="hsl(var(--primary))"
+                                                    strokeWidth={2}
+                                                    dot={false}
+                                                />
+                                            </AreaChart>
                                         </ResponsiveContainer>
                                       </CardContent>
                                   </Card>
