@@ -5,7 +5,7 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ArrowRight, Code, Cpu, Bot, Zap, ShieldCheck, User, Mail, Send, Video, FileText, Target, BrainCircuit, LayoutDashboard, CheckCircle, BarChartHorizontalBig, Mic, VideoOff as VideoOffIcon, BotIcon, CodeXml, Video as VideoIcon, History as HistoryIcon, Phone, Github, Linkedin, Instagram, TrendingUp, GalleryVertical, Plus, GraduationCap, Briefcase, Rocket, Star, Quote } from 'lucide-react';
+import { ArrowRight, Code, Cpu, Bot, Zap, ShieldCheck, User, Mail, Send, Video, FileText, Target, BrainCircuit, LayoutDashboard, CheckCircle, BarChartHorizontalBig, Mic, VideoOff as VideoOffIcon, BotIcon, CodeXml, Video as VideoIcon, History as HistoryIcon, Phone, Github, Linkedin, Instagram, TrendingUp, GalleryVertical, Plus, GraduationCap, Briefcase, Rocket, Star, Quote, Tags, Check } from 'lucide-react';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -23,6 +23,7 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import Autoplay from "embla-carousel-autoplay";
 import { ThemeToggle } from '@/components/layout/theme-toggle';
+import { Switch } from '@/components/ui/switch';
 
 
 const weeklyProgressData = [
@@ -149,6 +150,7 @@ export default function LandingPage() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const { user, loading } = useAuth();
+  const [isYearly, setIsYearly] = useState(false);
   
   const autoplayPlugin = useRef(
     Autoplay({ delay: 2000, stopOnInteraction: true, stopOnMouseEnter: true })
@@ -373,59 +375,68 @@ export default function LandingPage() {
 
   const pricingTiers = [
     {
-      name: "Apprentice",
-      price: "$0",
-      period: "/ month",
-      description: "Get a feel for the platform, on us.",
-      features: ["Basic Resume Generation", "3 Coding Questions/day", "Limited Code Feedback"],
-      cta: "Get Started Free",
-      href: "/signup"
+      name: 'Apprentice',
+      monthlyPrice: 0,
+      yearlyPrice: 0,
+      description: 'Get a feel for the platform, on us.',
+      features: [
+        'Basic Resume Generation',
+        '3 Coding Questions/day',
+        'Limited Code Feedback',
+        'Community Support',
+      ],
+      cta: 'Get Started Free',
+      href: '/signup',
     },
     {
-      name: "Developer",
-      price: "$15",
-      period: "/ month",
-      description: "The essential toolkit for active job seekers.",
-      features: ["Advanced Resume Generation", "Unlimited Coding Questions", "Full Code Analysis", "Resume Optimization"],
-      cta: "Choose Developer",
-      href: "/signup",
-      popular: true
+      name: 'Developer',
+      monthlyPrice: 15,
+      yearlyPrice: 12,
+      description: 'The essential toolkit for active job seekers.',
+      features: [
+        'Advanced Resume Generation & Optimization',
+        'Unlimited Coding Questions',
+        'Full Code Analysis & Feedback',
+        'AI Resume Tailoring',
+        'Priority Email Support',
+      ],
+      cta: 'Choose Developer',
+      href: '/signup',
+      popular: true,
     },
     {
-      name: "Ascendant",
-      price: "$29",
-      period: "/ month",
-      description: "For those who want to master their craft.",
-      features: ["All Developer Features", "Priority AI Agent Access", "Career Path Analysis", "Mock AI Interviews"],
-      cta: "Become Ascendant",
-      href: "/signup"
-    }
+      name: 'Ascendant',
+      monthlyPrice: 29,
+      yearlyPrice: 24,
+      description: 'For those who want to master their craft.',
+      features: [
+        'All Developer Features',
+        'Unlimited AI Mock Interviews',
+        'Career Path Analysis',
+        'Interview Arena Access',
+        'Dedicated Support Channel',
+      ],
+      cta: 'Become Ascendant',
+      href: '/signup',
+    },
   ];
 
   const faqs = [
     {
-        question: "What is Talxify?",
-        answer: "Talxify is an AI-powered platform designed to help developers accelerate their careers. We provide tools for resume building, coding practice, interview preparation, and portfolio showcasing, all tailored to your specific needs and goals."
+        question: 'What happens if I cancel my subscription?',
+        answer: 'You can cancel your subscription at any time. You will retain access to all your plan\'s features until the end of your current billing period. We do not offer refunds for partial periods.'
     },
     {
-        question: "Who is this platform for?",
-        answer: "Talxify is for any developer looking to level up—from students preparing for their first internship to senior engineers aiming for top-tier companies. If you're looking to improve your skills, ace interviews, and manage your career, Talxify is for you."
+        question: 'Can I upgrade or downgrade my plan?',
+        answer: 'Yes, you can change your plan at any time from your account settings. When you upgrade, you will be charged a prorated amount for the remainder of the billing cycle. Downgrades will take effect at the start of your next billing cycle.'
     },
     {
-        question: "How does the AI resume optimizer work?",
-        answer: "Our AI resume builder takes your work experience, skills, and the job description you're targeting. It then analyzes the content to suggest stronger action verbs, quantify your achievements, and align your resume with what recruiters and Applicant Tracking Systems (ATS) are looking for."
+        question: 'Is there a free trial for the paid plans?',
+        answer: 'Our Apprentice plan is always free and allows you to try out many of our core features. We do not currently offer a separate free trial for the Developer or Ascendant plans.'
     },
     {
-        question: "What kind of feedback does the Coding Gym provide?",
-        answer: "The AI mentor in the Coding Gym provides line-by-line analysis of your code. It checks for correctness, time and space complexity (Big O), and suggests more efficient algorithms or data structures. It also offers advice on code style and best practices for the given language."
-    },
-    {
-        question: "Is my data secure?",
-        answer: "Yes, data security is our top priority. All personal information and code submissions are encrypted and handled securely. We do not share your data with third parties. Your portfolio is only public if you choose to share the link."
-    },
-    {
-        question: "Can I cancel my subscription anytime?",
-        answer: "Absolutely. You have full control over your subscription. You can upgrade, downgrade, or cancel your plan at any time through your account settings. If you cancel, you will retain access until the end of your current billing period."
+        question: 'What payment methods do you accept?',
+        answer: 'We accept all major credit cards, including Visa, Mastercard, and American Express. All payments are processed securely through our payment provider, Stripe.'
     }
   ];
 
@@ -873,52 +884,71 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Pricing Section */}
-        <section id="pricing" className="py-20 sm:py-24">
-          <div className="container mx-auto px-4 max-w-5xl">
-            <div className="text-center max-w-3xl mx-auto">
-              <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline text-primary">Access Protocols</h2>
-              <p className="mt-4 text-lg text-muted-foreground">
-                Choose your level of engagement. No hidden fees. Upgrade or cancel anytime.
-              </p>
-            </div>
-            <div className="mt-16 grid gap-8 md:grid-cols-3">
-              {pricingTiers.map((tier) => (
-                <Card key={tier.name} className={cn(
-                  "bg-secondary/30 border-border flex flex-col transition-all duration-300 hover:border-primary hover:shadow-primary/20 hover:shadow-2xl hover:-translate-y-2",
-                  tier.popular ? 'border-primary shadow-[0_0_25px_hsl(var(--primary)_/_0.4)]' : ''
-                )}>
-                   {tier.popular && (
-                    <div className="text-center py-1 bg-primary text-primary-foreground font-bold text-sm">MOST POPULAR</div>
-                  )}
-                  <CardHeader className="text-center">
-                    <CardTitle className="text-3xl font-headline text-foreground">{tier.name}</CardTitle>
-                    <p className="text-muted-foreground">{tier.description}</p>
-                    <div className="text-5xl font-bold text-primary pt-4">{tier.price} <span className="text-xl font-normal text-muted-foreground">{tier.period}</span></div>
-                  </CardHeader>
-                  <CardContent className="flex-grow">
-                    <ul className="space-y-3">
-                      {tier.features.map((feature, i) => (
-                        <li key={i} className="flex items-center gap-3">
-                          <ShieldCheck className="h-5 w-5 text-primary" />
-                          <span className="text-foreground">{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                  <div className="p-6 pt-0">
-                     <Button className={cn(
-                       "w-full transition-all duration-300 hover:scale-105 active:scale-95",
-                       !tier.popular && 'bg-secondary hover:bg-secondary/80'
-                     )} asChild>
-                      <Link href={user ? '/dashboard' : tier.href}>{user ? "Go to Dashboard" : tier.cta}</Link>
-                    </Button>
-                  </div>
-                </Card>
-              ))}
+      {/* Pricing Section */}
+      <section id="pricing" className="py-20 sm:py-24">
+        <div className="container mx-auto px-4">
+          <div className="text-center max-w-3xl mx-auto">
+            <h2 className="text-4xl md:text-5xl font-bold font-headline text-primary">Find the Plan That's Right for You</h2>
+            <p className="mt-4 text-lg text-muted-foreground">
+              Choose your level of engagement. No hidden fees. Upgrade, downgrade, or cancel anytime.
+            </p>
+            <div className="mt-8 flex items-center justify-center space-x-4">
+              <Label htmlFor="billing-cycle-landing" className="font-medium">Monthly</Label>
+              <Switch
+                id="billing-cycle-landing"
+                checked={isYearly}
+                onCheckedChange={setIsYearly}
+                aria-label="Switch between monthly and yearly billing"
+              />
+              <Label htmlFor="billing-cycle-landing" className="font-medium flex items-center">
+                Yearly
+                <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-900 text-green-300">
+                  Save 20%
+                </span>
+              </Label>
             </div>
           </div>
-        </section>
+
+          <div className="mt-16 grid gap-8 md:grid-cols-2 lg:grid-cols-3 items-start max-w-6xl mx-auto">
+            {pricingTiers.map((tier) => (
+              <Card key={tier.name} className={cn(
+                "bg-secondary/30 border-border flex flex-col transition-all duration-300 hover:border-primary hover:shadow-primary/20 hover:shadow-2xl hover:-translate-y-2 h-full",
+                tier.popular ? 'border-2 border-primary shadow-[0_0_25px_hsl(var(--primary)_/_0.4)]' : ''
+              )}>
+                {tier.popular && (
+                  <div className="text-center py-1 bg-primary text-primary-foreground font-bold text-sm rounded-t-lg">MOST POPULAR</div>
+                )}
+                <CardHeader className="text-center">
+                  <CardTitle className="text-3xl font-headline text-foreground">{tier.name}</CardTitle>
+                  <CardDescription>{tier.description}</CardDescription>
+                  <div className="text-5xl font-bold text-primary pt-4">
+                    ${isYearly ? tier.yearlyPrice : tier.monthlyPrice}
+                    <span className="text-xl font-normal text-muted-foreground">/ month</span>
+                  </div>
+                  {isYearly && tier.monthlyPrice > 0 && (
+                    <p className="text-sm text-muted-foreground">Billed as ${tier.yearlyPrice * 12} per year</p>
+                  )}
+                </CardHeader>
+                <CardContent className="flex-grow">
+                  <ul className="space-y-4">
+                    {tier.features.map((feature, i) => (
+                      <li key={i} className="flex items-start gap-3">
+                        <Check className="h-5 w-5 text-green-500 mt-0.5 shrink-0" />
+                        <span className="text-foreground">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+                <div className="p-6 pt-0">
+                  <Button className="w-full transition-all duration-300" asChild>
+                    <Link href={tier.href}>{tier.cta}</Link>
+                  </Button>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
 
         {/* FAQ Section */}
         <section id="faq" className="py-20 sm:py-24">
@@ -929,34 +959,12 @@ export default function LandingPage() {
                         Frequently accessed data nodes. If your query is not here, please connect to a support channel.
                     </p>
                 </div>
-                <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+                <div className="mt-12">
                     <Accordion type="single" collapsible className="w-full">
-                        {faqs.slice(0, Math.ceil(faqs.length / 2)).map((faq, i) => (
+                        {faqs.map((faq, i) => (
                             <AccordionItem key={i} value={`item-${i}`} className="bg-secondary/30 border-border/50 rounded-lg mb-4 p-2 transition-all hover:bg-secondary/50">
-                                <AccordionTrigger className="text-lg text-left font-semibold text-foreground hover:text-primary transition-colors duration-300 p-4 [&[data-state=open]>svg:last-child]:-rotate-90">
-                                    <div className="flex items-center gap-4">
-                                        <div className="p-2 bg-secondary border border-border rounded-full">
-                                            <Plus className="h-5 w-5 text-primary transition-transform duration-300"/>
-                                        </div>
-                                        {faq.question}
-                                    </div>
-                                </AccordionTrigger>
-                                <AccordionContent className="text-muted-foreground text-base p-4 pt-0">
-                                    {faq.answer}
-                                </AccordionContent>
-                            </AccordionItem>
-                        ))}
-                    </Accordion>
-                    <Accordion type="single" collapsible className="w-full">
-                         {faqs.slice(Math.ceil(faqs.length / 2)).map((faq, i) => (
-                            <AccordionItem key={i} value={`item-${i + Math.ceil(faqs.length / 2)}`} className="bg-secondary/30 border-border/50 rounded-lg mb-4 p-2 transition-all hover:bg-secondary/50">
-                                <AccordionTrigger className="text-lg text-left font-semibold text-foreground hover:text-primary transition-colors duration-300 p-4 [&[data-state=open]>svg:last-child]:-rotate-90">
-                                     <div className="flex items-center gap-4">
-                                        <div className="p-2 bg-secondary border border-border rounded-full">
-                                            <Plus className="h-5 w-5 text-primary transition-transform duration-300"/>
-                                        </div>
-                                        {faq.question}
-                                    </div>
+                                <AccordionTrigger className="text-lg text-left font-semibold text-foreground hover:text-primary transition-colors duration-300 p-4">
+                                    {faq.question}
                                 </AccordionTrigger>
                                 <AccordionContent className="text-muted-foreground text-base p-4 pt-0">
                                     {faq.answer}
