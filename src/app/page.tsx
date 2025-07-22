@@ -22,6 +22,7 @@ import { Area, AreaChart, Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Radi
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import Autoplay from "embla-carousel-autoplay";
+import { ThemeToggle } from '@/components/layout/theme-toggle';
 
 
 const weeklyProgressData = [
@@ -494,6 +495,7 @@ export default function LandingPage() {
           </nav>
           <div className="flex items-center gap-2">
             {renderAuthButtons()}
+            <ThemeToggle />
           </div>
         </div>
       </header>
