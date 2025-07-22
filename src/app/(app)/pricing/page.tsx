@@ -68,8 +68,16 @@ const faqs = [
         answer: 'Yes, you can change your plan at any time from your account settings. When you upgrade, you will be charged a prorated amount for the remainder of the billing cycle. Downgrades will take effect at the start of your next billing cycle.'
     },
     {
-        question: 'Is there a free trial for the paid plans?',
-        answer: 'Our Apprentice plan is always free and allows you to try out many of our core features. We do not currently offer a separate free trial for the Developer or Ascendant plans.'
+        question: 'What AI models do you use?',
+        answer: 'Talxify is powered by Google\'s state-of-the-art Gemini family of models. This allows us to provide advanced capabilities in text generation, code analysis, and conversational AI for a top-tier user experience.'
+    },
+    {
+        question: 'How does the AI Resume Optimization work?',
+        answer: 'You provide your resume and a target job description. Our AI analyzes both, identifies key skills and keywords from the job description, and suggests improvements to your resume to align it better with the role. It helps you get past automated screening systems (ATS) and catch a recruiter\'s eye.'
+    },
+    {
+        question: 'Is my data secure?',
+        answer: 'Absolutely. We prioritize your privacy and data security. All personal information and user-generated content are encrypted and handled with the strictest confidentiality. We do not share your data with third parties.'
     },
     {
         question: 'What payment methods do you accept?',
