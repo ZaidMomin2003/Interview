@@ -9,13 +9,13 @@ import Link from 'next/link';
 import { differenceInDays, format, addDays, isFuture, isToday, isPast as isPastDate } from 'date-fns';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription } from '@/components/ui/alert-dialog';
-import { BrainCircuit, Code, MessageSquare, ArrowRight, Target, CalendarOff, CheckCircle2, Lock } from 'lucide-react';
+import { ClipboardList, Code, MessageSquare, ArrowRight, Target, CalendarOff, CheckCircle2, Lock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface DailyTask {
     id: string;
-    type: 'MCQ' | 'Coding' | 'Mock Interview';
+    type: 'Notes' | 'Coding' | 'Mock Interview';
     title: string;
     description: string;
     icon: React.ReactNode;
@@ -25,13 +25,13 @@ interface DailyTask {
 
 const generateTasks = (day: number): DailyTask[] => [
     {
-        id: `day${day}-interview`,
-        type: 'Mock Interview',
-        title: 'Daily Stand-up & Mock Interview',
-        description: 'Practice your communication and problem-solving skills under pressure.',
-        icon: <MessageSquare className="h-6 w-6 text-purple-400" />,
-        action: 'Start Interview',
-        href: '/ai-interview',
+        id: `day${day}-notes`,
+        type: 'Notes',
+        title: `Day ${day} Notes`,
+        description: 'Review your study notes and prepare for the day.',
+        icon: <ClipboardList className="h-6 w-6 text-amber-400" />,
+        action: 'Open Notes',
+        href: '#', // Placeholder for Notes feature
     },
     {
         id: `day${day}-coding`,
@@ -42,14 +42,14 @@ const generateTasks = (day: number): DailyTask[] => [
         action: 'Go to Gym',
         href: '/coding-practice',
     },
-    {
-        id: `day${day}-mcq`,
-        type: 'MCQ' as const,
-        title: `Day ${day} MCQs`,
-        description: 'Test your knowledge on core computer science concepts.',
-        icon: <BrainCircuit className="h-6 w-6 text-amber-400" />,
-        action: 'Start Quiz',
-        href: '#', // Placeholder for MCQ feature
+     {
+        id: `day${day}-interview`,
+        type: 'Mock Interview',
+        title: 'Daily Stand-up & Mock Interview',
+        description: 'Practice your communication and problem-solving skills under pressure.',
+        icon: <MessageSquare className="h-6 w-6 text-purple-400" />,
+        action: 'Start Interview',
+        href: '/ai-interview',
     },
 ];
 
