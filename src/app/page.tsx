@@ -487,10 +487,10 @@ export default function LandingPage() {
             <Link href="#features" onClick={handleSmoothScroll} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Features</Link>
             <Link href="#who-is-this-for" onClick={handleSmoothScroll} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Who It's For</Link>
             <Link href="#testimonials" onClick={handleSmoothScroll} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Testimonials</Link>
-            <Link href="#pricing" onClick={handleSmoothScroll} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Pricing</Link>
             <Link href="#about" onClick={handleSmoothScroll} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">About</Link>
+            <Link href="#pricing" onClick={handleSmoothScroll} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Pricing</Link>
             <Link href="#faq" onClick={handleSmoothScroll} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">FAQ</Link>
-             <Link href="#contact" onClick={handleSmoothScroll} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Contact</Link>
+            <Link href="#contact" onClick={handleSmoothScroll} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Contact</Link>
           </nav>
           <div className="flex items-center gap-2">
             {renderAuthButtons()}
