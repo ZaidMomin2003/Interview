@@ -9,6 +9,7 @@ import {
   SidebarMenuButton,
   SidebarFooter,
   SidebarTrigger,
+  SidebarSeparator,
 } from "@/components/ui/sidebar";
 import {
   LayoutDashboard,
@@ -20,6 +21,7 @@ import {
   Cpu,
   Bookmark,
   Tags,
+  Rocket,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -58,11 +60,6 @@ const menuItems = [
     href: "/portfolio-builder",
     label: "Portfolio",
     icon: GalleryVertical,
-  },
-  {
-    href: "/pricing",
-    label: "Pricing",
-    icon: Tags,
   },
 ];
 
@@ -116,6 +113,21 @@ export function AppSidebar() {
       </SidebarMenu>
 
       <SidebarFooter className="border-t mt-auto p-2 space-y-2">
+         <SidebarMenuItem>
+            <SidebarMenuButton
+              asChild
+              isActive={pathname.startsWith('/pricing')}
+              tooltip="Upgrade"
+              variant="default"
+              className="justify-start group-data-[collapsible=icon]:justify-center bg-primary/20 text-primary hover:bg-primary/30 hover:text-primary data-[active=true]:bg-primary/30 data-[active=true]:text-primary"
+            >
+              <Link href="/pricing">
+                <Rocket />
+                <span>Upgrade Plan</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        
         <Link href="/profile" className="block group-data-[collapsible=icon]:hidden">
           <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-secondary transition-colors">
             <Avatar className="size-9">
