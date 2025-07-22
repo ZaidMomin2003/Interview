@@ -514,9 +514,11 @@ export default function LandingPage() {
             <Link href="#contact" onClick={handleSmoothScroll} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Contact</Link>
           </nav>
 
-          <div className="hidden md:flex items-center gap-2">
+          <div className="flex items-center gap-2">
             {renderAuthButtons()}
-            <ThemeToggle />
+            <div className="hidden md:block">
+              <ThemeToggle />
+            </div>
           </div>
         </div>
       </header>
