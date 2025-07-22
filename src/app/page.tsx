@@ -475,7 +475,7 @@ export default function LandingPage() {
       {/* Header */}
       <header className={cn(
           "sticky top-0 z-50 w-full transition-all duration-300",
-          isScrolled ? "bg-background/80 backdrop-blur-sm" : "bg-transparent"
+          isScrolled ? "bg-background/80 backdrop-blur-sm border-b border-border/50" : "bg-transparent"
         )}>
         <div className="container mx-auto flex h-20 items-center justify-between px-4">
           <Link href="/" className="flex items-center gap-2">
@@ -1053,3 +1053,5 @@ export default function LandingPage() {
     </div>
   );
 }
+
+    
