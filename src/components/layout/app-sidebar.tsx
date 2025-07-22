@@ -39,6 +39,16 @@ const menuItems = [
     label: "Arena",
     icon: Target,
   },
+   {
+    href: "/ai-interview",
+    label: "AI Interview",
+    icon: Video,
+  },
+   {
+    href: "/coding-practice",
+    label: "Coding Gym",
+    icon: CodeXml,
+  },
   {
     href: "/resume-builder",
     label: "Resume Studio",
@@ -106,8 +116,31 @@ export function AppSidebar() {
       </SidebarMenu>
 
       <SidebarFooter className="border-t mt-auto p-2 space-y-2">
+        <Link href="/profile" className="block group-data-[collapsible=icon]:hidden">
+          <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-secondary transition-colors">
+            <Avatar className="size-9">
+              {user?.photoURL && <AvatarImage src={user.photoURL} alt={user.displayName || 'User'} />}
+              <AvatarFallback className="text-sm font-bold bg-primary/20 text-primary">
+                  {user?.displayName?.charAt(0).toUpperCase() || 'U'}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex-grow overflow-hidden">
+                <p className="font-semibold text-sm truncate text-foreground">{user?.displayName}</p>
+                <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+            </div>
+          </div>
+        </Link>
+        
         <SidebarMenu>
-          <SidebarMenuItem>
+          <SidebarMenuItem className="group-data-[collapsible=icon]:hidden">
+            <SidebarMenuButton tooltip="Log Out" onClick={handleLogout} variant="ghost" className="text-muted-foreground hover:bg-destructive hover:text-destructive-foreground justify-start group-data-[collapsible=icon]:justify-center">
+              <LogOut />
+              <span>Log Out</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          
+          {/* Collapsed view footer */}
+          <SidebarMenuItem className="hidden group-data-[collapsible=icon]:block">
              <SidebarMenuButton tooltip="Profile" asChild isActive={pathname.startsWith('/profile')} variant="ghost" className="justify-start group-data-[collapsible=icon]:justify-center">
                 <Link href="/profile">
                   <Avatar className="size-7">
@@ -116,14 +149,14 @@ export function AppSidebar() {
                         {user?.displayName?.charAt(0).toUpperCase() || 'U'}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="truncate">{user?.displayName || 'Your Profile'}</span>
+                  <span className="sr-only">{user?.displayName || 'Your Profile'}</span>
                 </Link>
               </SidebarMenuButton>
           </SidebarMenuItem>
-           <SidebarMenuItem>
+           <SidebarMenuItem className="hidden group-data-[collapsible=icon]:block">
             <SidebarMenuButton tooltip="Log Out" onClick={handleLogout} variant="ghost" className="text-muted-foreground hover:bg-destructive hover:text-destructive-foreground justify-start group-data-[collapsible=icon]:justify-center">
               <LogOut />
-              <span>Log Out</span>
+              <span className="sr-only">Log Out</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
