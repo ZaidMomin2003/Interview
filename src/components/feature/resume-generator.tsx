@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useForm, useFieldArray, Controller } from "react-hook-form";
+import { useState, useRef } from "react";
+import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
@@ -11,9 +11,13 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { handleGenerateResume, handleEnhanceResumeSection } from "@/lib/actions";
-import { Loader2, Copy, Check, PlusCircle, Trash2, Sparkles } from "lucide-react";
+import { Loader2, PlusCircle, Trash2, Sparkles, Download } from "lucide-react";
 import type { GenerateResumeOutput } from "@/ai/flows/generate-resume";
 import { AnimatePresence, motion } from "framer-motion";
+import { ModernResumeTemplate } from "./modern-resume-template";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
+
 
 const experienceSchema = z.object({
   jobTitle: z.string().min(2, "Job title is required"),
@@ -52,14 +56,17 @@ const resumeFormSchema = z.object({
   desiredJob: z.string().min(3, "Desired job must be at least 3 characters."),
 });
 
-type ResumeFormData = z.infer<typeof resumeFormSchema>;
+export type ResumeFormData = z.infer<typeof resumeFormSchema>;
 
 export function ResumeGenerator() {
   const [result, setResult] = useState<GenerateResumeOutput | null>(null);
+  const [formData, setFormData] = useState<ResumeFormData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
   const [isEnhancing, setIsEnhancing] = useState<Record<string, boolean>>({});
-  const [copied, setCopied] = useState(false);
   const { toast } = useToast();
+  const resumePreviewRef = useRef<HTMLDivElement>(null);
+
 
   const form = useForm<ResumeFormData>({
     resolver: zodResolver(resumeFormSchema),
@@ -115,10 +122,14 @@ export function ResumeGenerator() {
   async function onSubmit(values: ResumeFormData) {
     setIsLoading(true);
     setResult(null);
+    setFormData(null);
     try {
+      // We still call the original flow to get the text content,
+      // but we will use the structured `values` for the modern template.
       const response = await handleGenerateResume(values);
       setResult(response);
-      toast({ title: "Resume Generated!", description: "Your new resume is ready." });
+      setFormData(values); // Save form data for the template
+      toast({ title: "Resume Generated!", description: "Your new resume is ready to be previewed and downloaded." });
     } catch (error) {
       toast({
         variant: "destructive",
@@ -130,11 +141,54 @@ export function ResumeGenerator() {
     }
   }
 
-  const handleCopy = () => {
-    if (result?.resume) {
-      navigator.clipboard.writeText(result.resume);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+  const handleDownload = async () => {
+    if (!resumePreviewRef.current) return;
+    setIsDownloading(true);
+
+    try {
+        const canvas = await html2canvas(resumePreviewRef.current, {
+            scale: 2, // Higher scale for better quality
+            useCORS: true,
+            backgroundColor: null,
+        });
+
+        const imgData = canvas.toDataURL('image/png');
+        // A4 dimensions in points: 595.28 x 841.89
+        const pdf = new jsPDF({
+            orientation: 'p',
+            unit: 'pt',
+            format: 'a4',
+        });
+
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        const canvasWidth = canvas.width;
+        const canvasHeight = canvas.height;
+        const ratio = canvasWidth / canvasHeight;
+        
+        let newCanvasWidth = pdfWidth;
+        let newCanvasHeight = newCanvasWidth / ratio;
+
+        if (newCanvasHeight > pdfHeight) {
+            newCanvasHeight = pdfHeight;
+            newCanvasWidth = newCanvasHeight * ratio;
+        }
+
+        const xOffset = (pdfWidth - newCanvasWidth) / 2;
+        const yOffset = 0; // Align to top
+
+        pdf.addImage(imgData, 'PNG', xOffset, yOffset, newCanvasWidth, newCanvasHeight);
+        pdf.save(`${formData?.fullName.replace(' ', '-')}-Resume.pdf`);
+
+    } catch (error) {
+        toast({
+            variant: "destructive",
+            title: "Download Failed",
+            description: "Could not generate PDF. Please try again."
+        });
+        console.error(error);
+    } finally {
+        setIsDownloading(false);
     }
   };
 
@@ -239,35 +293,37 @@ export function ResumeGenerator() {
       {/* Result Card */}
       <Card className="flex flex-col lg:sticky lg:top-8 h-fit max-h-[90vh]">
         <CardHeader>
-          <CardTitle className="font-headline text-3xl">Generated Resume</CardTitle>
-          <CardDescription>
-            Your AI-crafted resume will appear here. Review and copy it.
-          </CardDescription>
+          <div className="flex justify-between items-center">
+            <div>
+              <CardTitle className="font-headline text-3xl">Resume Preview</CardTitle>
+              <CardDescription>
+                Your AI-crafted resume will appear here. Review and download it.
+              </CardDescription>
+            </div>
+            {formData && (
+              <Button onClick={handleDownload} disabled={isDownloading}>
+                {isDownloading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4" />}
+                 Download PDF
+              </Button>
+            )}
+          </div>
         </CardHeader>
-        <CardContent className="flex-grow relative min-h-[300px]">
+        <CardContent className="flex-grow relative min-h-[300px] overflow-auto bg-gray-200">
           {isLoading && (
             <div className="absolute inset-0 flex items-center justify-center bg-card/50 rounded-md">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
           )}
-          {result?.resume && (
-            <>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute top-4 right-4 h-8 w-8"
-                onClick={handleCopy}
-              >
-                {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
-              </Button>
-              <pre className="w-full h-full bg-secondary p-4 rounded-md overflow-auto text-sm font-code whitespace-pre-wrap">
-                {result.resume}
-              </pre>
-            </>
+          
+          {formData && (
+            <div ref={resumePreviewRef} className="p-2">
+                <ModernResumeTemplate {...formData} />
+            </div>
           )}
-          {!isLoading && !result && (
+
+          {!isLoading && !formData && (
              <div className="flex items-center justify-center h-full text-muted-foreground p-8 text-center">
-                Fill out the form and click "Generate" to create your new resume.
+                Fill out the form and click "Generate" to create and preview your new resume.
             </div>
           )}
         </CardContent>
