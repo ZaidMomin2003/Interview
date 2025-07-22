@@ -5,7 +5,7 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ArrowRight, Code, Cpu, Bot, Zap, ShieldCheck, User, Mail, Send, Video, FileText, Target, BrainCircuit, LayoutDashboard, CheckCircle, BarChartHorizontalBig, Mic, VideoOff as VideoOffIcon, BotIcon, CodeXml, Video as VideoIcon, History as HistoryIcon, Phone, Github, Linkedin, Instagram, TrendingUp, GalleryVertical, Plus, GraduationCap, Briefcase, Rocket } from 'lucide-react';
+import { ArrowRight, Code, Cpu, Bot, Zap, ShieldCheck, User, Mail, Send, Video, FileText, Target, BrainCircuit, LayoutDashboard, CheckCircle, BarChartHorizontalBig, Mic, VideoOff as VideoOffIcon, BotIcon, CodeXml, Video as VideoIcon, History as HistoryIcon, Phone, Github, Linkedin, Instagram, TrendingUp, GalleryVertical, Plus, GraduationCap, Briefcase, Rocket, Star } from 'lucide-react';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -20,6 +20,7 @@ import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Area, AreaChart, Bar, BarChart, ResponsiveContainer, XAxis, YAxis, RadialBar, RadialBarChart } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 
 
 const weeklyProgressData = [
@@ -336,6 +337,28 @@ export default function LandingPage() {
     }
   ];
 
+  const testimonials = [
+    {
+      name: "Alex Rivera",
+      role: "Senior Software Engineer @ Google",
+      avatar: "/avatars/01.png",
+      testimonial: "The AI feedback on my resume was a game-changer. It helped me highlight my impact in a way I hadn't thought of, and I started getting way more callbacks. Talxify was instrumental in landing my current role.",
+    },
+    {
+      name: "Samantha Chen",
+      role: "Frontend Developer @ Vercel",
+      avatar: "/avatars/02.png",
+      testimonial: "As a visual learner, the interactive coding gym and mock interviews were perfect for me. The AI interviewer is surprisingly realistic and helped me build confidence for the real thing. Highly recommend!",
+    },
+    {
+      name: "David Kim",
+      role: "Full-Stack Developer @ Startup",
+      avatar: "/avatars/03.png",
+      testimonial: "I used the Arena feature for a 2-week crunch before a series of interviews. The daily, structured plan kept me focused and covered all my bases. I felt more prepared than ever before.",
+    },
+  ];
+
+
   const pricingTiers = [
     {
       name: "Apprentice",
@@ -452,6 +475,7 @@ export default function LandingPage() {
           <nav className="hidden md:flex items-center gap-6">
             <Link href="#features" onClick={handleSmoothScroll} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Features</Link>
             <Link href="#who-is-this-for" onClick={handleSmoothScroll} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Who It's For</Link>
+            <Link href="#testimonials" onClick={handleSmoothScroll} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Testimonials</Link>
             <Link href="#pricing" onClick={handleSmoothScroll} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Pricing</Link>
             <Link href="#about" onClick={handleSmoothScroll} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">About</Link>
             <Link href="#faq" onClick={handleSmoothScroll} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">FAQ</Link>
@@ -716,6 +740,58 @@ export default function LandingPage() {
                   </SpotlightCard>
                 ))}
               </div>
+          </div>
+        </section>
+
+        {/* Testimonials Section */}
+        <section id="testimonials" className="py-20 sm:py-24">
+          <div className="container mx-auto px-4 max-w-5xl">
+            <div className="text-center max-w-3xl mx-auto">
+              <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline text-primary">Stories of Success</h2>
+              <p className="mt-4 text-lg text-muted-foreground">
+                See how developers like you have accelerated their careers with Talxify.
+              </p>
+            </div>
+            <Carousel
+              opts={{ align: "start", loop: true, }}
+              className="w-full mt-16"
+            >
+              <CarouselContent>
+                {testimonials.map((item, index) => (
+                  <CarouselItem key={index} className="md:basis-1/2 lg:basis-2/3">
+                    <div className="p-1">
+                      <Card className="bg-secondary/30 border-border overflow-hidden">
+                        <CardContent className="grid md:grid-cols-2 p-0">
+                          <div className="p-6 flex flex-col justify-between bg-black/20 backdrop-blur-sm">
+                             <div className="flex-grow">
+                                <Cpu className="h-8 w-8 text-primary/50" />
+                              </div>
+                              <div>
+                                 <Avatar className="w-16 h-16 border-2 border-primary/50 mb-4">
+                                  <AvatarImage src={`https://placehold.co/128x128.png`} data-ai-hint="man portrait" alt={item.name} />
+                                  <AvatarFallback>{item.name.charAt(0)}</AvatarFallback>
+                                </Avatar>
+                                <h4 className="font-bold text-lg text-foreground">{item.name}</h4>
+                                <p className="text-sm text-muted-foreground">{item.role}</p>
+                              </div>
+                          </div>
+                           <div className="p-8 flex flex-col justify-center">
+                              <div className="flex gap-0.5 mb-4">
+                                {[...Array(5)].map((_, i) => <Star key={i} className="w-5 h-5 text-amber-400 fill-amber-400" />)}
+                              </div>
+                              <blockquote className="text-foreground leading-relaxed">
+                                {item.testimonial}
+                              </blockquote>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="-left-4 md:-left-12" />
+              <CarouselNext className="-right-4 md:-right-12" />
+            </Carousel>
           </div>
         </section>
 
