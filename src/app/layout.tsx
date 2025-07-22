@@ -1,19 +1,18 @@
 import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
-import { Inter } from 'next/font/google'
-import { Space_Grotesk } from 'next/font/google'
+import { Outfit, Syne } from 'next/font/google'
 import { AuthProvider } from '@/hooks/use-auth';
 
 
-const inter = Inter({
+const outfit = Outfit({
   subsets: ['latin'],
-  variable: '--font-inter',
+  variable: '--font-outfit',
 })
 
-const spaceGrotesk = Space_Grotesk({
+const syne = Syne({
   subsets: ['latin'],
-  variable: '--font-space-grotesk',
+  variable: '--font-syne',
 })
 
 
@@ -29,7 +28,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className={`${inter.variable} ${spaceGrotesk.variable} font-body antialiased`}>
+      <body className={`${outfit.variable} ${syne.variable} font-body antialiased`}>
         <AuthProvider>
           {children}
         </AuthProvider>

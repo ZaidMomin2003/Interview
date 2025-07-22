@@ -14,12 +14,12 @@ import {
   LayoutDashboard,
   FileText,
   CodeXml,
-  Rocket,
   LogOut,
   Video,
   Target,
   History,
   GalleryVertical,
+  Cpu,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -92,8 +92,8 @@ export function AppSidebar() {
              <SidebarTrigger/>
            </Button>
            <Link href="/dashboard" className="flex items-center gap-2">
-            <Rocket className="h-6 w-6 text-primary" />
-            <span className="font-bold font-headline text-lg group-data-[collapsible=icon]:hidden">
+            <Cpu className="h-8 w-8 text-primary" />
+            <span className="font-bold font-headline text-lg uppercase tracking-widest group-data-[collapsible=icon]:hidden">
               Talxify
             </span>
           </Link>
@@ -124,7 +124,7 @@ export function AppSidebar() {
               isActive={pathname.startsWith(item.href)}
               tooltip={item.label}
               variant="ghost"
-              className="justify-start"
+              className="justify-start group-data-[collapsible=icon]:justify-center"
             >
               <Link href={item.href}>
                 <item.icon />
@@ -138,7 +138,7 @@ export function AppSidebar() {
       <SidebarFooter className="border-t mt-auto p-2 space-y-2">
         <SidebarMenu>
           <SidebarMenuItem>
-             <SidebarMenuButton tooltip="Profile" asChild isActive={pathname.startsWith('/profile')} variant="ghost" className="justify-start">
+             <SidebarMenuButton tooltip="Profile" asChild isActive={pathname.startsWith('/profile')} variant="ghost" className="justify-start group-data-[collapsible=icon]:justify-center">
                 <Link href="/profile">
                   <Avatar className="size-7">
                     {user?.photoURL && <AvatarImage src={user.photoURL} alt={user.displayName || 'User'} />}
@@ -151,7 +151,7 @@ export function AppSidebar() {
               </SidebarMenuButton>
           </SidebarMenuItem>
            <SidebarMenuItem>
-            <SidebarMenuButton tooltip="Log Out" onClick={handleLogout} variant="ghost" className="text-muted-foreground hover:bg-destructive hover:text-destructive-foreground justify-start">
+            <SidebarMenuButton tooltip="Log Out" onClick={handleLogout} variant="ghost" className="text-muted-foreground hover:bg-destructive hover:text-destructive-foreground justify-start group-data-[collapsible=icon]:justify-center">
               <LogOut />
               <span>Log Out</span>
             </SidebarMenuButton>
