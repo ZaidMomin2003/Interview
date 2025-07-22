@@ -504,6 +504,13 @@ export default function LandingPage() {
         {/* Hero Section */}
         <section id="hero" className="py-20 md:py-24">
           <div className="container mx-auto px-4 text-center">
+             <div className="mb-6">
+                <Badge variant="outline" className="cursor-pointer text-sm font-semibold py-1 px-3 rounded-full border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 transition-all">
+                    <span className="font-bold mr-2">v0.3</span>
+                    <span className="text-primary/90">Now with Light Mode and new features!</span>
+                    <ArrowRight className="ml-2 h-4 w-4 text-primary/90"/>
+                </Badge>
+            </div>
              <h1 className="animate-text-gradient bg-gradient-to-r from-primary via-purple-400 to-primary bg-clip-text text-5xl font-bold tracking-tighter text-transparent sm:text-6xl md:text-7xl font-headline">
               Ascend Your Career
             </h1>
