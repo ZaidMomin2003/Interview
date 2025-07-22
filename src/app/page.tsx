@@ -525,12 +525,12 @@ export default function LandingPage() {
                                           <CardTitle className="text-foreground">Weekly Progress</CardTitle>
                                       </CardHeader>
                                       <CardContent className="pl-2">
-                                        <ResponsiveContainer width="100%" height={250}>
-                                             <AreaChart
+                                        <ChartContainer config={chartConfig} className="h-[250px] w-full">
+                                            <AreaChart
                                                 accessibilityLayer
                                                 data={weeklyProgressData}
                                                 margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-                                              >
+                                            >
                                                 <defs>
                                                   <linearGradient id="fillQuestionsLanding" x1="0" y1="0" x2="0" y2="1">
                                                     <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.8}/>
@@ -552,7 +552,7 @@ export default function LandingPage() {
                                                     dot={false}
                                                 />
                                             </AreaChart>
-                                        </ResponsiveContainer>
+                                        </ChartContainer>
                                       </CardContent>
                                   </Card>
                               </div>
