@@ -29,6 +29,7 @@ import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { ThemeToggle } from "./theme-toggle";
 
 const menuItems = [
    {
@@ -127,20 +128,23 @@ export function AppSidebar() {
             </SidebarMenuButton>
           </SidebarMenuItem>
         
-        <Link href="/profile" className="block group-data-[collapsible=icon]:hidden">
-          <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-secondary transition-colors">
-            <Avatar className="size-9">
-              {user?.photoURL && <AvatarImage src={user.photoURL} alt={user.displayName || 'User'} />}
-              <AvatarFallback className="text-sm font-bold bg-primary/20 text-primary">
-                  {user?.displayName?.charAt(0).toUpperCase() || 'U'}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-grow overflow-hidden">
-                <p className="font-semibold text-sm truncate text-foreground">{user?.displayName}</p>
-                <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
-            </div>
-          </div>
-        </Link>
+        <div className="flex items-center justify-between group-data-[collapsible=icon]:justify-center">
+            <Link href="/profile" className="flex-grow overflow-hidden group-data-[collapsible=icon]:hidden">
+              <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-secondary transition-colors">
+                <Avatar className="size-9">
+                  {user?.photoURL && <AvatarImage src={user.photoURL} alt={user.displayName || 'User'} />}
+                  <AvatarFallback className="text-sm font-bold bg-primary/20 text-primary">
+                      {user?.displayName?.charAt(0).toUpperCase() || 'U'}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-grow overflow-hidden">
+                    <p className="font-semibold text-sm truncate text-foreground">{user?.displayName}</p>
+                    <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+                </div>
+              </div>
+            </Link>
+            <ThemeToggle />
+        </div>
         
         <SidebarMenu>
           <SidebarMenuItem className="group-data-[collapsible=icon]:hidden">
