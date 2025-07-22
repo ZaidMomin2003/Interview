@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 @layer base {
-  :root, .theme-default {
+  :root {
     --background: 0 0% 0%; /* #000000 */
     --foreground: 60 67% 92%; /* #f5f5dc */
     --card: 208 33% 12%; /* A slightly lighter dark blue */
@@ -25,59 +25,49 @@
     --ring: 21 99% 54%;
     --radius: 0.75rem;
   }
-
-  .theme-forest {
-    --background: 220 40% 8%;
-    --foreground: 120 10% 95%;
-    --primary: 140 60% 45%; /* Green */
-    --primary-foreground: 140 20% 98%;
-    --secondary: 220 25% 15%;
-    --secondary-foreground: 120 10% 95%;
-    --muted: 220 25% 15%;
-    --muted-foreground: 220 10% 65%;
-    --accent: 40 80% 60%; /* Orange */
-    --accent-foreground: 40 20% 98%;
-    --destructive: 0 70% 50%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 220 20% 30%;
-    --input: 220 20% 30%;
-    --ring: 140 60% 45%;
-  }
-
-  .theme-ocean {
-    --background: 220 60% 10%;
-    --foreground: 200 20% 96%;
-    --primary: 210 80% 60%; /* Blue */
-    --primary-foreground: 210 20% 98%;
-    --secondary: 225 40% 18%;
-    --secondary-foreground: 200 20% 96%;
-    --muted: 225 40% 18%;
-    --muted-foreground: 210 15% 65%;
-    --accent: 180 70% 50%; /* Teal */
-    --accent-foreground: 180 20% 98%;
-    --destructive: 350 80% 60%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 220 30% 35%;
-    --input: 220 30% 35%;
-    --ring: 210 80% 60%;
-  }
   
-  .theme-sunset {
-    --background: 20 20% 10%;
-    --foreground: 30 15% 95%;
-    --primary: 30 90% 60%; /* Orange */
-    --primary-foreground: 30 20% 10%;
-    --secondary: 25 30% 18%;
-    --secondary-foreground: 30 15% 95%;
-    --muted: 25 30% 18%;
-    --muted-foreground: 30 10% 65%;
-    --accent: 340 80% 65%; /* Pink */
-    --accent-foreground: 340 20% 98%;
-    --destructive: 0 80% 65%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 25 20% 30%;
-    --input: 25 20% 30%;
-    --ring: 30 90% 60%;
+  .dark {
+    --background: 0 0% 0%; /* #000000 */
+    --foreground: 60 67% 92%; /* #f5f5dc */
+    --card: 208 33% 12%; /* A slightly lighter dark blue */
+    --card-foreground: 60 67% 92%;
+    --popover: 208 33% 10%;
+    --popover-foreground: 60 67% 92%;
+    --primary: 21 99% 54%; /* #fe5516 */
+    --primary-foreground: 60 67% 92%; /* Light text on orange */
+    --secondary: 208 33% 15%; /* Dark blue from card */
+    --secondary-foreground: 60 67% 92%;
+    --muted: 208 33% 15%;
+    --muted-foreground: 39 44% 83%; /* #e8d9bb for muted text */
+    --accent: 21 99% 48%; /* A slightly darker orange */
+    --accent-foreground: 60 67% 92%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 0 0% 97%;
+    --border: 208 33% 18%; /* Border slightly lighter than secondary */
+    --input: 208 33% 18%;
+    --ring: 21 99% 54%;
+  }
+
+  .light {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 0 0% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 222.2 84% 4.9%;
   }
 
   .dark {

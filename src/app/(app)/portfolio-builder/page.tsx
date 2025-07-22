@@ -9,12 +9,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
-import { GalleryVertical, Link as LinkIcon, Eye, Copy, Check, PlusCircle, Trash2, Palette } from 'lucide-react';
+import { GalleryVertical, Link as LinkIcon, Eye, Copy, Check, PlusCircle, Trash2, Palette, Moon, Sun } from 'lucide-react';
 import Link from 'next/link';
 
 // Dummy data structure, in a real app this would come from state/DB
 const initialPortfolioData = {
   slug: 'ada-lovelace',
+  theme: 'dark', // 'light' or 'dark'
   includeDashboardStats: true,
   projects: [
     { id: 1, title: 'Analytical Engine', description: 'A mechanical general-purpose computer.', tech: 'Brass, Iron, Steam', link: '#' },
@@ -27,58 +28,9 @@ const initialPortfolioData = {
   ]
 };
 
-const themes = [
-  { name: 'Default', class: 'theme-default' },
-  { name: 'Forest', class: 'theme-forest' },
-  { name: 'Ocean', class: 'theme-ocean' },
-  { name: 'Sunset', class: 'theme-sunset' },
-];
-
-function ThemeSwitcher() {
-  const [currentTheme, setCurrentTheme] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('app-theme') || 'theme-default';
-    }
-    return 'theme-default';
-  });
-
-  const setTheme = (themeClass: string) => {
-    document.documentElement.classList.remove(...themes.map(t => t.class));
-    document.documentElement.classList.add(themeClass);
-    localStorage.setItem('app-theme', themeClass);
-    setCurrentTheme(themeClass);
-  };
-  
-  // Set initial theme on mount
-  useState(() => {
-     if (typeof window !== 'undefined') {
-        const savedTheme = localStorage.getItem('app-theme') || 'theme-default';
-        setTheme(savedTheme);
-     }
-  });
-
-
-  return (
-    <div className="space-y-2">
-      <div className="flex items-center gap-2 text-primary">
-        <Palette className="w-5 h-5"/>
-        <h3 className="text-lg font-headline">Color Palette</h3>
-      </div>
-       <div className="flex flex-wrap gap-2">
-          {themes.map((theme) => (
-            <Button
-              key={theme.name}
-              variant={currentTheme === theme.class ? 'default' : 'outline'}
-              onClick={() => setTheme(theme.class)}
-            >
-              {theme.name}
-            </Button>
-          ))}
-        </div>
-    </div>
-  )
-}
-
+const Textarea = (props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) => (
+    <textarea className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" {...props} />
+);
 
 export default function PortfolioBuilderPage() {
   const { user } = useAuth();
@@ -215,7 +167,21 @@ export default function PortfolioBuilderPage() {
               </Label>
               <Switch id="include-stats" checked={portfolio.includeDashboardStats} onCheckedChange={(checked) => setPortfolio(p => ({ ...p, includeDashboardStats: checked}))}/>
            </div>
-           <ThemeSwitcher />
+            <div className="flex items-center justify-between">
+              <Label htmlFor="theme-mode" className="flex flex-col">
+                <span className="font-semibold">Appearance</span>
+                <span className="text-sm text-muted-foreground">Choose between a light or dark theme for your public portfolio.</span>
+              </Label>
+               <div className="flex items-center gap-2">
+                 <Sun className="h-5 w-5" />
+                 <Switch 
+                    id="theme-mode" 
+                    checked={portfolio.theme === 'dark'} 
+                    onCheckedChange={(checked) => setPortfolio(p => ({ ...p, theme: checked ? 'dark' : 'light'}))}
+                 />
+                 <Moon className="h-5 w-5" />
+              </div>
+           </div>
         </CardContent>
       </Card>
       
@@ -226,8 +192,3 @@ export default function PortfolioBuilderPage() {
     </div>
   );
 }
-
-// Add a simple Textarea component if it doesn't exist.
-const Textarea = (props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) => (
-    <textarea className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" {...props} />
-);
