@@ -100,11 +100,22 @@ export function AppSidebar() {
         </div>
       </SidebarHeader>
 
-      <SidebarMenu ref={menuRef} className="flex-1 relative">
+      <SidebarMenu ref={menuRef} className="flex-1 relative" style={{ filter: "url(#gooey)"}}>
+        {/* SVG filter for the gooey effect */}
+        <svg className="absolute w-0 h-0">
+          <defs>
+            <filter id="gooey">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+              <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="goo" />
+              <feBlend in="SourceGraphic" in2="goo" />
+            </filter>
+          </defs>
+        </svg>
+
         <motion.div
-          className="absolute left-2 w-[calc(100%-1rem)] bg-primary/20 rounded-lg -z-10"
+          className="absolute left-2 w-[calc(100%-1rem)] bg-primary rounded-lg -z-10"
           animate={activePillStyle}
-          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          transition={{ type: "spring", stiffness: 300, damping: 25 }}
         />
         {menuItems.map((item) => (
           <SidebarMenuItem key={item.href}>
