@@ -26,7 +26,7 @@ const weeklyProgress = [
 ];
 
 const chartConfig = {
-  questions: { label: "Questions Solved", color: "hsl(260 100% 70%)" },
+  questions: { label: "Questions Solved", color: "hsl(var(--primary))" },
 };
 
 const readinessData = [{ name: 'readiness', value: 78, fill: 'hsl(var(--primary))' }];
@@ -111,8 +111,8 @@ export default function DashboardPage() {
                         >
                           <defs>
                             <linearGradient id="fillQuestions" x1="0" y1="0" x2="0" y2="1">
-                              <stop offset="5%" stopColor="hsl(260 100% 70%)" stopOpacity={0.8}/>
-                              <stop offset="95%" stopColor="hsl(260 100% 70%)" stopOpacity={0.1}/>
+                              <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.8}/>
+                              <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0.1}/>
                             </linearGradient>
                           </defs>
                            <XAxis
@@ -136,7 +136,7 @@ export default function DashboardPage() {
                             dataKey="questions" 
                             type="natural" 
                             fill="url(#fillQuestions)"
-                            stroke="hsl(260 100% 80%)"
+                            stroke="hsl(var(--primary))"
                             stackId="a" 
                             strokeWidth={2}
                             dot={false}
@@ -144,7 +144,7 @@ export default function DashboardPage() {
                                 r: 6,
                                 stroke: "white",
                                 strokeWidth: 1,
-                                fill: "hsl(260 100% 70%)"
+                                fill: "hsl(var(--primary))"
                             }}
                             />
                         </AreaChart>
