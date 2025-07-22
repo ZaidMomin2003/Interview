@@ -19,6 +19,7 @@ import {
   GalleryVertical,
   Cpu,
   Bookmark,
+  Tags,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -57,6 +58,11 @@ const menuItems = [
     href: "/portfolio-builder",
     label: "Portfolio",
     icon: GalleryVertical,
+  },
+  {
+    href: "/pricing",
+    label: "Pricing",
+    icon: Tags,
   },
 ];
 
