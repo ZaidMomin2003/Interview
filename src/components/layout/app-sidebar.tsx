@@ -42,19 +42,9 @@ const menuItems = [
     icon: Target,
   },
   {
-    href: "/ai-interview",
-    label: "AI Interview",
-    icon: Video,
-  },
-  {
     href: "/resume-builder",
     label: "Resume Studio",
     icon: FileText,
-  },
-  {
-    href: "/coding-practice",
-    label: "Coding Gym",
-    icon: CodeXml,
   },
   {
     href: "/history",
