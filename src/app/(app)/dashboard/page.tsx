@@ -103,10 +103,10 @@ export default function DashboardPage() {
                           accessibilityLayer
                           data={weeklyProgress}
                            margin={{
-                            top: 5,
-                            right: 0,
+                            top: 10,
+                            right: 30,
                             left: 0,
-                            bottom: 5,
+                            bottom: 0,
                           }}
                         >
                           <defs>
@@ -115,6 +115,23 @@ export default function DashboardPage() {
                               <stop offset="95%" stopColor="hsl(260 100% 70%)" stopOpacity={0.1}/>
                             </linearGradient>
                           </defs>
+                           <XAxis
+                            dataKey="name"
+                            tickLine={false}
+                            axisLine={false}
+                            tickMargin={8}
+                            tickFormatter={(value) => value.slice(0, 6)}
+                          />
+                           <YAxis
+                            tickLine={false}
+                            axisLine={false}
+                            tickMargin={8}
+                            tickCount={6}
+                          />
+                          <ChartTooltip
+                            cursor={false}
+                            content={<ChartTooltipContent indicator="line" />}
+                          />
                           <Area 
                             dataKey="questions" 
                             type="natural" 
@@ -122,9 +139,7 @@ export default function DashboardPage() {
                             stroke="hsl(260 100% 80%)"
                             stackId="a" 
                             strokeWidth={2}
-                            dot={{
-                                r: 0
-                            }}
+                            dot={false}
                              activeDot={{
                                 r: 6,
                                 stroke: "white",
