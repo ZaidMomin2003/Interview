@@ -14,6 +14,7 @@ import {z} from 'genkit';
 const CodeExampleSchema = z.object({
   language: z.string().describe('The programming language of the code example (e.g., Python, JavaScript).'),
   code: z.string().describe('The code snippet demonstrating the concept.'),
+  result: z.string().optional().describe('The expected output or result of running the code snippet.'),
 });
 
 const SectionSchema = z.object({
@@ -46,11 +47,12 @@ const prompt = ai.definePrompt({
   output: {schema: GenerateNotesOutputSchema},
   prompt: `You are an expert computer science educator. Your task is to generate comprehensive, clear, and well-structured study notes on a given technical topic.
 
-The notes should be broken down into logical sections, each with a title and detailed content. Where appropriate, include a code example to illustrate the concept.
+The notes should be broken down into logical sections, each with a title and detailed content. Where appropriate, include a code example to illustrate the concept, including the result of running that code.
 
 Topic: {{{topic}}}
 
 Structure the output with a main title, an introduction, multiple sections, and a final summary. The content should be written in Markdown for easy formatting.
+For each code example, also provide the expected output in the 'result' field.
 `,
 });
 

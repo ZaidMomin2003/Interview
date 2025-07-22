@@ -72,6 +72,7 @@ export default async function NotesPage({ params }: { params: { topic: string } 
                     code={section.example.code} 
                     language={section.example.language} 
                     problemDescription={`Example for ${section.title}`}
+                    result={section.example.result}
                   />
                 )}
               </CardContent>
