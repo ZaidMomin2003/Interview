@@ -5,7 +5,7 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ArrowRight, Code, Cpu, Bot, Zap, ShieldCheck, User, Mail, Send, Video, FileText, Target, BrainCircuit, LayoutDashboard, CheckCircle, BarChartHorizontalBig, Mic, VideoOff as VideoOffIcon, BotIcon, CodeXml, Video as VideoIcon, History as HistoryIcon, Phone, Github, Linkedin, Instagram, TrendingUp, GalleryVertical, Plus, GraduationCap, Briefcase, Rocket, Star } from 'lucide-react';
+import { ArrowRight, Code, Cpu, Bot, Zap, ShieldCheck, User, Mail, Send, Video, FileText, Target, BrainCircuit, LayoutDashboard, CheckCircle, BarChartHorizontalBig, Mic, VideoOff as VideoOffIcon, BotIcon, CodeXml, Video as VideoIcon, History as HistoryIcon, Phone, Github, Linkedin, Instagram, TrendingUp, GalleryVertical, Plus, GraduationCap, Briefcase, Rocket, Star, Quote } from 'lucide-react';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -355,6 +355,12 @@ export default function LandingPage() {
       role: "Full-Stack Developer @ Startup",
       avatar: "/avatars/03.png",
       testimonial: "I used the Arena feature for a 2-week crunch before a series of interviews. The daily, structured plan kept me focused and covered all my bases. I felt more prepared than ever before.",
+    },
+     {
+      name: "Maria Garcia",
+      role: "Backend Developer @ Amazon",
+      avatar: "/avatars/04.png",
+      testimonial: "The portfolio builder is slick. I had a professional-looking site up in minutes that automatically showcased my stats from the platform. It's a great way to show, not just tell, what you can do.",
     },
   ];
 
@@ -745,7 +751,7 @@ export default function LandingPage() {
 
         {/* Testimonials Section */}
         <section id="testimonials" className="py-20 sm:py-24">
-          <div className="container mx-auto px-4 max-w-5xl">
+          <div className="container mx-auto px-4">
             <div className="text-center max-w-3xl mx-auto">
               <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline text-primary">Stories of Success</h2>
               <p className="mt-4 text-lg text-muted-foreground">
@@ -754,36 +760,29 @@ export default function LandingPage() {
             </div>
             <Carousel
               opts={{ align: "start", loop: true, }}
-              className="w-full mt-16"
+              className="w-full mt-16 max-w-6xl mx-auto"
             >
-              <CarouselContent>
+              <CarouselContent className="-ml-4">
                 {testimonials.map((item, index) => (
-                  <CarouselItem key={index} className="md:basis-1/2 lg:basis-2/3">
-                    <div className="p-1">
-                      <Card className="bg-secondary/30 border-border overflow-hidden">
-                        <CardContent className="grid md:grid-cols-2 p-0">
-                          <div className="p-6 flex flex-col justify-between bg-black/20 backdrop-blur-sm">
-                             <div className="flex-grow">
-                                <Cpu className="h-8 w-8 text-primary/50" />
-                              </div>
+                  <CarouselItem key={index} className="pl-4 md:basis-1/2 lg:basis-1/3">
+                    <div className="p-1 h-full">
+                      <Card className="bg-secondary/30 border-border h-full flex flex-col justify-between">
+                          <CardContent className="p-6 flex-grow">
+                             <Quote className="w-12 h-12 text-primary/20 mb-4" />
+                            <blockquote className="text-foreground text-lg leading-relaxed">
+                              {item.testimonial}
+                            </blockquote>
+                          </CardContent>
+                          <CardHeader className="p-6 pt-0 flex-row items-center gap-4">
+                             <Avatar className="w-12 h-12 border-2 border-primary/50">
+                                <AvatarImage src={`https://placehold.co/128x128.png`} data-ai-hint="person portrait" alt={item.name} />
+                                <AvatarFallback>{item.name.charAt(0)}</AvatarFallback>
+                              </Avatar>
                               <div>
-                                 <Avatar className="w-16 h-16 border-2 border-primary/50 mb-4">
-                                  <AvatarImage src={`https://placehold.co/128x128.png`} data-ai-hint="man portrait" alt={item.name} />
-                                  <AvatarFallback>{item.name.charAt(0)}</AvatarFallback>
-                                </Avatar>
-                                <h4 className="font-bold text-lg text-foreground">{item.name}</h4>
+                                <h4 className="font-bold text-foreground">{item.name}</h4>
                                 <p className="text-sm text-muted-foreground">{item.role}</p>
                               </div>
-                          </div>
-                           <div className="p-8 flex flex-col justify-center">
-                              <div className="flex gap-0.5 mb-4">
-                                {[...Array(5)].map((_, i) => <Star key={i} className="w-5 h-5 text-amber-400 fill-amber-400" />)}
-                              </div>
-                              <blockquote className="text-foreground leading-relaxed">
-                                {item.testimonial}
-                              </blockquote>
-                          </div>
-                        </CardContent>
+                          </CardHeader>
                       </Card>
                     </div>
                   </CarouselItem>
@@ -1045,3 +1044,4 @@ export default function LandingPage() {
     </div>
   );
 }
+
