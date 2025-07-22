@@ -4,7 +4,7 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ArrowRight, Code, Cpu, Bot, Zap, ShieldCheck, User, Mail, Send, Video, FileText, Target, BrainCircuit, LayoutDashboard, CheckCircle, BarChartHorizontalBig, Mic, VideoOff as VideoOffIcon, BotIcon, CodeXml, Video as VideoIcon, History as HistoryIcon, Phone, Github, Linkedin, Instagram } from 'lucide-react';
+import { ArrowRight, Code, Cpu, Bot, Zap, ShieldCheck, User, Mail, Send, Video, FileText, Target, BrainCircuit, LayoutDashboard, CheckCircle, BarChartHorizontalBig, Mic, VideoOff as VideoOffIcon, BotIcon, CodeXml, Video as VideoIcon, History as HistoryIcon, Phone, Github, Linkedin, Instagram, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -358,7 +358,7 @@ export default function LandingPage() {
         </Button>
       </div>
     );
-  };
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-black text-gray-200 font-body">
@@ -489,7 +489,7 @@ export default function LandingPage() {
                                   <Card className="bg-secondary/30 backdrop-blur-sm">
                                       <CardHeader>
                                           <CardTitle className="text-gray-200">Weekly Progress</CardTitle>
-                                      </CardHeader>
+                                      </Header>
                                       <CardContent className="pl-2">
                                         <ResponsiveContainer width="100%" height={250}>
                                             <BarChart data={weeklyProgressData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
@@ -596,6 +596,30 @@ export default function LandingPage() {
               </div>
             ))}
           </div>
+        </section>
+
+        {/* Lead Magnet Section */}
+        <section id="salary-calculator" className="py-20 sm:py-24">
+            <div className="container mx-auto px-4 max-w-4xl">
+                <SpotlightCard className="p-8 md:p-12">
+                    <div className="text-center">
+                         <div className="inline-block p-4 bg-primary/20 rounded-full mb-4">
+                            <TrendingUp className="h-12 w-12 text-primary" />
+                        </div>
+                        <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline text-cyan-400">Know Your Worth</h2>
+                        <p className="mt-4 text-lg text-gray-400 max-w-2xl mx-auto">
+                            Use our AI-powered salary estimator to understand your market value. Get a personalized salary range based on your skills, experience, and location.
+                        </p>
+                        <div className="mt-8">
+                            <Button size="lg" asChild>
+                                <Link href="/calculate-salary">
+                                    Calculate Your Salary <ArrowRight className="ml-2" />
+                                </Link>
+                            </Button>
+                        </div>
+                    </div>
+                </SpotlightCard>
+            </div>
         </section>
 
         {/* About Us Section */}

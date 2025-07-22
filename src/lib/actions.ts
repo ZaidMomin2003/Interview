@@ -5,6 +5,7 @@ import { generateResume, GenerateResumeInput } from "@/ai/flows/generate-resume"
 import { optimizeResume, OptimizeResumeInput } from "@/ai/flows/optimize-resume";
 import { generateCodingQuestion, GenerateCodingQuestionInput } from "@/ai/flows/generate-coding-question";
 import { getCodeFeedback, GetCodeFeedbackInput } from "@/ai/flows/get-code-feedback";
+import { calculateSalary, CalculateSalaryInput, CalculateSalaryInputSchema } from "@/ai/flows/calculate-salary";
 
 const resumeGeneratorSchema = z.object({
   workExperience: z.string().min(50, "Please provide more details about your work experience."),
@@ -90,5 +91,21 @@ export async function handleGetCodeFeedback(data: GetCodeFeedbackInput) {
     } catch (error) {
         console.error(error);
         throw new Error("Failed to get code feedback. Please try again.");
+    }
+}
+
+export async function handleCalculateSalary(data: CalculateSalaryInput) {
+    const validatedFields = CalculateSalaryInputSchema.safeParse(data);
+    
+    if (!validatedFields.success) {
+        throw new Error("Invalid input.");
+    }
+
+    try {
+        const result = await calculateSalary(validatedFields.data);
+        return result;
+    } catch (error) {
+        console.error(error);
+        throw new Error("Failed to calculate salary. Please try again.");
     }
 }

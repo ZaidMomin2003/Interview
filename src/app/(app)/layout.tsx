@@ -3,7 +3,7 @@
 
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { useRequireAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/hooks/use-auth";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
@@ -11,13 +11,15 @@ import { Button } from "@/components/ui/button";
 
 // Define paths that don't need the main app layout
 const NO_LAYOUT_PATHS = ['/onboarding'];
+const AUTH_OPTIONAL_PATHS = ['/calculate-salary'];
+
 
 export default function AppLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { user, loading } = useRequireAuth();
+  const { user, loading } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
 
@@ -31,7 +33,16 @@ export default function AppLayout({
     }
   }, [user, loading, hasOnboarded, pathname, router]);
 
-  if (loading || !user) {
+  // If loading, show skeleton.
+  // If not loading and no user, but path is not auth-optional, redirect.
+  useEffect(() => {
+    if (!loading && !user && !AUTH_OPTIONAL_PATHS.includes(pathname) && !NO_LAYOUT_PATHS.includes(pathname)) {
+        router.push('/login');
+    }
+  }, [user, loading, pathname, router]);
+
+
+  if (loading && !AUTH_OPTIONAL_PATHS.includes(pathname)) {
     return (
       <div className="flex min-h-screen w-full bg-background">
         <div className="hidden md:flex flex-col gap-4 p-2 border-r border-border bg-secondary/30 w-64">
@@ -55,6 +66,12 @@ export default function AppLayout({
   if (NO_LAYOUT_PATHS.includes(pathname)) {
     return <>{children}</>;
   }
+  
+  // For auth-optional paths, we still show the layout if the user *is* logged in
+  if (!user && AUTH_OPTIONAL_PATHS.includes(pathname)) {
+     return <>{children}</>;
+  }
+
 
   return (
     <SidebarProvider>
