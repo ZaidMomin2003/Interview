@@ -4,7 +4,7 @@
 
 @layer base {
   :root, .theme-default {
-    --background: 208 33% 10%; /* #111a21 */
+    --background: 0 0% 0%; /* #000000 */
     --foreground: 60 67% 92%; /* #f5f5dc */
     --card: 208 33% 12%; /* A slightly lighter dark blue */
     --card-foreground: 60 67% 92%;
