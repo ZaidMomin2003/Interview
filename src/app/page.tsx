@@ -607,7 +607,7 @@ export default function LandingPage() {
                   <p className="mt-4 text-lg text-gray-400">
                     Meet Zaid, a passionate programmer from Bijapur, Karnataka. With a B.Tech in CSE specializing in Data Science, he is dedicated to building innovative tools that empower the developer community.
                   </p>
-                  <div className="mt-6 flex gap-4">
+                  <div className="mt-6 flex flex-wrap gap-4">
                      <Button asChild variant="outline">
                         <Link href="https://github.com/ZaidMomin2003" target="_blank">
                             <Github className="mr-2 h-4 w-4" /> GitHub
@@ -625,13 +625,13 @@ export default function LandingPage() {
                      </Button>
                   </div>
                 </div>
-                <div className="flex items-center justify-center">
+                <div className="flex items-center justify-center order-first md:order-last">
                    <Image 
                         src="/about.jpg"
                         alt="Developer Zaid"
                         width={400}
                         height={400}
-                        className="rounded-full shadow-cyan-500/20 shadow-2xl"
+                        className="rounded-full shadow-cyan-500/20 shadow-2xl w-64 h-64 md:w-96 md:h-96 object-cover"
                     />
                 </div>
             </div>
