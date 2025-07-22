@@ -103,8 +103,15 @@ export default function ProfilePage() {
             <span className="sr-only">Edit avatar</span>
           </Button>
         </div>
-        <div>
-            <h1 className="text-4xl font-bold font-headline">{user.displayName}</h1>
+        <div className="flex-grow">
+            <div className="flex flex-wrap items-center gap-4 mb-2">
+                <h1 className="text-4xl font-bold font-headline">{user.displayName}</h1>
+                <Button variant="outline" asChild>
+                    <Link href="/onboarding">
+                        <Pencil className="mr-2 h-4 w-4" /> Edit Profile
+                    </Link>
+                </Button>
+            </div>
             <p className="text-muted-foreground flex items-center gap-2 mt-1">
                 <Mail className="h-4 w-4" />
                 {user.email}
