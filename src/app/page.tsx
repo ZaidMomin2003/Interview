@@ -138,7 +138,7 @@ function SpotlightCard({ children, className }: { children: React.ReactNode, cla
       {children}
     </div>
   );
-};
+}
 
 
 export default function LandingPage() {
