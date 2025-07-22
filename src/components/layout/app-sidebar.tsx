@@ -119,7 +119,7 @@ export function AppSidebar() {
               isActive={pathname.startsWith('/pricing')}
               tooltip="Upgrade"
               variant="default"
-              className="justify-start group-data-[collapsible=icon]:justify-center bg-primary/20 text-primary hover:bg-primary/30 hover:text-primary data-[active=true]:bg-primary/30 data-[active=true]:text-primary"
+              className="justify-start group-data-[collapsible=icon]:justify-center bg-primary/90 text-primary-foreground hover:bg-primary"
             >
               <Link href="/pricing">
                 <Rocket />
