@@ -5,7 +5,7 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ArrowRight, Code, Cpu, Bot, Zap, ShieldCheck, User, Mail, Send, Video, FileText, Target, BrainCircuit, LayoutDashboard, CheckCircle, BarChartHorizontalBig, Mic, VideoOff as VideoOffIcon, BotIcon, CodeXml, Video as VideoIcon, History as HistoryIcon, Phone, Github, Linkedin, Instagram, TrendingUp, GalleryVertical, Plus } from 'lucide-react';
+import { ArrowRight, Code, Cpu, Bot, Zap, ShieldCheck, User, Mail, Send, Video, FileText, Target, BrainCircuit, LayoutDashboard, CheckCircle, BarChartHorizontalBig, Mic, VideoOff as VideoOffIcon, BotIcon, CodeXml, Video as VideoIcon, History as HistoryIcon, Phone, Github, Linkedin, Instagram, TrendingUp, GalleryVertical, Plus, GraduationCap, Briefcase, Rocket } from 'lucide-react';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -315,6 +315,27 @@ export default function LandingPage() {
     },
   ];
 
+  const personas = [
+    {
+        icon: <GraduationCap className="h-12 w-12 text-primary"/>,
+        title: "The Aspiring Student",
+        description: "Launching your career? Talxify helps you build a solid foundation, from crafting the perfect entry-level resume to mastering fundamental coding concepts for your first technical interview.",
+        benefits: ["Build a portfolio from scratch", "Master data structures", "Nail your first interview"],
+    },
+    {
+        icon: <Rocket className="h-12 w-12 text-primary"/>,
+        title: "The Career Accelerator",
+        description: "Ready for the next step? Optimize your resume for senior roles, tackle advanced coding challenges, and practice behavioral questions to land a promotion or a job at a top-tier company.",
+        benefits: ["Optimize resume for senior roles", "Target specific companies", "Sharpen communication skills"],
+    },
+    {
+        icon: <Briefcase className="h-12 w-12 text-primary"/>,
+        title: "The Senior Strategist",
+        description: "Aimed at Staff+ roles? Dive deep into system design, practice high-level architectural discussions in mock interviews, and refine your leadership narrative to stand out to hiring managers.",
+        benefits: ["Practice system design interviews", "Refine leadership narrative", "Prepare for architectural discussions"],
+    }
+  ];
+
   const pricingTiers = [
     {
       name: "Apprentice",
@@ -429,9 +450,10 @@ export default function LandingPage() {
             </span>
           </Link>
           <nav className="hidden md:flex items-center gap-6">
-            <Link href="#about" onClick={handleSmoothScroll} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">About</Link>
             <Link href="#features" onClick={handleSmoothScroll} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Features</Link>
+            <Link href="#who-is-this-for" onClick={handleSmoothScroll} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Who It's For</Link>
             <Link href="#pricing" onClick={handleSmoothScroll} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Pricing</Link>
+            <Link href="#about" onClick={handleSmoothScroll} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">About</Link>
             <Link href="#faq" onClick={handleSmoothScroll} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">FAQ</Link>
              <Link href="#contact" onClick={handleSmoothScroll} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Contact</Link>
           </nav>
@@ -661,6 +683,42 @@ export default function LandingPage() {
             ))}
           </div>
         </section>
+
+        {/* Who is this for Section */}
+        <section id="who-is-this-for" className="py-20 sm:py-24">
+          <div className="container mx-auto px-4 max-w-6xl">
+              <div className="text-center max-w-3xl mx-auto">
+                <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl font-headline text-primary">Engineered For Every Ascent</h2>
+                <p className="mt-4 text-lg text-muted-foreground">
+                  Whether you're writing your first line of code or designing distributed systems, Talxify is your dedicated co-pilot.
+                </p>
+              </div>
+              <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+                {personas.map((persona) => (
+                  <SpotlightCard key={persona.title} className="p-8 text-center flex flex-col">
+                    <div className="flex-grow">
+                      <div className="inline-block p-4 bg-secondary border border-border rounded-full mb-4">
+                        {persona.icon}
+                      </div>
+                      <h3 className="text-2xl font-bold font-headline text-foreground">{persona.title}</h3>
+                      <p className="mt-2 text-muted-foreground">{persona.description}</p>
+                    </div>
+                    <div className="mt-6 text-left">
+                       <ul className="space-y-2 text-sm">
+                          {persona.benefits.map(benefit => (
+                            <li key={benefit} className="flex items-center gap-2">
+                              <CheckCircle className="h-4 w-4 text-primary shrink-0"/>
+                              <span className="text-muted-foreground">{benefit}</span>
+                            </li>
+                          ))}
+                       </ul>
+                    </div>
+                  </SpotlightCard>
+                ))}
+              </div>
+          </div>
+        </section>
+
 
         {/* Lead Magnet Section */}
         <section id="salary-calculator" className="py-20 sm:py-24">
