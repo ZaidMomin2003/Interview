@@ -20,7 +20,6 @@ import {
   Target,
   History,
   GalleryVertical,
-  TrendingUp,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -56,11 +55,6 @@ const menuItems = [
     href: "/coding-practice",
     label: "Coding Gym",
     icon: CodeXml,
-  },
-  {
-    href: "/calculate-salary",
-    label: "Salary Calculator",
-    icon: TrendingUp,
   },
   {
     href: "/history",
