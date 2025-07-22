@@ -358,7 +358,7 @@ export default function LandingPage() {
         </Button>
       </div>
     );
-  }
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-black text-gray-200 font-body">
