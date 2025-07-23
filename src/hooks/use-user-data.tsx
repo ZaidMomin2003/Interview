@@ -3,6 +3,9 @@
 
 import { useState, useEffect, useContext, createContext, ReactNode, useCallback } from 'react';
 import { useAuth, type AppUser } from './use-auth';
+import { db } from '@/lib/firebase';
+import { doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
+
 
 export interface HistoryItem {
   id: string;
@@ -44,80 +47,103 @@ const UserDataContext = createContext<UserDataContextType>({
   clearData: () => {},
 });
 
-const USER_DATA_STORAGE_PREFIX = 'userData_';
 
 export const UserDataProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useAuth();
   const [data, setData] = useState<UserData>({ history: [], bookmarks: [] });
   const [isLoaded, setIsLoaded] = useState(false);
   
-  const getStorageKey = useCallback((userId: string) => `${USER_DATA_STORAGE_PREFIX}${userId}`, []);
+  const getUserDocRef = useCallback((userId: string) => doc(db, 'userData', userId), []);
 
   useEffect(() => {
-    if (user) {
-      const storedData = localStorage.getItem(getStorageKey(user.uid));
-      if (storedData) {
-        const parsedData = JSON.parse(storedData);
-        // Ensure date objects are correctly parsed
-        parsedData.history = parsedData.history.map((item: any) => ({
-            ...item,
-            timestamp: new Date(item.timestamp),
-        }));
-        setData(parsedData);
-      } else {
-        setData({ history: [], bookmarks: [] });
-      }
-      setIsLoaded(true);
-    } else {
-      setIsLoaded(false);
-      setData({ history: [], bookmarks: [] });
-    }
-  }, [user, getStorageKey]);
+    const loadUserData = async () => {
+        if (user) {
+            const userDocRef = getUserDocRef(user.uid);
+            const docSnap = await getDoc(userDocRef);
 
-  useEffect(() => {
-    if (user && isLoaded) {
-      localStorage.setItem(getStorageKey(user.uid), JSON.stringify(data));
-    }
-  }, [data, user, isLoaded, getStorageKey]);
+            if (docSnap.exists()) {
+                const firestoreData = docSnap.data() as UserData;
+                // Ensure timestamps are converted back to Date objects
+                firestoreData.history = firestoreData.history.map((item: any) => ({
+                    ...item,
+                    timestamp: item.timestamp.toDate(),
+                }));
+                 // Sort history by most recent first upon loading
+                firestoreData.history.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+                setData(firestoreData);
+            } else {
+                // If no data exists, create an empty document for the new user
+                await setDoc(userDocRef, { history: [], bookmarks: [] });
+                setData({ history: [], bookmarks: [] });
+            }
+            setIsLoaded(true);
+        } else {
+            // Reset state when user logs out
+            setData({ history: [], bookmarks: [] });
+            setIsLoaded(false);
+        }
+    };
+    
+    loadUserData();
+  }, [user, getUserDocRef]);
 
 
-  const addHistoryItem = useCallback((item: Omit<HistoryItem, 'id' | 'timestamp'> & { id?: string }) => {
+  const addHistoryItem = useCallback(async (item: Omit<HistoryItem, 'id' | 'timestamp'> & { id?: string }) => {
+    if (!user) return;
+    const newHistoryItem = {
+        ...item,
+        id: item.id || `hist-${Date.now()}`,
+        timestamp: new Date(),
+    };
+    // Update local state immediately for responsiveness
     setData(prevData => ({
-      ...prevData,
-      history: [{ ...item, id: item.id || `hist-${Date.now()}`, timestamp: new Date() }, ...prevData.history],
+        ...prevData,
+        history: [newHistoryItem, ...prevData.history]
     }));
-  }, []);
+    // Persist to Firestore
+    const userDocRef = getUserDocRef(user.uid);
+    await updateDoc(userDocRef, {
+        history: arrayUnion(newHistoryItem)
+    });
+  }, [user, getUserDocRef]);
 
-  const addBookmark = useCallback((item: Bookmark) => {
-    setData(prevData => {
-      // Avoid duplicates
-      if (prevData.bookmarks.some(b => b.id === item.id)) {
-        return prevData;
-      }
-      return {
+  const addBookmark = useCallback(async (item: Bookmark) => {
+     if (!user || data.bookmarks.some(b => b.id === item.id)) return;
+     setData(prevData => ({
         ...prevData,
         bookmarks: [item, ...prevData.bookmarks],
-      };
-    });
-  }, []);
+      }));
+      const userDocRef = getUserDocRef(user.uid);
+      await updateDoc(userDocRef, {
+        bookmarks: arrayUnion(item)
+      });
+  }, [user, data.bookmarks, getUserDocRef]);
 
-  const removeBookmark = useCallback((id: string) => {
+  const removeBookmark = useCallback(async (id: string) => {
+    if (!user) return;
+    const bookmarkToRemove = data.bookmarks.find(b => b.id === id);
+    if (!bookmarkToRemove) return;
+    
     setData(prevData => ({
       ...prevData,
       bookmarks: prevData.bookmarks.filter(b => b.id !== id),
     }));
-  }, []);
+    const userDocRef = getUserDocRef(user.uid);
+    await updateDoc(userDocRef, {
+        bookmarks: arrayRemove(bookmarkToRemove)
+    });
+  }, [user, data.bookmarks, getUserDocRef]);
   
   const isBookmarked = useCallback((id: string) => {
     return data.bookmarks.some(b => b.id === id);
   }, [data.bookmarks]);
   
-  const clearData = useCallback(() => {
+  const clearData = useCallback(async () => {
+     if (!user) return;
      setData({ history: [], bookmarks: [] });
-     if (user) {
-        localStorage.removeItem(getStorageKey(user.uid));
-     }
-  }, [user, getStorageKey]);
+     const userDocRef = getUserDocRef(user.uid);
+     await setDoc(userDocRef, { history: [], bookmarks: [] });
+  }, [user, getUserDocRef]);
 
 
   return (

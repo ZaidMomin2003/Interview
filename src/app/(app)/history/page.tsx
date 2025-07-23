@@ -22,8 +22,7 @@ const getIconForType = (type: string) => {
 export default function HistoryPage() {
   const { history } = useUserData();
 
-  // Sort history by most recent first
-  const sortedHistory = [...history].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+  // The history is now pre-sorted in the hook, so no need to sort here.
 
   return (
     <div className="space-y-8">
@@ -42,13 +41,13 @@ export default function HistoryPage() {
         </CardHeader>
         <CardContent>
           <ScrollArea className="h-[60vh] pr-4">
-            {sortedHistory.length > 0 ? (
+            {history.length > 0 ? (
                 <div className="relative pl-6">
                 {/* Vertical line */}
                 <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-border" />
                 
                 <div className="space-y-8">
-                    {sortedHistory.map((item) => (
+                    {history.map((item) => (
                     <div key={item.id} className="relative flex items-start gap-4">
                         {/* Dot on the timeline */}
                         <div className="absolute left-[-24px] top-1.5 h-4 w-4 rounded-full bg-primary border-4 border-background" />
