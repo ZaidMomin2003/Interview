@@ -28,6 +28,9 @@ type AuthContextType = {
   user: AppUser | null;
   loading: boolean;
   loginWithGoogle: () => Promise<void>;
+  loginWithGithub: () => Promise<void>;
+  loginWithApple: () => Promise<void>;
+  loginWithLinkedin: () => Promise<void>;
   loginWithEmail: (email: string, password: string) => Promise<void>;
   signupWithEmail: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
@@ -38,6 +41,9 @@ const AuthContext = createContext<AuthContextType>({
   user: null,
   loading: true,
   loginWithGoogle: async () => {},
+  loginWithGithub: async () => {},
+  loginWithApple: async () => {},
+  loginWithLinkedin: async () => {},
   loginWithEmail: async () => {},
   signupWithEmail: async () => {},
   logout: async () => {},
@@ -78,6 +84,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     await signInWithPopup(auth, provider);
     // onAuthStateChanged will handle setting the user state.
   };
+  
+  // Placeholder functions for other providers
+  const loginWithGithub = async () => { console.warn("GitHub login not implemented."); };
+  const loginWithApple = async () => { console.warn("Apple login not implemented."); };
+  const loginWithLinkedin = async () => { console.warn("LinkedIn login not implemented."); };
+
 
   const loginWithEmail = async (email: string, password: string) => {
     await signInWithEmailAndPassword(auth, email, password);
@@ -127,7 +139,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
 
   return (
-    <AuthContext.Provider value={{ user, loading, loginWithGoogle, loginWithEmail, signupWithEmail, logout, updateUser }}>
+    <AuthContext.Provider value={{ user, loading, loginWithGoogle, loginWithGithub, loginWithApple, loginWithLinkedin, loginWithEmail, signupWithEmail, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );
