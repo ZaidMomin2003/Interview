@@ -375,49 +375,61 @@ export default function LandingPage() {
 
   const pricingTiers = [
     {
-      name: 'Apprentice',
-      monthlyPrice: 0,
-      yearlyPrice: 0,
-      description: 'Get a feel for the platform, on us.',
+      name: 'Cadet',
+      monthlyPrice: 9,
+      yearlyPrice: 7,
+      description: 'Perfect for getting started and sharpening core skills.',
       features: [
-        'Basic Resume Generation',
-        '3 Coding Questions/day',
-        'Limited Code Feedback',
+        '10 AI Mock Interviews',
+        '60 Coding Questions',
+        '30 Notes Generations',
         'Community Support',
       ],
-      cta: 'Get Started Free',
+      cta: 'Choose Cadet',
       href: '/signup',
     },
     {
-      name: 'Developer',
-      monthlyPrice: 15,
-      yearlyPrice: 12,
-      description: 'The essential toolkit for active job seekers.',
+      name: 'Gladiator',
+      monthlyPrice: 19,
+      yearlyPrice: 15,
+      description: 'For those serious about landing their next big role.',
       features: [
-        'Advanced Resume Generation & Optimization',
-        'Unlimited Coding Questions',
-        'Full Code Analysis & Feedback',
-        'AI Resume Tailoring',
+        '25 AI Mock Interviews',
+        '130 Coding Questions',
+        '70 Notes Generations',
         'Priority Email Support',
       ],
-      cta: 'Choose Developer',
+      cta: 'Choose Gladiator',
       href: '/signup',
       popular: true,
     },
     {
-      name: 'Ascendant',
-      monthlyPrice: 29,
-      yearlyPrice: 24,
-      description: 'For those who want to master their craft.',
+      name: 'Champion',
+      monthlyPrice: 49,
+      yearlyPrice: 39,
+      description: 'For dedicated developers aiming for the top.',
       features: [
-        'All Developer Features',
-        'Unlimited AI Mock Interviews',
-        'Career Path Analysis',
-        'Interview Arena Access',
+        '60 AI Mock Interviews',
+        '200 Coding Questions',
+        '180 Notes Generations',
         'Dedicated Support Channel',
       ],
-      cta: 'Become Ascendant',
+      cta: 'Choose Champion',
       href: '/signup',
+    },
+    {
+        name: 'Legend',
+        monthlyPrice: 99,
+        yearlyPrice: 79,
+        description: 'The ultimate toolkit for elite performers.',
+        features: [
+          '120 AI Mock Interviews',
+          '400 Coding Questions',
+          '400 Notes Generations',
+          '24/7 Premium Support',
+        ],
+        cta: 'Choose Legend',
+        href: '/signup',
     },
   ];
 
@@ -916,7 +928,7 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="mt-16 grid gap-8 md:grid-cols-2 lg:grid-cols-3 items-start max-w-6xl mx-auto">
+          <div className="mt-16 grid gap-8 md:grid-cols-2 lg:grid-cols-4 items-start max-w-7xl mx-auto">
             {pricingTiers.map((tier) => (
               <Card key={tier.name} className={cn(
                 "bg-secondary/30 border-border flex flex-col transition-all duration-300 hover:border-primary hover:shadow-primary/20 hover:shadow-2xl hover:-translate-y-2 h-full",
