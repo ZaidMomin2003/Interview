@@ -82,7 +82,6 @@ export default function OnboardingPage() {
 
   const processForm = async (data: OnboardingData) => {
     setIsLoading(true);
-    console.log('Onboarding data:', data);
     
     try {
         await updateUserProfile(data);

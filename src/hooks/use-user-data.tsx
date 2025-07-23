@@ -3,9 +3,10 @@
 
 import { useState, useEffect, useContext, createContext, ReactNode, useCallback } from 'react';
 import { useAuth, CoreUser } from './use-auth';
-import { db, auth } from '@/lib/firebase';
-import { doc, getDoc, setDoc, updateDoc, onSnapshot, Timestamp } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+import { doc, setDoc, updateDoc, onSnapshot, Timestamp } from 'firebase/firestore';
 import type { OnboardingData } from '@/app/(app)/onboarding/page';
+import { auth } from '@/lib/firebase';
 import { updateProfile } from "firebase/auth";
 
 export interface HistoryItem {

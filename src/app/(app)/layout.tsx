@@ -45,9 +45,12 @@ export default function AppLayout({
 
   if (NO_LAYOUT_PATHS.includes(pathname)) {
     return (
-        <UserDataProvider>
+      // Onboarding still needs the UserDataProvider to save the profile
+      <UserDataProvider>
+        <AuthGuard>
             {children}
-        </UserDataProvider>
+        </AuthGuard>
+      </UserDataProvider>
     );
   }
 

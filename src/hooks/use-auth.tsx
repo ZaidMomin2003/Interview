@@ -3,7 +3,6 @@
 
 import { useState, useEffect, useContext, createContext, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
-import type { OnboardingData } from '@/app/(app)/onboarding/page';
 import { auth } from '@/lib/firebase';
 import { 
   onAuthStateChanged, 
@@ -12,13 +11,12 @@ import {
   GoogleAuthProvider,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  updateProfile,
-  type User as FirebaseUser,
   GithubAuthProvider,
-  OAuthProvider
+  OAuthProvider,
+  type User as FirebaseUser
 } from "firebase/auth";
-import { useUserData } from './use-user-data';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useUserData } from './use-user-data';
 
 // This will now only hold the core Firebase User object properties
 export interface CoreUser {
@@ -37,7 +35,6 @@ type AuthContextType = {
   loginWithEmail: (email: string, password: string) => Promise<void>;
   signupWithEmail: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
-  // updateUser is now removed from here, it will be in useUserData
 };
 
 const AuthContext = createContext<AuthContextType>({
@@ -59,7 +56,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser) {
         // User is signed in. We only store the core Firebase info here.
-        // The rest of the user's data will come from the useUserData hook.
         setUser({
           uid: firebaseUser.uid,
           email: firebaseUser.email,
@@ -131,9 +127,9 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     }, [user, loading, router]);
 
     // We also check the user data from useUserData to ensure the profile is loaded.
-    const { profile } = useUserData();
+    const { profile, loading: userDataLoading } = useUserData();
 
-    if (loading || !user || !profile) {
+    if (loading || userDataLoading || !user || !profile) {
         return (
              <div className="flex min-h-screen w-full bg-background">
                 <div className="hidden md:flex flex-col gap-4 p-2 border-r border-border bg-secondary/30 w-64">

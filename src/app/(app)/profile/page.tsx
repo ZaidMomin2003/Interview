@@ -11,6 +11,7 @@ import { format } from 'date-fns';
 import { useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const InfoCard = ({ icon, title, children }: { icon: React.ReactNode, title: string, children: React.ReactNode }) => (
     <Card className="bg-secondary/30 border-border">
@@ -32,12 +33,12 @@ const SocialLink = ({ href, icon, label }: { href: string; icon: React.ReactNode
 );
 
 export default function ProfilePage() {
-  const { profile, updateUserProfile } = useUserData();
+  const { profile, updateUserProfile, loading } = useUserData();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
-  if (!profile) {
-    return null; // Or a loading spinner
+  if (loading || !profile) {
+    return <ProfileSkeleton />;
   }
 
   const handleAvatarClick = () => {
@@ -186,4 +187,46 @@ export default function ProfilePage() {
       </div>
     </div>
   );
+}
+
+
+function ProfileSkeleton() {
+    return (
+        <div className="space-y-8">
+            <div className="flex flex-col sm:flex-row items-center gap-6">
+                <Skeleton className="h-24 w-24 rounded-full" />
+                <div className="flex-grow space-y-2">
+                    <Skeleton className="h-10 w-1/2" />
+                    <Skeleton className="h-5 w-1/3" />
+                </div>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2 space-y-6">
+                    <Card className="bg-secondary/30 border-border">
+                        <CardHeader><Skeleton className="h-8 w-1/3" /></CardHeader>
+                        <CardContent className="space-y-4">
+                            <Skeleton className="h-5 w-full" />
+                            <Skeleton className="h-5 w-3/4" />
+                        </CardContent>
+                    </Card>
+                     <Card className="bg-secondary/30 border-border">
+                        <CardHeader><Skeleton className="h-8 w-1/3" /></CardHeader>
+                        <CardContent className="space-y-4">
+                            <Skeleton className="h-5 w-full" />
+                            <Skeleton className="h-5 w-3/4" />
+                        </CardContent>
+                    </Card>
+                </div>
+                <div className="space-y-6">
+                    <Card className="bg-secondary/30 border-border">
+                        <CardHeader><Skeleton className="h-8 w-1/2" /></CardHeader>
+                        <CardContent className="space-y-3">
+                            <Skeleton className="h-5 w-full" />
+                             <Skeleton className="h-5 w-full" />
+                        </CardContent>
+                    </Card>
+                </div>
+            </div>
+        </div>
+    )
 }
