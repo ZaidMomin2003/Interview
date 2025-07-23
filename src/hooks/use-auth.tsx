@@ -4,72 +4,97 @@
 import { useState, useEffect, useContext, createContext, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import type { OnboardingData } from '@/app/(app)/onboarding/page';
+import { auth } from '@/lib/firebase';
+import { 
+  onAuthStateChanged, 
+  signOut,
+  signInWithPopup,
+  GoogleAuthProvider,
+  updateProfile,
+  type User as FirebaseUser
+} from "firebase/auth";
 
-// Define a shape for our dummy user
-// It now includes all the onboarding data fields.
-export interface DummyUser extends Partial<OnboardingData> {
+// Combine Firebase User with our custom onboarding data
+export interface AppUser extends Partial<OnboardingData> {
   uid: string;
-  email: string;
-  displayName?: string | null;
-  photoURL?: string | null; // Can be a URL or a Data URI
+  email: string | null;
+  displayName: string | null;
+  photoURL: string | null;
 }
 
 type AuthContextType = {
-  user: DummyUser | null;
+  user: AppUser | null;
   loading: boolean;
-  login: (userData: { email: string; displayName: string }) => void;
-  logout: () => void;
-  updateUser: (userData: DummyUser) => void;
+  login: () => Promise<void>;
+  logout: () => Promise<void>;
+  updateUser: (data: Partial<OnboardingData>) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
   loading: true,
-  login: () => {},
-  logout: () => {},
-  updateUser: () => {},
+  login: async () => {},
+  logout: async () => {},
+  updateUser: async () => {},
 });
 
-const DUMMY_USER_STORAGE_KEY = 'dummyUser';
+const USER_PROFILE_STORAGE_PREFIX = 'userProfile_';
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<DummyUser | null>(null);
+  const [user, setUser] = useState<AppUser | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // On initial load, try to get the user from localStorage
-    try {
-      const storedUser = localStorage.getItem(DUMMY_USER_STORAGE_KEY);
-      if (storedUser) {
-        setUser(JSON.parse(storedUser));
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser) {
+        // User is signed in.
+        const profileData = localStorage.getItem(`${USER_PROFILE_STORAGE_PREFIX}${firebaseUser.uid}`);
+        const appUser: AppUser = {
+          uid: firebaseUser.uid,
+          email: firebaseUser.email,
+          displayName: firebaseUser.displayName,
+          photoURL: firebaseUser.photoURL,
+          ...(profileData ? JSON.parse(profileData) : {})
+        };
+        setUser(appUser);
+      } else {
+        // User is signed out.
+        setUser(null);
       }
-    } catch (error) {
-      console.error("Failed to parse user from localStorage", error);
-      localStorage.removeItem(DUMMY_USER_STORAGE_KEY);
-    } finally {
       setLoading(false);
-    }
+    });
+
+    return () => unsubscribe();
   }, []);
 
-  const login = (userData: { email: string; displayName: string }) => {
-    const dummyUser: DummyUser = {
-      uid: 'dummy-uid-' + Math.random().toString(36).substring(2, 9),
-      email: userData.email,
-      displayName: userData.displayName,
-    };
-    localStorage.setItem(DUMMY_USER_STORAGE_KEY, JSON.stringify(dummyUser));
-    setUser(dummyUser);
-  };
-  
-  const updateUser = (userData: DummyUser) => {
-    localStorage.setItem(DUMMY_USER_STORAGE_KEY, JSON.stringify(userData));
-    setUser(userData);
+  const login = async () => {
+    const provider = new GoogleAuthProvider();
+    await signInWithPopup(auth, provider);
+    // onAuthStateChanged will handle setting the user state.
   };
 
-  const logout = () => {
-    localStorage.removeItem(DUMMY_USER_STORAGE_KEY);
-    setUser(null);
+  const logout = async () => {
+    await signOut(auth);
+     // onAuthStateChanged will handle setting the user state to null.
   };
+  
+  const updateUser = async (data: Partial<OnboardingData>) => {
+    if (auth.currentUser) {
+        // You could update Firebase profile here if needed, e.g., displayName
+        // await updateProfile(auth.currentUser, { displayName: data.displayName });
+        
+        // Save additional onboarding data to local storage, keyed by UID
+        const currentProfileData = localStorage.getItem(`${USER_PROFILE_STORAGE_PREFIX}${auth.currentUser.uid}`);
+        const existingData = currentProfileData ? JSON.parse(currentProfileData) : {};
+        const newData = { ...existingData, ...data };
+
+        localStorage.setItem(`${USER_PROFILE_STORAGE_PREFIX}${auth.currentUser.uid}`, JSON.stringify(newData));
+
+        // Update the user state in the context
+        setUser(prevUser => prevUser ? { ...prevUser, ...newData } : null);
+    }
+  };
+
 
   return (
     <AuthContext.Provider value={{ user, loading, login, logout, updateUser }}>

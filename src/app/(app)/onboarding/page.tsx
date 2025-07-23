@@ -21,6 +21,7 @@ import { Label } from '@/components/ui/label';
 import { Calendar } from '@/components/ui/calendar';
 
 const onboardingSchema = z.object({
+  displayName: z.string().min(2, 'Please enter your name.'),
   status: z.enum(['student', 'employee']),
   languages: z.array(z.string()).min(1, 'Please select at least one language.'),
   university: z.string().optional(),
@@ -37,6 +38,7 @@ const onboardingSchema = z.object({
 export type OnboardingData = z.infer<typeof onboardingSchema>;
 
 const steps = [
+  { id: 'welcome', title: 'Welcome to Talxify!', fields: ['displayName'] },
   { id: 'status', title: 'What is your current status?', fields: ['status'] },
   { id: 'languages', title: 'Which languages are you proficient in?', fields: ['languages'] },
   { id: 'university', title: 'What university are you attending?', fields: ['university'], dependsOn: 'status', expectedValue: 'student' },
@@ -68,6 +70,7 @@ export default function OnboardingPage() {
   const methods = useForm<OnboardingData>({
     resolver: zodResolver(onboardingSchema),
     defaultValues: {
+      displayName: user?.displayName || '',
       languages: [],
     },
   });
@@ -75,23 +78,27 @@ export default function OnboardingPage() {
 
   const watchedStatus = watch('status');
 
-  const processForm = (data: OnboardingData) => {
+  const processForm = async (data: OnboardingData) => {
     setIsLoading(true);
     console.log('Onboarding data:', data);
     
-    // Update the user in our dummy auth hook
-    if (user) {
-        updateUser({
-            ...user,
-            ...data,
+    try {
+        await updateUser(data);
+        toast({
+          title: 'Onboarding Complete!',
+          description: "Welcome! We're redirecting you to your dashboard.",
         });
+        router.push('/dashboard');
+    } catch(e) {
+        console.error(e);
+        toast({
+            variant: 'destructive',
+            title: 'Update failed',
+            description: 'Could not save your profile. Please try again.',
+        })
+    } finally {
+        setIsLoading(false);
     }
-
-    toast({
-      title: 'Onboarding Complete!',
-      description: "Welcome! We're redirecting you to your dashboard.",
-    });
-    setTimeout(() => router.push('/dashboard'), 1000);
   };
 
   const nextStep = async () => {
@@ -110,7 +117,7 @@ export default function OnboardingPage() {
     if (nextStepIndex < steps.length) {
       setCurrentStep(nextStepIndex);
     } else {
-      handleSubmit(processForm)();
+      await handleSubmit(processForm)();
     }
   };
 
@@ -125,8 +132,9 @@ export default function OnboardingPage() {
   };
   
   const getVisibleSteps = () => steps.filter(step => {
+    if (step.id === 'welcome') return true;
     if (step.dependsOn) {
-      return getValues(step.dependsOn as keyof OnboardingData) === step.expectedValue;
+      return watch(step.dependsOn as keyof OnboardingData) === step.expectedValue;
     }
     return true;
   });
@@ -161,6 +169,7 @@ export default function OnboardingPage() {
                   </div>
 
                   <div className="min-h-[350px] flex items-center justify-center">
+                    {activeStep.id === 'welcome' && <WelcomeStep />}
                     {activeStep.id === 'status' && <StatusStep />}
                     {activeStep.id === 'languages' && <LanguagesStep />}
                     {activeStep.id === 'university' && <UniversityStep />}
@@ -204,6 +213,18 @@ const SelectionBox = ({ icon, label, isSelected, onSelect }: { icon: ReactNode, 
     <p className="mt-4 font-semibold text-lg">{label}</p>
   </div>
 );
+
+const WelcomeStep = () => {
+    const { register, formState: { errors } } = useFormContext<OnboardingData>();
+    return (
+      <div className="w-full max-w-sm space-y-2">
+        <Label htmlFor="displayName" className="flex items-center gap-2 text-cyan-400"><CaseSensitive className="h-5 w-5"/> What's your name?</Label>
+        <Input id="displayName" {...register('displayName')} placeholder="e.g., Ada Lovelace" className="bg-gray-800 border-gray-700 text-gray-200" />
+        {errors.displayName && <p className="text-sm text-red-400">{errors.displayName.message}</p>}
+      </div>
+    );
+};
+
 
 const StatusStep = () => {
   const { setValue, watch } = useFormContext<OnboardingData>();

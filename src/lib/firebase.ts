@@ -1,8 +1,6 @@
 // src/lib/firebase.ts
 import { initializeApp, getApps, getApp, type FirebaseOptions } from "firebase/app";
-// We are not using getAuth anymore in the dummy version, but other files might import it.
-// To prevent breaking imports, we can create a dummy auth object.
-// import { getAuth } from "firebase/auth";
+import { getAuth } from "firebase/auth";
 
 const firebaseConfig: FirebaseOptions = {
   // It's okay for these to be undefined in the dummy setup
@@ -14,10 +12,8 @@ const firebaseConfig: FirebaseOptions = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Initialize Firebase only if the config is valid, otherwise create a dummy app
-const app = !getApps().length && firebaseConfig.apiKey ? initializeApp(firebaseConfig) : (getApps()[0] || null);
-
-// Dummy auth object to prevent errors in other parts of the app that might import it.
-const auth = {};
+// Initialize Firebase
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+const auth = getAuth(app);
 
 export { app, auth };

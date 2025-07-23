@@ -2,24 +2,13 @@
 "use client";
 
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Cpu, FileText, CodeXml, Video, Star } from 'lucide-react';
-
-const formSchema = z.object({
-  name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
-  email: z.string().email({ message: 'Please enter a valid email.' }),
-  password: z.string().min(6, { message: 'Password must be at least 6 characters.' }),
-});
+import { Loader2, Cpu, FileText, CodeXml, Video, Star, Github } from 'lucide-react';
 
 const TrustFeature = ({ icon, title, description }: { icon: React.ReactNode, title: string, description: string}) => (
     <div className="flex items-start gap-4">
@@ -31,28 +20,16 @@ const TrustFeature = ({ icon, title, description }: { icon: React.ReactNode, tit
     </div>
 );
 
-
 export default function SignUpPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
   const { login } = useAuth();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: { name: '', email: '', password: '' },
-  });
-
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function handleGoogleSignUp() {
     setIsLoading(true);
     try {
-      // Simulate account creation
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      login({
-        displayName: values.name,
-        email: values.email,
-      });
-      
+      await login();
       toast({
         title: "Account Created",
         description: "Welcome! Let's get you set up.",
@@ -62,7 +39,7 @@ export default function SignUpPage() {
       toast({
         variant: 'destructive',
         title: 'Sign Up Failed',
-        description: 'An unexpected error occurred. Please try again.',
+        description: error.message || 'An unexpected error occurred. Please try again.',
       });
     } finally {
       setIsLoading(false);
@@ -121,67 +98,9 @@ export default function SignUpPage() {
                 <CardDescription className="text-muted-foreground">Join the ascent. It's free to get started.</CardDescription>
               </CardHeader>
               <CardContent>
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                    <FormField
-                      control={form.control}
-                      name="name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-primary">Name</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="text" 
-                              placeholder="Ada Lovelace" 
-                              {...field} 
-                              className="bg-background/50 border-border"
-                              />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-primary">Email</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="email" 
-                              placeholder="you@example.com" 
-                              {...field} 
-                              className="bg-background/50 border-border"
-                              />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="password"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-primary">Password</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="password" 
-                              placeholder="••••••••" 
-                              {...field} 
-                              className="bg-background/50 border-border"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <Button type="submit" disabled={isLoading} className="w-full">
-                      {isLoading ? <Loader2 className="animate-spin" /> : 'Create Account'}
-                    </Button>
-                  </form>
-                </Form>
+                 <Button onClick={handleGoogleSignUp} disabled={isLoading} className="w-full">
+                    {isLoading ? <Loader2 className="animate-spin" /> : <><Github className="mr-2 h-5 w-5" /> Sign Up with Google</>}
+                  </Button>
               </CardContent>
               <CardFooter className="flex justify-center">
                   <p className="text-sm text-muted-foreground">
