@@ -20,9 +20,8 @@ const getIconForType = (type: string) => {
 };
 
 export default function HistoryPage() {
-  const { history } = useUserData();
-
-  // The history is now pre-sorted in the hook, so no need to sort here.
+  const { profile } = useUserData();
+  const history = profile?.history || [];
 
   return (
     <div className="space-y-8">

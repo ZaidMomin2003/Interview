@@ -23,7 +23,8 @@ const BookmarkCard = ({ title, description, href }: { title: string, description
 );
 
 export default function BookmarksPage() {
-  const { bookmarks } = useUserData();
+  const { profile } = useUserData();
+  const bookmarks = profile?.bookmarks || [];
 
   const notes = bookmarks.filter(b => b.type === 'note');
   const codingQuestions = bookmarks.filter(b => b.type === 'coding-question');

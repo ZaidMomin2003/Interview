@@ -1,7 +1,7 @@
 // src/app/(app)/profile/page.tsx
 'use client';
 
-import { useAuth } from '@/hooks/use-auth';
+import { useUserData } from '@/hooks/use-user-data';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -32,11 +32,11 @@ const SocialLink = ({ href, icon, label }: { href: string; icon: React.ReactNode
 );
 
 export default function ProfilePage() {
-  const { user, updateUser } = useAuth();
+  const { profile, updateUserProfile } = useUserData();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
-  if (!user) {
+  if (!profile) {
     return null; // Or a loading spinner
   }
 
@@ -57,23 +57,31 @@ export default function ProfilePage() {
       }
 
       const reader = new FileReader();
-      reader.onload = (e) => {
+      reader.onload = async (e) => {
         const result = e.target?.result as string;
-        updateUser({ photoURL: result });
-        toast({
-          title: 'Avatar updated!',
-          description: 'Your new profile picture has been saved.',
-        });
+        try {
+            await updateUserProfile({ photoURL: result });
+            toast({
+              title: 'Avatar updated!',
+              description: 'Your new profile picture has been saved.',
+            });
+        } catch (error) {
+             toast({
+              variant: 'destructive',
+              title: 'Update Failed',
+              description: 'Could not save your new avatar.',
+            });
+        }
       };
       reader.readAsDataURL(file);
     }
   };
   
   const socialLinks = [
-    { href: user.linkedin, icon: <LinkIcon className="h-5 w-5" />, label: "LinkedIn" },
-    { href: user.github, icon: <LinkIcon className="h-5 w-5" />, label: "GitHub" },
-    { href: user.twitter, icon: <LinkIcon className="h-5 w-5" />, label: "Twitter/X" },
-    { href: user.instagram, icon: <LinkIcon className="h-5 w-5" />, label: "Instagram" },
+    { href: profile.linkedin, icon: <LinkIcon className="h-5 w-5" />, label: "LinkedIn" },
+    { href: profile.github, icon: <LinkIcon className="h-5 w-5" />, label: "GitHub" },
+    { href: profile.twitter, icon: <LinkIcon className="h-5 w-5" />, label: "Twitter/X" },
+    { href: profile.instagram, icon: <LinkIcon className="h-5 w-5" />, label: "Instagram" },
   ].filter(link => link.href);
 
   return (
@@ -81,9 +89,9 @@ export default function ProfilePage() {
       <div className="flex flex-col sm:flex-row items-center gap-6">
         <div className="relative group">
            <Avatar className="h-24 w-24 border-4 border-primary">
-              {user.photoURL && <AvatarImage src={user.photoURL} alt={user.displayName || 'User'} />}
+              {profile.photoURL && <AvatarImage src={profile.photoURL} alt={profile.displayName || 'User'} />}
               <AvatarFallback className="text-4xl font-bold bg-secondary text-primary">
-                  {user.displayName?.charAt(0).toUpperCase() || 'U'}
+                  {profile.displayName?.charAt(0).toUpperCase() || 'U'}
               </AvatarFallback>
           </Avatar>
           <input 
@@ -105,7 +113,7 @@ export default function ProfilePage() {
         </div>
         <div className="flex-grow">
             <div className="flex flex-wrap items-center gap-4 mb-2">
-                <h1 className="text-4xl font-bold font-headline">{user.displayName}</h1>
+                <h1 className="text-4xl font-bold font-headline">{profile.displayName}</h1>
                 <Button variant="outline" asChild>
                     <Link href="/onboarding">
                         <Pencil className="mr-2 h-4 w-4" /> Edit Profile
@@ -114,12 +122,12 @@ export default function ProfilePage() {
             </div>
             <p className="text-muted-foreground flex items-center gap-2 mt-1">
                 <Mail className="h-4 w-4" />
-                {user.email}
+                {profile.email}
             </p>
-             {user.phone && (
+             {profile.phone && (
                 <p className="text-muted-foreground flex items-center gap-2 mt-1">
                     <Phone className="h-4 w-4" />
-                    {user.phone}
+                    {profile.phone}
                 </p>
             )}
         </div>
@@ -129,18 +137,18 @@ export default function ProfilePage() {
         <div className="lg:col-span-2 space-y-6">
             <InfoCard icon={<Briefcase className="w-8 h-8 text-primary/80" />} title="Professional Info">
                 <div className="space-y-4">
-                     {user.status && <div className="flex items-center gap-2"><strong className="font-semibold text-foreground">Status:</strong> <Badge variant="secondary" className="capitalize">{user.status}</Badge></div>}
-                     {user.status === 'student' && user.university && (
+                     {profile.status && <div className="flex items-center gap-2"><strong className="font-semibold text-foreground">Status:</strong> <Badge variant="secondary" className="capitalize">{profile.status}</Badge></div>}
+                     {profile.status === 'student' && profile.university && (
                         <p className="flex items-center gap-2">
                            <GraduationCap className="h-5 w-5 text-muted-foreground" />
-                           <strong className="font-semibold text-foreground">University:</strong> {user.university}
+                           <strong className="font-semibold text-foreground">University:</strong> {profile.university}
                         </p>
                      )}
-                     {user.languages && user.languages.length > 0 && (
+                     {profile.languages && profile.languages.length > 0 && (
                         <div>
                             <strong className="font-semibold text-foreground flex items-center gap-2 mb-2"><Code className="h-5 w-5" /> Proficient Languages:</strong>
                             <div className="flex flex-wrap gap-2">
-                                {user.languages.map((lang: string) => <Badge key={lang} className="capitalize bg-primary/20 text-primary border-primary/30">{lang}</Badge>)}
+                                {profile.languages.map((lang: string) => <Badge key={lang} className="capitalize bg-primary/20 text-primary border-primary/30">{lang}</Badge>)}
                             </div>
                         </div>
                      )}
@@ -149,14 +157,14 @@ export default function ProfilePage() {
 
             <InfoCard icon={<Target className="w-8 h-8 text-primary/80" />} title="Career Goals">
                  <div className="space-y-4">
-                     {user.targetRole && <p className="flex items-center gap-2"><CaseSensitive className="h-5 w-5 text-muted-foreground" /> <strong className="font-semibold text-foreground">Target Role:</strong> {user.targetRole}</p>}
-                     {user.targetCompanies && (
+                     {profile.targetRole && <p className="flex items-center gap-2"><CaseSensitive className="h-5 w-5 text-muted-foreground" /> <strong className="font-semibold text-foreground">Target Role:</strong> {profile.targetRole}</p>}
+                     {profile.targetCompanies && (
                         <div>
                             <strong className="font-semibold text-foreground flex items-center gap-2 mb-2"><Building className="h-5 w-5" /> Target Companies:</strong>
-                            <p className="text-muted-foreground whitespace-pre-wrap">{user.targetCompanies}</p>
+                            <p className="text-muted-foreground whitespace-pre-wrap">{profile.targetCompanies}</p>
                         </div>
                      )}
-                     {user.interviewDate && <p className="flex items-center gap-2"><CalendarDays className="h-5 w-5 text-muted-foreground" /> <strong className="font-semibold text-foreground">Target Interview Date:</strong> {format(new Date(user.interviewDate), 'PPP')}</p>}
+                     {profile.interviewDate && <p className="flex items-center gap-2"><CalendarDays className="h-5 w-5 text-muted-foreground" /> <strong className="font-semibold text-foreground">Target Interview Date:</strong> {format(new Date(profile.interviewDate), 'PPP')}</p>}
                 </div>
             </InfoCard>
         </div>

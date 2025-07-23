@@ -1,7 +1,7 @@
 // src/components/layout/app-header.tsx
 "use client";
 
-import { useAuth } from "@/hooks/use-auth";
+import { useUserData } from "@/hooks/use-user-data";
 import { Button } from "../ui/button";
 import { SidebarTrigger } from "../ui/sidebar";
 import { History, Bookmark, User } from "lucide-react";
@@ -9,9 +9,11 @@ import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { ThemeToggle } from "./theme-toggle";
+import { useAuth } from "@/hooks/use-auth";
 
 export function AppHeader() {
-    const { user, logout } = useAuth();
+    const { logout } = useAuth();
+    const { profile } = useUserData();
 
     return (
         <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-sm sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
@@ -37,9 +39,9 @@ export function AppHeader() {
                     <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon" className="rounded-full">
                              <Avatar className="h-8 w-8">
-                                {user?.photoURL && <AvatarImage src={user.photoURL} alt={user.displayName || 'User'} />}
+                                {profile?.photoURL && <AvatarImage src={profile.photoURL} alt={profile.displayName || 'User'} />}
                                 <AvatarFallback className="text-sm font-bold bg-primary/20 text-primary">
-                                    {user?.displayName?.charAt(0).toUpperCase() || 'U'}
+                                    {profile?.displayName?.charAt(0).toUpperCase() || 'U'}
                                 </AvatarFallback>
                             </Avatar>
                         </Button>

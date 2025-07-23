@@ -1,6 +1,5 @@
 // src/app/(app)/dashboard/page.tsx
 'use client';
-import { useAuth } from "@/hooks/use-auth";
 import { useUserData } from "@/hooks/use-user-data";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -25,11 +24,10 @@ const planLimits = {
 };
 
 export default function DashboardPage() {
-  const { user } = useAuth();
-  const { history, bookmarks } = useUserData();
-  const displayName = user?.displayName?.split(' ')[0] || 'developer';
+  const { profile, loading } = useUserData();
 
   const {
+    displayName,
     interviewsUsed,
     questionsUsed,
     notesUsed,
@@ -37,6 +35,20 @@ export default function DashboardPage() {
     readinessScore,
     topicsToImprove,
   } = useMemo(() => {
+    if (!profile) {
+      return { 
+        displayName: 'developer', 
+        interviewsUsed: 0, 
+        questionsUsed: 0, 
+        notesUsed: 0, 
+        dailyActivity: [], 
+        readinessScore: [{ name: 'readiness', value: 0, fill: 'hsl(var(--primary))' }],
+        topicsToImprove: []
+      };
+    }
+    
+    const { history = [], bookmarks = [] } = profile;
+
     // Calculate usage
     const interviewsUsed = history.filter(item => item.type === 'AI Interview').length;
     const questionsUsed = history.filter(item => item.type === 'Coding Challenge').length;
@@ -67,7 +79,7 @@ export default function DashboardPage() {
     const score = Math.min(
       Math.floor(
         (interviewsUsed * 10 + questionsUsed * 2 + recentHistory.length) / 
-        (planLimits.interviews * 5 + planLimits.codingQuestions * 1 + planLimits.notes * 0.5 + 50) * 100 // Adjusted denominator for better scaling
+        (planLimits.interviews * 5 + planLimits.codingQuestions * 1 + planLimits.notes * 0.5 + 50) * 100
       ), 100
     );
     
@@ -79,6 +91,7 @@ export default function DashboardPage() {
     })).slice(0, 3); // Get top 3
 
     return {
+        displayName: profile.displayName?.split(' ')[0] || 'developer',
         interviewsUsed,
         questionsUsed,
         notesUsed,
@@ -87,7 +100,12 @@ export default function DashboardPage() {
         topicsToImprove: topics,
     };
 
-  }, [history, bookmarks]);
+  }, [profile]);
+  
+  if (loading) {
+      // You can return a skeleton loader here if you wish
+      return <div>Loading dashboard...</div>;
+  }
 
   return (
     <div className="space-y-8 text-foreground">

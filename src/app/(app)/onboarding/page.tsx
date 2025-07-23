@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { AnimatePresence, motion } from 'framer-motion';
 
-import { useAuth } from '@/hooks/use-auth';
+import { useUserData } from '@/hooks/use-user-data';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Input } from '@/components/ui/input';
@@ -19,6 +19,7 @@ import type { ReactNode } from 'react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Calendar } from '@/components/ui/calendar';
+import { useAuth } from '@/hooks/use-auth';
 
 const onboardingSchema = z.object({
   displayName: z.string().min(2, 'Please enter your name.'),
@@ -64,7 +65,8 @@ export default function OnboardingPage() {
   const [currentStep, setCurrentStep] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const { user, updateUser } = useAuth();
+  const { user } = useAuth();
+  const { updateUserProfile } = useUserData();
   const { toast } = useToast();
   
   const methods = useForm<OnboardingData>({
@@ -83,7 +85,7 @@ export default function OnboardingPage() {
     console.log('Onboarding data:', data);
     
     try {
-        await updateUser(data);
+        await updateUserProfile(data);
         toast({
           title: 'Onboarding Complete!',
           description: "Welcome! We're redirecting you to your dashboard.",
