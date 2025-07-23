@@ -48,12 +48,6 @@ const GithubIcon = () => (
     </svg>
 );
 
-const AppleIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12.01,1.99C9.93,1.98,8.23,3.24,7.2,5.26c-1.72,3.42-0.63,8.34,2.23,10.61c1.3,1.06,2.83,1.62,4.21,1.61 c0.12,0,0.25-0.01,0.37-0.02c1.73-0.18,3.22-1.22,4.1-2.73c-1.78-1.15-2.74-3.56-1.9-5.93C16.96,8.22,18.91,6.8,22,6.56 c-1.42-2.11-3.7-3.43-6.19-3.55C14.4,2.99,13.23,1.99,12.01,1.99z M15.13,0.06C13.84,0.14,12.5,0.78,11.53,1.75 C10.51,2.78,9.92,4.12,9.96,5.53c0.04,1.41,0.67,2.81,1.73,3.78c1.03,0.95,2.4,1.48,3.81,1.44c1.39-0.07,2.76-0.74,3.71-1.71 c1-0.97,1.59-2.31,1.55-3.72c-0.04-1.41-0.68-2.8-1.75-3.76C17.51,0.73,16.14-0.03,15.13,0.06z"/>
-    </svg>
-);
-
 const LinkedinIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
         <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
@@ -66,7 +60,7 @@ export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
-  const { loginWithGoogle, signupWithEmail } = useAuth();
+  const { loginWithGoogle, signupWithEmail, loginWithGithub, loginWithLinkedin } = useAuth();
   
   const form = useForm<z.infer<typeof signupFormSchema>>({
     resolver: zodResolver(signupFormSchema),
@@ -78,6 +72,46 @@ export default function SignUpPage() {
     setIsLoading(true);
     try {
       await loginWithGoogle();
+      toast({
+        title: "Account Created",
+        description: "Welcome! Let's get you set up.",
+      });
+      router.push('/onboarding');
+    } catch (error: any) {
+      toast({
+        variant: 'destructive',
+        title: 'Sign Up Failed',
+        description: error.message || 'An unexpected error occurred. Please try again.',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function handleGithubSignUp() {
+    setIsLoading(true);
+    try {
+      await loginWithGithub();
+      toast({
+        title: "Account Created",
+        description: "Welcome! Let's get you set up.",
+      });
+      router.push('/onboarding');
+    } catch (error: any) {
+      toast({
+        variant: 'destructive',
+        title: 'Sign Up Failed',
+        description: error.message || 'An unexpected error occurred. Please try again.',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }
+  
+  async function handleLinkedinSignUp() {
+    setIsLoading(true);
+    try {
+      await loginWithLinkedin();
       toast({
         title: "Account Created",
         description: "Welcome! Let's get you set up.",
@@ -221,13 +255,10 @@ export default function SignUpPage() {
                     <Button onClick={handleGoogleSignUp} disabled={isLoading} className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/80" variant="outline">
                         {isLoading ? <Loader2 className="animate-spin" /> : <><GoogleIcon /><span className="ml-2">Google</span></>}
                     </Button>
-                     <Button disabled={isLoading} className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/80" variant="outline">
+                     <Button onClick={handleGithubSignUp} disabled={isLoading} className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/80" variant="outline">
                         {isLoading ? <Loader2 className="animate-spin" /> : <><GithubIcon /><span className="ml-2">GitHub</span></>}
                     </Button>
-                     <Button disabled={isLoading} className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/80" variant="outline">
-                        {isLoading ? <Loader2 className="animate-spin" /> : <><AppleIcon /><span className="ml-2">Apple</span></>}
-                    </Button>
-                     <Button disabled={isLoading} className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/80" variant="outline">
+                     <Button onClick={handleLinkedinSignUp} disabled={isLoading} className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/80" variant="outline">
                         {isLoading ? <Loader2 className="animate-spin" /> : <><LinkedinIcon /><span className="ml-2">LinkedIn</span></>}
                     </Button>
                 </div>
