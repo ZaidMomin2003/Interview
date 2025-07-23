@@ -16,10 +16,8 @@ import {
   FileText,
   LogOut,
   Target,
-  History,
   GalleryVertical,
   Cpu,
-  Bookmark,
   Tags,
   Rocket,
   CodeXml,
@@ -32,14 +30,12 @@ import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { ThemeToggle } from "./theme-toggle";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../ui/dialog";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import { Input } from "../ui/input";
 
 const menuItems = [
    {
@@ -66,16 +62,6 @@ const menuItems = [
     href: "/resume-builder",
     label: "Resume Studio",
     icon: FileText,
-  },
-  {
-    href: "/history",
-    label: "History",
-    icon: History,
-  },
-   {
-    href: "/bookmarks",
-    label: "Bookmarks",
-    icon: Bookmark,
   },
   {
     href: "/portfolio-builder",
@@ -247,21 +233,6 @@ export function AppSidebar() {
           </SidebarMenuItem>
         
         <div className="flex items-center justify-between group-data-[collapsible=icon]:justify-center">
-            <Link href="/profile" className="flex-grow overflow-hidden group-data-[collapsible=icon]:hidden">
-              <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-secondary transition-colors">
-                <Avatar className="size-9">
-                  {user?.photoURL && <AvatarImage src={user.photoURL} alt={user.displayName || 'User'} />}
-                  <AvatarFallback className="text-sm font-bold bg-primary/20 text-primary">
-                      {user?.displayName?.charAt(0).toUpperCase() || 'U'}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex-grow overflow-hidden">
-                    <p className="font-semibold text-sm truncate text-foreground">{user?.displayName}</p>
-                    <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
-                </div>
-              </div>
-            </Link>
-            <ThemeToggle />
         </div>
         
         <SidebarMenu>
@@ -273,19 +244,6 @@ export function AppSidebar() {
           </SidebarMenuItem>
           
           {/* Collapsed view footer */}
-          <SidebarMenuItem className="hidden group-data-[collapsible=icon]:block">
-             <SidebarMenuButton tooltip="Profile" asChild isActive={pathname.startsWith('/profile')} variant="ghost" className="justify-start group-data-[collapsible=icon]:justify-center">
-                <Link href="/profile">
-                  <Avatar className="size-7">
-                    {user?.photoURL && <AvatarImage src={user.photoURL} alt={user.displayName || 'User'} />}
-                    <AvatarFallback className="text-xs font-bold">
-                        {user?.displayName?.charAt(0).toUpperCase() || 'U'}
-                    </AvatarFallback>
-                  </Avatar>
-                  <span className="sr-only">{user?.displayName || 'Your Profile'}</span>
-                </Link>
-              </SidebarMenuButton>
-          </SidebarMenuItem>
            <SidebarMenuItem className="hidden group-data-[collapsible=icon]:block">
             <SidebarMenuButton tooltip="Log Out" onClick={handleLogout} variant="ghost" className="text-muted-foreground hover:bg-destructive hover:text-destructive-foreground justify-start group-data-[collapsible=icon]:justify-center">
               <LogOut />

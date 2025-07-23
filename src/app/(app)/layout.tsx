@@ -1,13 +1,12 @@
 // src/app/(app)/layout.tsx
 "use client";
 
+import { AppHeader } from "@/components/layout/app-header";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { useAuth } from "@/hooks/use-auth";
-import { Skeleton } from "@/components/ui/skeleton";
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { Button } from "@/components/ui/button";
 import { AuthGuard } from "@/hooks/with-auth";
 
 // Define paths that don't need the main app layout
@@ -49,11 +48,7 @@ export default function AppLayout({
       <SidebarProvider>
         <AppSidebar />
         <SidebarInset>
-          <div className="md:hidden flex items-center p-2 border-b border-border bg-background/80 backdrop-blur-sm sticky top-0 z-30">
-            <Button variant="ghost" size="icon" className="shrink-0" asChild>
-              <SidebarTrigger />
-            </Button>
-          </div>
+          <AppHeader />
           <div className="relative min-h-screen lg:p-8 p-4 bg-background text-foreground">
               {children}
           </div>
