@@ -9,7 +9,6 @@ import {ai} from '@/ai/genkit';
 import {googleAI} from '@genkit-ai/googleai';
 import wav from 'wav';
 import {
-    InterviewMessage,
     InterviewTurnInput,
     InterviewTurnInputSchema,
     InterviewTurnOutput,
@@ -113,8 +112,9 @@ const conductInterviewFlow = ai.defineFlow(
     const llmResponse = await interviewPrompt(input);
     const responseText = llmResponse.text;
 
-    if (!responseText) {
-        throw new Error("The AI failed to generate a response.");
+    // Validate the response before proceeding to TTS.
+    if (!responseText || responseText.trim() === '') {
+        throw new Error("The AI model returned an empty response.");
     }
     
     // Convert the text response to audio.

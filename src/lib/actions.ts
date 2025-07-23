@@ -205,7 +205,7 @@ export async function conductInterview(data: InterviewTurnInput) {
         return await conductInterviewFlow(validatedFields.data);
     } catch (error) {
         console.error('Error in conductInterview server action:', error);
-        throw new Error('The AI failed to respond. Please try again.');
+        throw new Error('The AI model did not provide a valid response. Please try again.');
     }
 }
 
