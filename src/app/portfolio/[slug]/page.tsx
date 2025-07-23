@@ -6,9 +6,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Code, GitBranch, Github, Linkedin, Globe, Trophy, Award, BarChartHorizontalBig, Cpu, Video, CodeXml, CheckCircle, Target } from 'lucide-react';
 import Link from 'next/link';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { Bar, BarChart, XAxis, YAxis } from 'recharts';
 import { cn } from '@/lib/utils';
+import { PortfolioCharts } from '@/components/feature/portfolio-charts';
 
 
 // Dummy data mirroring the builder and dashboard
@@ -55,17 +54,6 @@ const getPortfolioData = async (slug: string) => {
 };
 
 
-const chartConfig = {
-  questions: {
-    label: "Questions Solved",
-    color: "hsl(var(--primary))",
-  },
-  interviews: {
-    label: "Interviews",
-    color: "hsl(var(--accent))",
-  },
-} satisfies React.ComponentProps<typeof ChartContainer>["config"];
-
 const Section = ({ icon, title, children }: { icon: React.ReactNode, title: string, children: React.ReactNode }) => (
     <section className="space-y-6">
         <h2 className="text-2xl font-bold font-headline flex items-center gap-3 text-primary">
@@ -109,56 +97,7 @@ export default async function PortfolioPage({ params }: { params: { slug: string
                 {/* Left Column */}
                 <div className="lg:col-span-2 space-y-12">
                     <Section icon={<BarChartHorizontalBig/>} title="Activity & Progress">
-                      <div className="space-y-6">
-                          {/* Stats Cards */}
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                              <Card className="bg-secondary/50 border-border">
-                                  <CardHeader className="flex flex-row items-center justify-between pb-2">
-                                      <CardTitle className="text-sm font-medium text-primary">Interviews Completed</CardTitle>
-                                      <Video className="h-4 w-4 text-muted-foreground" />
-                                  </CardHeader>
-                                  <CardContent>
-                                      <div className="text-2xl font-bold">{dashboard.interviewsCompleted}</div>
-                                  </CardContent>
-                              </Card>
-                              <Card className="bg-secondary/50 border-border">
-                                  <CardHeader className="flex flex-row items-center justify-between pb-2">
-                                      <CardTitle className="text-sm font-medium text-primary">Coding Questions Solved</CardTitle>
-                                      <CodeXml className="h-4 w-4 text-muted-foreground" />
-                                  </CardHeader>
-                                  <CardContent>
-                                      <div className="text-2xl font-bold">{dashboard.codingQuestionsSolved}</div>
-                                  </CardContent>
-                              </Card>
-                              <Card className="bg-secondary/50 border-border">
-                                  <CardHeader className="flex flex-row items-center justify-between pb-2">
-                                      <CardTitle className="text-sm font-medium text-primary">MCQs Answered</CardTitle>
-                                      <CheckCircle className="h-4 w-4 text-muted-foreground" />
-                                  </CardHeader>
-                                  <CardContent>
-                                      <div className="text-2xl font-bold">{dashboard.mcqsAnswered}</div>
-                                  </CardContent>
-                              </Card>
-                          </div>
-                          
-                          {/* Progress Chart */}
-                          <Card className="bg-secondary/50 border-border">
-                              <CardHeader>
-                                  <CardTitle className="text-primary">Weekly Activity</CardTitle>
-                              </CardHeader>
-                              <CardContent className="pl-2">
-                                  <ChartContainer config={chartConfig} className="h-[200px] w-full">
-                                      <BarChart accessibilityLayer data={dashboard.weeklyProgress} margin={{ top: 20, right: 20, bottom: 5, left: 0 }}>
-                                          <XAxis dataKey="name" tickLine={false} axisLine={false} tickMargin={8} tickFormatter={(value) => value.slice(0, 6)} />
-                                          <YAxis tickLine={false} axisLine={false} tickMargin={8} />
-                                          <ChartTooltip content={<ChartTooltipContent />} />
-                                          <Bar dataKey="questions" fill="var(--color-questions)" radius={4} />
-                                          <Bar dataKey="interviews" fill="var(--color-interviews)" radius={4} />
-                                      </BarChart>
-                                  </ChartContainer>
-                              </CardContent>
-                          </Card>
-                      </div>
+                      <PortfolioCharts dashboard={dashboard} />
                     </Section>
 
                     <Section icon={<GitBranch/>} title="Projects">
