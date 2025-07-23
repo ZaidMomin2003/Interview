@@ -13,7 +13,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Cpu, FileText, CodeXml, Video, Star } from 'lucide-react';
+import { Loader2, Cpu, FileText, CodeXml, Video, Star, Eye, EyeOff } from 'lucide-react';
 
 
 const signupFormSchema = z.object({
@@ -45,6 +45,7 @@ const GoogleIcon = () => (
 
 export default function SignUpPage() {
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
   const { loginWithGoogle, signupWithEmail } = useAuth();
@@ -160,7 +161,28 @@ export default function SignUpPage() {
                          <FormField control={form.control} name="password" render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Password</FormLabel>
-                                <FormControl><Input type="password" placeholder="••••••••" {...field} disabled={isLoading} /></FormControl>
+                                <FormControl>
+                                    <div className="relative">
+                                        <Input 
+                                            type={showPassword ? "text" : "password"} 
+                                            placeholder="••••••••" 
+                                            {...field} 
+                                            disabled={isLoading} 
+                                            className="pr-10"
+                                        />
+                                        <Button 
+                                            type="button" 
+                                            variant="ghost" 
+                                            size="icon" 
+                                            className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground"
+                                            onClick={() => setShowPassword(prev => !prev)}
+                                            tabIndex={-1}
+                                        >
+                                            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                            <span className="sr-only">Toggle password visibility</span>
+                                        </Button>
+                                    </div>
+                                </FormControl>
                                 <FormMessage />
                             </FormItem>
                         )} />
@@ -177,7 +199,7 @@ export default function SignUpPage() {
                         <span className="bg-secondary px-2 text-muted-foreground">Or continue with</span>
                     </div>
                 </div>
-                 <Button onClick={handleGoogleSignUp} disabled={isLoading} className="w-full bg-background hover:bg-secondary/80 text-foreground" variant="outline">
+                 <Button onClick={handleGoogleSignUp} disabled={isLoading} className="w-full bg-white hover:bg-gray-100 text-gray-800" variant="outline">
                     {isLoading ? (
                         <Loader2 className="animate-spin" />
                     ) : (
