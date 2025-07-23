@@ -3,11 +3,12 @@
 
 import { AppHeader } from "@/components/layout/app-header";
 import { AppSidebar } from "@/components/layout/app-sidebar";
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useAuth } from "@/hooks/use-auth";
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { AuthGuard } from "@/hooks/with-auth";
+import { UserDataProvider } from "@/hooks/use-user-data";
 
 // Define paths that don't need the main app layout
 const NO_LAYOUT_PATHS = ['/onboarding'];
@@ -45,15 +46,17 @@ export default function AppLayout({
 
   return (
     <AuthGuard>
-      <SidebarProvider>
-        <AppSidebar />
-        <SidebarInset>
-          <AppHeader />
-          <div className="relative min-h-screen lg:p-8 p-4 bg-background text-foreground">
-              {children}
-          </div>
-        </SidebarInset>
-      </SidebarProvider>
+      <UserDataProvider>
+        <SidebarProvider>
+          <AppSidebar />
+          <SidebarInset>
+            <AppHeader />
+            <div className="relative min-h-screen lg:p-8 p-4 bg-background text-foreground">
+                {children}
+            </div>
+          </SidebarInset>
+        </SidebarProvider>
+      </UserDataProvider>
     </AuthGuard>
   );
 }

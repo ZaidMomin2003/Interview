@@ -14,6 +14,7 @@ import Image from 'next/image';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useUserData, HistoryItem } from '@/hooks/use-user-data';
 
 // Check for SpeechRecognition API
 const SpeechRecognition =
@@ -25,6 +26,7 @@ function AiInterviewComponent() {
   const difficulty = searchParams.get('difficulty');
   
   const { toast } = useToast();
+  const { addHistoryItem } = useUserData();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [hasCameraPermission, setHasCameraPermission] = useState(false);
   const [isCameraOn, setIsCameraOn] = useState(true);
@@ -73,6 +75,8 @@ function AiInterviewComponent() {
           videoRef.current.srcObject = stream;
         }
         setIsCameraOn(true);
+        // Automatically start listening once permissions are granted
+        startListening();
       } catch (error) {
         console.error('Error accessing camera:', error);
         setHasCameraPermission(false);
@@ -115,7 +119,7 @@ function AiInterviewComponent() {
         console.error('Speech recognition error:', event.error);
         if (event.error === 'network') {
           console.log('Network error, attempting to restart recognition...');
-        } else {
+        } else if (event.error !== 'no-speech') {
           toast({
             variant: 'destructive',
             title: 'Speech Recognition Error',
@@ -132,6 +136,14 @@ function AiInterviewComponent() {
             description: 'Speech recognition is not supported by your browser.',
         });
     }
+
+    // Log history item
+    addHistoryItem({
+        id: `interview-${Date.now()}`,
+        type: 'AI Interview',
+        description: `Started a mock interview on "${topic}" (${difficulty}).`,
+        timestamp: new Date(),
+    });
 
     return () => {
         if (videoRef.current && videoRef.current.srcObject) {
@@ -315,4 +327,3 @@ export default function AiInterviewPage() {
         </Suspense>
     );
 }
-

@@ -15,6 +15,7 @@ import { Loader2, Bookmark } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { GenerateCodingQuestionOutput } from "@/ai/flows/generate-coding-question";
 import type { GetCodeFeedbackOutput } from "@/ai/flows/get-code-feedback";
+import { useUserData } from "@/hooks/use-user-data";
 
 const formSchema = z.object({
   code: z.string().min(10, { message: "Code must be at least 10 characters." }),
@@ -23,12 +24,14 @@ const formSchema = z.object({
 interface CodeEditorFeedbackProps {
   question: GenerateCodingQuestionOutput;
   language: string;
+  onNewQuestion: () => void;
 }
 
-export function CodeEditorFeedback({ question, language }: CodeEditorFeedbackProps) {
+export function CodeEditorFeedback({ question, language, onNewQuestion }: CodeEditorFeedbackProps) {
   const [feedback, setFeedback] = useState<GetCodeFeedbackOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const { addBookmark } = useUserData();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -57,6 +60,13 @@ export function CodeEditorFeedback({ question, language }: CodeEditorFeedbackPro
   }
 
   const handleBookmark = () => {
+    addBookmark({
+      id: `cq-${question.topic}-${question.difficulty}`,
+      type: 'coding-question',
+      title: question.topic,
+      description: `${question.difficulty} | ${question.question.substring(0, 100)}...`,
+      href: '/coding-practice',
+    });
     toast({
       title: "Question Bookmarked!",
       description: "You can find it in your bookmarks section."
@@ -103,14 +113,19 @@ export function CodeEditorFeedback({ question, language }: CodeEditorFeedbackPro
                   </FormItem>
                 )}
               />
-              <Button type="submit" disabled={isLoading}>
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Analyzing...
-                  </>
-                ) : "Get Feedback"}
-              </Button>
+              <div className="flex gap-4">
+                <Button type="submit" disabled={isLoading}>
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Analyzing...
+                    </>
+                  ) : "Get Feedback"}
+                </Button>
+                 <Button type="button" variant="outline" onClick={onNewQuestion}>
+                    Generate New Question
+                </Button>
+              </div>
             </form>
           </Form>
         </CardContent>

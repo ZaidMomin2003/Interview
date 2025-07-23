@@ -1,18 +1,26 @@
 // src/app/(app)/notes/[topic]/page.tsx
+'use client'
+
 import { handleGenerateNotes } from '@/lib/actions';
-import { notFound } from 'next/navigation';
+import { useParams, useSearchParams, notFound } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ClipboardList, BookOpen, ThumbsDown, ThumbsUp, Bookmark } from 'lucide-react';
 import { NoteCodeBlock } from '@/components/feature/note-code-block';
 import { marked } from 'marked';
 import { Button } from '@/components/ui/button';
-import { Suspense } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
+import type { GenerateNotesOutput } from '@/ai/flows/generate-notes';
+import { useUserData } from '@/hooks/use-user-data';
+import { useToast } from '@/hooks/use-toast';
 
 // This is a server component that fetches data on the server.
-export default async function NotesPage({ params, searchParams }: { params: { topic: string }, searchParams: { difficulty?: string } }) {
-  const topic = decodeURIComponent(params.topic);
-  const difficulty = searchParams.difficulty || 'intermediate';
+export default function NotesPage() {
+  const params = useParams();
+  const searchParams = useSearchParams();
+
+  const topic = typeof params.topic === 'string' ? decodeURIComponent(params.topic) : '';
+  const difficulty = searchParams.get('difficulty') || 'intermediate';
 
   if (!topic) {
     notFound();
@@ -25,32 +33,61 @@ export default async function NotesPage({ params, searchParams }: { params: { to
   )
 }
 
-async function NotesContent({ topic, difficulty }: { topic: string, difficulty: string }) {
-   let notes;
-  try {
-    notes = await handleGenerateNotes({ topic, difficulty });
-  } catch (error) {
-    console.error('Failed to generate notes:', error);
-    // Render an error state, or you could redirect
-    return (
+function NotesContent({ topic, difficulty }: { topic: string, difficulty: string }) {
+  const [notes, setNotes] = useState<GenerateNotesOutput | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const { addBookmark, addHistoryItem } = useUserData();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    async function fetchNotes() {
+      try {
+        const result = await handleGenerateNotes({ topic, difficulty });
+        setNotes(result);
+        addHistoryItem({
+          id: `note-${Date.now()}`,
+          type: 'Notes Generation',
+          description: `Generated notes on "${result.title}".`,
+          timestamp: new Date(),
+        });
+      } catch (err) {
+        console.error('Failed to generate notes:', err);
+        setError(err instanceof Error ? err.message : 'An unknown error occurred.');
+      }
+    }
+    fetchNotes();
+  }, [topic, difficulty, addHistoryItem]);
+
+
+  const handleBookmark = () => {
+    if (!notes) return;
+    addBookmark({
+      id: `note-${topic}-${difficulty}`,
+      type: 'note',
+      title: notes.title,
+      description: `Difficulty: ${difficulty}. ${notes.introduction.substring(0, 100)}...`,
+      href: `/notes/${encodeURIComponent(topic)}?difficulty=${difficulty}`,
+    });
+    toast({
+      title: 'Note Bookmarked!',
+      description: 'You can find this note in your bookmarks.',
+    });
+  };
+
+  if (error) {
+     return (
       <div className="space-y-8 text-center">
         <h1 className="text-3xl md:text-4xl font-bold font-headline text-destructive">Unable to Generate Notes</h1>
         <p className="text-muted-foreground max-w-lg mx-auto">
           The AI service is currently experiencing high demand and could not generate notes for the topic: "{topic}". Please try again in a few moments.
         </p>
+         <pre className="text-xs text-left bg-secondary p-4 rounded-md">{error}</pre>
       </div>
     );
   }
 
   if (!notes) {
-    return (
-       <div className="space-y-8">
-        <h1 className="text-3xl md:text-4xl font-bold font-headline">No Notes Found</h1>
-        <p className="text-muted-foreground">
-          We could not find or generate notes for the topic: "{topic}".
-        </p>
-      </div>
-    )
+    return <NotesSkeleton topic={topic} />
   }
 
   return (
@@ -62,7 +99,7 @@ async function NotesContent({ topic, difficulty }: { topic: string, difficulty: 
                 <h1 className="text-4xl md:text-5xl font-bold font-headline text-primary">{notes.title}</h1>
                 <p className="mt-4 text-lg text-muted-foreground max-w-3xl">{notes.introduction}</p>
             </div>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={handleBookmark}>
                 <Bookmark className="mr-2 h-4 w-4"/>
                 Bookmark Note
             </Button>
