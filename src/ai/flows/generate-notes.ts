@@ -25,6 +25,7 @@ const SectionSchema = z.object({
 
 const GenerateNotesInputSchema = z.object({
   topic: z.string().describe("The technical topic for which to generate notes (e.g., 'Data Structures', 'Big O Notation')."),
+  difficulty: z.string().describe("The desired difficulty level for the notes (e.g., 'Beginner', 'Intermediate', 'Advanced')."),
 });
 export type GenerateNotesInput = z.infer<typeof GenerateNotesInputSchema>;
 
@@ -45,11 +46,12 @@ const prompt = ai.definePrompt({
   name: 'generateNotesPrompt',
   input: {schema: GenerateNotesInputSchema},
   output: {schema: GenerateNotesOutputSchema},
-  prompt: `You are an expert computer science educator. Your task is to generate comprehensive, clear, and well-structured study notes on a given technical topic.
+  prompt: `You are an expert computer science educator. Your task is to generate comprehensive, clear, and well-structured study notes on a given technical topic, tailored to a specific difficulty level.
 
 The notes should be broken down into logical sections, each with a title and detailed content. Where appropriate, include a code example to illustrate the concept, including the result of running that code.
 
 Topic: {{{topic}}}
+Difficulty: {{{difficulty}}}
 
 Structure the output with a main title, an introduction, multiple sections, and a final summary. The content should be written in Markdown for easy formatting.
 For each code example, also provide the expected output in the 'result' field.

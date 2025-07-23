@@ -171,6 +171,7 @@ export async function handleCalculateSalary(data: CalculateSalaryInput) {
 
 const generateNotesSchema = z.object({
     topic: z.string().min(2, "Topic must be at least 2 characters."),
+    difficulty: z.string().min(1, "Difficulty is required."),
 });
 
 export async function handleGenerateNotes(data: GenerateNotesInput) {

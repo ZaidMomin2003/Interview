@@ -12,9 +12,11 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Loader2, BookOpen, Wand2, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const formSchema = z.object({
   topic: z.string().min(2, { message: 'Please enter a topic to get notes on.' }),
+  difficulty: z.string().min(1, { message: 'Please select a difficulty level.' }),
 });
 
 export default function NotesLandingPage() {
@@ -23,12 +25,12 @@ export default function NotesLandingPage() {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: { topic: '' },
+    defaultValues: { topic: '', difficulty: 'intermediate' },
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    router.push(`/notes/${encodeURIComponent(values.topic)}`);
+    router.push(`/notes/${encodeURIComponent(values.topic)}?difficulty=${encodeURIComponent(values.difficulty)}`);
   }
 
   return (
@@ -52,21 +54,43 @@ export default function NotesLandingPage() {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="flex items-start gap-4">
-              <FormField
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+               <FormField
                 control={form.control}
                 name="topic"
                 render={({ field }) => (
-                  <FormItem className="flex-grow">
-                    <FormLabel className="sr-only">Topic</FormLabel>
+                  <FormItem>
+                    <FormLabel>Topic</FormLabel>
                     <FormControl>
                       <Input placeholder="e.g., 'Big O Notation', 'React Hooks', 'System Design Basics'" {...field} />
                     </FormControl>
-                    <FormMessage className="mt-2" />
+                    <FormMessage />
                   </FormItem>
                 )}
               />
-              <Button type="submit" disabled={isLoading}>
+               <FormField
+                control={form.control}
+                name="difficulty"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Difficulty Level</FormLabel>
+                     <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a difficulty..." />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="beginner">Beginner</SelectItem>
+                        <SelectItem value="intermediate">Intermediate</SelectItem>
+                        <SelectItem value="advanced">Advanced</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button type="submit" disabled={isLoading} className="w-full">
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -74,7 +98,7 @@ export default function NotesLandingPage() {
                   </>
                 ) : (
                     <>
-                    Generate <ArrowRight className="ml-2 h-4 w-4" />
+                    Generate Notes <ArrowRight className="ml-2 h-4 w-4" />
                     </>
                 )}
               </Button>

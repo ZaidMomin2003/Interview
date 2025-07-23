@@ -6,18 +6,29 @@ import { ClipboardList, BookOpen, ThumbsDown, ThumbsUp, Bookmark } from 'lucide-
 import { NoteCodeBlock } from '@/components/feature/note-code-block';
 import { marked } from 'marked';
 import { Button } from '@/components/ui/button';
+import { Suspense } from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 // This is a server component that fetches data on the server.
-export default async function NotesPage({ params }: { params: { topic: string } }) {
+export default async function NotesPage({ params, searchParams }: { params: { topic: string }, searchParams: { difficulty?: string } }) {
   const topic = decodeURIComponent(params.topic);
+  const difficulty = searchParams.difficulty || 'intermediate';
 
   if (!topic) {
     notFound();
   }
+  
+  return (
+      <Suspense fallback={<NotesSkeleton topic={topic} />}>
+        <NotesContent topic={topic} difficulty={difficulty} />
+      </Suspense>
+  )
+}
 
-  let notes;
+async function NotesContent({ topic, difficulty }: { topic: string, difficulty: string }) {
+   let notes;
   try {
-    notes = await handleGenerateNotes({ topic });
+    notes = await handleGenerateNotes({ topic, difficulty });
   } catch (error) {
     console.error('Failed to generate notes:', error);
     // Render an error state, or you could redirect
@@ -123,4 +134,50 @@ export default async function NotesPage({ params }: { params: { topic: string } 
       </div>
     </div>
   );
+}
+
+
+function NotesSkeleton({ topic }: { topic: string }) {
+    return (
+        <div className="space-y-12">
+            {/* Header */}
+            <div className="border-b border-border pb-8">
+                <Skeleton className="h-12 w-3/4" />
+                <Skeleton className="h-6 w-1/2 mt-4" />
+            </div>
+
+            {/* Main Content */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+                <div className="lg:col-span-2 space-y-8">
+                    {[...Array(3)].map((_, index) => (
+                        <Card key={index} className="bg-secondary/30">
+                            <CardHeader>
+                                <Skeleton className="h-8 w-1/2" />
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                               <Skeleton className="h-4 w-full" />
+                               <Skeleton className="h-4 w-full" />
+                               <Skeleton className="h-4 w-5/6" />
+                               <Skeleton className="h-32 w-full mt-4" />
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
+
+                {/* Sidebar */}
+                <aside className="lg:sticky lg:top-8 space-y-8">
+                    <Card className="bg-secondary/30">
+                        <CardHeader>
+                           <Skeleton className="h-6 w-3/4"/>
+                        </CardHeader>
+                        <CardContent className="space-y-2">
+                           <Skeleton className="h-4 w-full" />
+                           <Skeleton className="h-4 w-full" />
+                           <Skeleton className="h-4 w-2/3" />
+                        </CardContent>
+                    </Card>
+                </aside>
+            </div>
+        </div>
+    );
 }
