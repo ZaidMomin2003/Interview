@@ -494,7 +494,7 @@ export default function LandingPage() {
       {/* Header */}
       <header className={cn(
           "sticky top-0 z-50 w-full transition-all duration-300",
-          isScrolled ? "bg-background/80 backdrop-blur-sm border-b border-border/50" : "bg-transparent"
+          isScrolled ? "bg-background/90 backdrop-blur-lg border-b border-border/50 shadow-md" : "bg-transparent"
         )}>
         <div className="container mx-auto flex h-20 items-center justify-between px-4">
           <Link href="/" className="flex items-center gap-2">
@@ -504,14 +504,14 @@ export default function LandingPage() {
             </span>
           </Link>
           
-          <nav className="hidden md:flex items-center gap-6">
-            <Link href="#features" onClick={handleSmoothScroll} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Features</Link>
-            <Link href="#who-is-this-for" onClick={handleSmoothScroll} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Who It's For</Link>
-            <Link href="#testimonials" onClick={handleSmoothScroll} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Testimonials</Link>
-            <Link href="#about" onClick={handleSmoothScroll} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">About</Link>
-            <Link href="#pricing" onClick={handleSmoothScroll} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Pricing</Link>
-            <Link href="#faq" onClick={handleSmoothScroll} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">FAQ</Link>
-            <Link href="#contact" onClick={handleSmoothScroll} className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Contact</Link>
+          <nav className="hidden md:flex items-center gap-1">
+            <Link href="#features" onClick={handleSmoothScroll} className="text-sm font-medium text-muted-foreground hover:bg-accent/50 hover:text-primary transition-colors px-3 py-2 rounded-md">Features</Link>
+            <Link href="#who-is-this-for" onClick={handleSmoothScroll} className="text-sm font-medium text-muted-foreground hover:bg-accent/50 hover:text-primary transition-colors px-3 py-2 rounded-md">Who It's For</Link>
+            <Link href="#testimonials" onClick={handleSmoothScroll} className="text-sm font-medium text-muted-foreground hover:bg-accent/50 hover:text-primary transition-colors px-3 py-2 rounded-md">Testimonials</Link>
+            <Link href="#about" onClick={handleSmoothScroll} className="text-sm font-medium text-muted-foreground hover:bg-accent/50 hover:text-primary transition-colors px-3 py-2 rounded-md">About</Link>
+            <Link href="#pricing" onClick={handleSmoothScroll} className="text-sm font-medium text-muted-foreground hover:bg-accent/50 hover:text-primary transition-colors px-3 py-2 rounded-md">Pricing</Link>
+            <Link href="#faq" onClick={handleSmoothScroll} className="text-sm font-medium text-muted-foreground hover:bg-accent/50 hover:text-primary transition-colors px-3 py-2 rounded-md">FAQ</Link>
+            <Link href="#contact" onClick={handleSmoothScroll} className="text-sm font-medium text-muted-foreground hover:bg-accent/50 hover:text-primary transition-colors px-3 py-2 rounded-md">Contact</Link>
           </nav>
 
           <div className="flex items-center gap-2">
