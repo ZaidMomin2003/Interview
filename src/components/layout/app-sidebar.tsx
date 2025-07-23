@@ -32,7 +32,6 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { ThemeToggle } from "./theme-toggle";
-import { Progress } from "../ui/progress";
 
 const menuItems = [
    {
@@ -66,59 +65,6 @@ const menuItems = [
     icon: GalleryVertical,
   },
 ];
-
-// Placeholder data for credits
-const creditUsage = {
-    interviews: { used: 3, total: 10 },
-    codingQuestions: { used: 25, total: 60 },
-    notes: { used: 12, total: 30 },
-};
-
-const CreditUsageCard = () => {
-    const interviewProgress = (creditUsage.interviews.used / creditUsage.interviews.total) * 100;
-    const questionsProgress = (creditUsage.codingQuestions.used / creditUsage.codingQuestions.total) * 100;
-    const notesProgress = (creditUsage.notes.used / creditUsage.notes.total) * 100;
-
-    return (
-        <div className="px-4 group-data-[collapsible=icon]:hidden">
-            <div className="p-3 rounded-lg bg-secondary/50 border border-border/50 space-y-3 text-sm">
-                <h4 className="font-semibold text-foreground">Credit Usage</h4>
-                <div className="space-y-3">
-                    <div className="flex items-center gap-2">
-                        <Video className="w-4 h-4 text-muted-foreground" />
-                        <div className="flex-grow">
-                             <div className="flex justify-between text-xs text-muted-foreground mb-1">
-                                <span>Interviews</span>
-                                <span>{creditUsage.interviews.used} / {creditUsage.interviews.total}</span>
-                            </div>
-                            <Progress value={interviewProgress} className="h-1.5"/>
-                        </div>
-                    </div>
-                     <div className="flex items-center gap-2">
-                        <CodeXml className="w-4 h-4 text-muted-foreground" />
-                        <div className="flex-grow">
-                             <div className="flex justify-between text-xs text-muted-foreground mb-1">
-                                <span>Coding Questions</span>
-                                <span>{creditUsage.codingQuestions.used} / {creditUsage.codingQuestions.total}</span>
-                            </div>
-                            <Progress value={questionsProgress} className="h-1.5"/>
-                        </div>
-                    </div>
-                     <div className="flex items-center gap-2">
-                        <FileText className="w-4 h-4 text-muted-foreground" />
-                        <div className="flex-grow">
-                             <div className="flex justify-between text-xs text-muted-foreground mb-1">
-                                <span>Notes</span>
-                                <span>{creditUsage.notes.used} / {creditUsage.notes.total}</span>
-                            </div>
-                            <Progress value={notesProgress} className="h-1.5"/>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    )
-}
 
 export function AppSidebar() {
   const pathname = usePathname();
@@ -168,10 +114,6 @@ export function AppSidebar() {
         ))}
       </SidebarMenu>
       
-      <div className="flex-grow" />
-
-      <CreditUsageCard />
-
       <SidebarFooter className="border-t mt-auto p-2 space-y-2">
          <SidebarMenuItem>
             <SidebarMenuButton

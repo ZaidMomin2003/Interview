@@ -3,7 +3,7 @@
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CodeXml, FileText, ArrowRight, Video, Target, CheckCircle, PercentCircle, BarChartHorizontalBig, Info } from "lucide-react";
+import { CodeXml, FileText, ArrowRight, Video, Target, CheckCircle, PercentCircle, BarChartHorizontalBig, Info, BrainCircuit } from "lucide-react";
 import Link from "next/link";
 import { ChartContainer, ChartTooltipContent, ChartLegend, ChartLegendContent, ChartTooltip } from "@/components/ui/chart";
 import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip, RadialBarChart, RadialBar, LabelList, LineChart, Line, CartesianGrid } from "recharts";
@@ -11,9 +11,9 @@ import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip, RadialBarC
 
 // Placeholder data
 const progressData = {
-    interviewsCompleted: 3,
-    codingQuestionsSolved: 42,
-    mcqsAnswered: 128,
+    interviews: { used: 3, total: 10 },
+    codingQuestions: { used: 42, total: 60 },
+    notes: { used: 12, total: 30 },
 };
 
 const dailyActivity = [
@@ -64,32 +64,32 @@ export default function DashboardPage() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <Card className="bg-secondary/30 backdrop-blur-sm">
                       <CardHeader className="flex flex-row items-center justify-between pb-2">
-                          <CardTitle className="text-sm font-medium">Interviews Completed</CardTitle>
+                          <CardTitle className="text-sm font-medium">Interviews Usage</CardTitle>
                           <Video className="h-4 w-4 text-muted-foreground" />
                       </CardHeader>
                       <CardContent>
-                          <div className="text-2xl font-bold">{progressData.interviewsCompleted}</div>
-                          <p className="text-xs text-muted-foreground">+1 since last week</p>
+                          <div className="text-2xl font-bold">{progressData.interviews.used} / {progressData.interviews.total}</div>
+                          <p className="text-xs text-muted-foreground">Credits remaining for this cycle</p>
                       </CardContent>
                   </Card>
                    <Card className="bg-secondary/30 backdrop-blur-sm">
                       <CardHeader className="flex flex-row items-center justify-between pb-2">
-                          <CardTitle className="text-sm font-medium">Coding Questions Solved</CardTitle>
+                          <CardTitle className="text-sm font-medium">Coding Questions Usage</CardTitle>
                           <CodeXml className="h-4 w-4 text-muted-foreground" />
                       </CardHeader>
                       <CardContent>
-                          <div className="text-2xl font-bold">{progressData.codingQuestionsSolved}</div>
-                          <p className="text-xs text-muted-foreground">+12 since last week</p>
+                          <div className="text-2xl font-bold">{progressData.codingQuestions.used} / {progressData.codingQuestions.total}</div>
+                          <p className="text-xs text-muted-foreground">Credits remaining for this cycle</p>
                       </CardContent>
                   </Card>
                    <Card className="bg-secondary/30 backdrop-blur-sm">
                       <CardHeader className="flex flex-row items-center justify-between pb-2">
-                          <CardTitle className="text-sm font-medium">MCQs Answered</CardTitle>
-                          <CheckCircle className="h-4 w-4 text-muted-foreground" />
+                          <CardTitle className="text-sm font-medium">Notes Generations</CardTitle>
+                          <BrainCircuit className="h-4 w-4 text-muted-foreground" />
                       </CardHeader>
                       <CardContent>
-                          <div className="text-2xl font-bold">{progressData.mcqsAnswered}</div>
-                           <p className="text-xs text-muted-foreground">92% accuracy</p>
+                          <div className="text-2xl font-bold">{progressData.notes.used} / {progressData.notes.total}</div>
+                           <p className="text-xs text-muted-foreground">Credits remaining for this cycle</p>
                       </CardContent>
                   </Card>
               </div>
