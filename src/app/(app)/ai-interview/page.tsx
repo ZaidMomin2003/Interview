@@ -247,7 +247,7 @@ function AiInterviewComponent() {
             <Card className="w-full h-48 md:h-full bg-secondary border-border flex flex-col items-center justify-center">
                <CardContent className="p-6 text-center">
                   <Image
-                      src="https://placehold.co/128x128.png"
+                      src="/ai-interviewer.png"
                       alt="AI Interviewer"
                       width={128}
                       height={128}
