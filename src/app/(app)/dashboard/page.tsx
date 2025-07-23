@@ -67,7 +67,7 @@ export default function DashboardPage() {
     const score = Math.min(
       Math.floor(
         (interviewsUsed * 10 + questionsUsed * 2 + recentHistory.length) / 
-        (planLimits.interviews * 10 + planLimits.codingQuestions * 2) * 100
+        (planLimits.interviews * 5 + planLimits.codingQuestions * 1 + planLimits.notes * 0.5 + 50) * 100 // Adjusted denominator for better scaling
       ), 100
     );
     
