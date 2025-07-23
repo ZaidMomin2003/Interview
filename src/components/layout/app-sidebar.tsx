@@ -15,10 +15,8 @@ import {
   LayoutDashboard,
   FileText,
   LogOut,
-  Target,
   GalleryVertical,
   Cpu,
-  Tags,
   Rocket,
   CodeXml,
   Video,
@@ -30,13 +28,13 @@ import { usePathname } from "next/navigation";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../ui/dialog";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import { Input } from "../ui/input";
 
 const menuItems = [
    {
@@ -55,7 +53,7 @@ const menuItems = [
     icon: CodeXml,
   },
   {
-    href: "/notes",
+    id: "ai-notes",
     label: "AI Notes",
     icon: BookOpen,
   },
@@ -76,6 +74,9 @@ const interviewSetupSchema = z.object({
   difficulty: z.string().min(1, "Please select a difficulty level."),
 });
 
+const notesSetupSchema = z.object({
+  topic: z.string().min(2, "Please enter a topic."),
+});
 
 function InterviewSetupForm({ onSetupComplete }: { onSetupComplete: () => void }) {
   const router = useRouter();
@@ -93,7 +94,7 @@ function InterviewSetupForm({ onSetupComplete }: { onSetupComplete: () => void }
     setIsSubmitting(true);
     const url = `/ai-interview?topic=${encodeURIComponent(values.topic)}&difficulty=${encodeURIComponent(values.difficulty)}`;
     router.push(url);
-    // The onSetupComplete callback will be called by the Dialog's onOpenChange
+    onSetupComplete();
   }
 
   return (
@@ -154,12 +155,54 @@ function InterviewSetupForm({ onSetupComplete }: { onSetupComplete: () => void }
   );
 }
 
+function NotesSetupForm({ onSetupComplete }: { onSetupComplete: () => void }) {
+  const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const form = useForm<z.infer<typeof notesSetupSchema>>({
+    resolver: zodResolver(notesSetupSchema),
+    defaultValues: { topic: "" },
+  });
+
+  function onSubmit(values: z.infer<typeof notesSetupSchema>) {
+    setIsSubmitting(true);
+    const url = `/notes/${encodeURIComponent(values.topic)}`;
+    router.push(url);
+    onSetupComplete();
+  }
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <FormField
+          control={form.control}
+          name="topic"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Notes Topic</FormLabel>
+               <FormControl>
+                <Input placeholder="e.g., 'Big O Notation', 'React Hooks'" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button type="submit" className="w-full" disabled={isSubmitting}>
+          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          Generate Notes
+        </Button>
+      </form>
+    </Form>
+  );
+}
+
 
 export function AppSidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
   const [isInterviewDialogOpen, setIsInterviewDialogOpen] = useState(false);
+  const [isNotesDialogOpen, setIsNotesDialogOpen] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -167,6 +210,14 @@ export function AppSidebar() {
       router.push('/login');
     } catch (error) {
       console.error("Error signing out: ", error);
+    }
+  };
+  
+  const handleMenuItemClick = (id?: string) => {
+    if (id === 'ai-interview') {
+      setIsInterviewDialogOpen(true);
+    } else if (id === 'ai-notes') {
+      setIsNotesDialogOpen(true);
     }
   };
 
@@ -204,8 +255,8 @@ export function AppSidebar() {
               </SidebarMenuButton>
             ) : (
                <SidebarMenuButton
-                onClick={() => setIsInterviewDialogOpen(true)}
-                isActive={pathname.startsWith('/ai-interview')}
+                onClick={() => handleMenuItemClick(item.id)}
+                isActive={pathname.startsWith(`/${item.id}`)}
                 tooltip={item.label}
                 className="justify-start group-data-[collapsible=icon]:justify-center"
               >
@@ -233,9 +284,6 @@ export function AppSidebar() {
             </SidebarMenuButton>
           </SidebarMenuItem>
         
-        <div className="flex items-center justify-between group-data-[collapsible=icon]:justify-center">
-        </div>
-        
         <SidebarMenu>
           <SidebarMenuItem className="group-data-[collapsible=icon]:hidden">
             <SidebarMenuButton tooltip="Log Out" onClick={handleLogout} variant="ghost" className="text-muted-foreground hover:bg-destructive hover:text-destructive-foreground justify-start group-data-[collapsible=icon]:justify-center">
@@ -244,7 +292,6 @@ export function AppSidebar() {
             </SidebarMenuButton>
           </SidebarMenuItem>
           
-          {/* Collapsed view footer */}
            <SidebarMenuItem className="hidden group-data-[collapsible=icon]:block">
             <SidebarMenuButton tooltip="Log Out" onClick={handleLogout} variant="ghost" className="text-muted-foreground hover:bg-destructive hover:text-destructive-foreground justify-start group-data-[collapsible=icon]:justify-center">
               <LogOut />
@@ -254,17 +301,30 @@ export function AppSidebar() {
         </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
+
     <Dialog open={isInterviewDialogOpen} onOpenChange={setIsInterviewDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle className="font-headline text-2xl">Setup Your Mock Interview</DialogTitle>
-            <DialogDescription>
-              Choose a topic and difficulty to begin your practice session.
-            </DialogDescription>
-          </DialogHeader>
-          <InterviewSetupForm onSetupComplete={() => setIsInterviewDialogOpen(false)} />
-        </DialogContent>
-      </Dialog>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle className="font-headline text-2xl">Setup Your Mock Interview</DialogTitle>
+          <DialogDescription>
+            Choose a topic and difficulty to begin your practice session.
+          </DialogDescription>
+        </DialogHeader>
+        <InterviewSetupForm onSetupComplete={() => setIsInterviewDialogOpen(false)} />
+      </DialogContent>
+    </Dialog>
+    
+     <Dialog open={isNotesDialogOpen} onOpenChange={setIsNotesDialogOpen}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle className="font-headline text-2xl">Generate AI Notes</DialogTitle>
+          <DialogDescription>
+            Enter a topic, and our AI will create detailed study notes for you.
+          </DialogDescription>
+        </DialogHeader>
+        <NotesSetupForm onSetupComplete={() => setIsNotesDialogOpen(false)} />
+      </DialogContent>
+    </Dialog>
     </>
   );
 }
