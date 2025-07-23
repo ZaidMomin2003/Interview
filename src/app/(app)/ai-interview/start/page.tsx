@@ -11,9 +11,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Loader2, Video, ArrowRight } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 
 const interviewSetupSchema = z.object({
-  topic: z.string().min(1, "Please select a topic."),
+  topic: z.string().optional(),
   difficulty: z.string().min(1, "Please select a difficulty level."),
 });
 
@@ -31,7 +32,7 @@ export default function AiInterviewStartPage() {
 
   function onSubmit(values: z.infer<typeof interviewSetupSchema>) {
     setIsSubmitting(true);
-    const url = `/ai-interview?topic=${encodeURIComponent(values.topic)}&difficulty=${encodeURIComponent(values.difficulty)}`;
+    const url = `/ai-interview?topic=${encodeURIComponent(values.topic || 'General')}&difficulty=${encodeURIComponent(values.difficulty)}`;
     router.push(url);
   }
 
@@ -60,20 +61,10 @@ export default function AiInterviewStartPage() {
                 name="topic"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Interview Topic</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a topic..." />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="behavioral">Behavioral</SelectItem>
-                        <SelectItem value="technical-deep-dive">Technical Deep Dive</SelectItem>
-                        <SelectItem value="system-design">System Design</SelectItem>
-                        <SelectItem value="algorithms-data-structures">Algorithms & Data Structures</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <FormLabel>Interview Topic (Optional)</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g., System Design, Behavioral, React Hooks" {...field} />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
