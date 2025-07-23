@@ -2,21 +2,28 @@
 // src/app/(app)/ai-interview/page.tsx
 'use client';
 
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef, useCallback, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { AlertCircle, Bot, Bookmark } from 'lucide-react';
+import { AlertCircle, Bot, Bookmark, HelpCircle } from 'lucide-react';
 import { Mic, MicOff, Video, VideoOff, PhoneOff } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 
 // Check for SpeechRecognition API
 const SpeechRecognition =
   (typeof window !== 'undefined' && (window.SpeechRecognition || window.webkitSpeechRecognition));
 
-export default function AiInterviewPage() {
+function AiInterviewComponent() {
+  const searchParams = useSearchParams();
+  const topic = searchParams.get('topic');
+  const difficulty = searchParams.get('difficulty');
+  
   const { toast } = useToast();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [hasCameraPermission, setHasCameraPermission] = useState(false);
@@ -38,7 +45,6 @@ export default function AiInterviewPage() {
   const startListening = useCallback(() => {
     if (!SpeechRecognition || !recognitionRef.current) return;
     
-    // Clear transcript only when starting a new session
     setTranscript('');
     
     try {
@@ -97,9 +103,7 @@ export default function AiInterviewPage() {
             interimTranscript += event.results[i][0].transcript;
           }
         }
-         // Use a callback with setTranscript to ensure we have the latest state
         setTranscript(prevTranscript => {
-            // Check if the final transcript part is already included
             if(event.results[event.results.length-1].isFinal) {
                return prevTranscript.replace(/Listening...$/, '') + finalTranscript + ' ';
             }
@@ -139,7 +143,6 @@ export default function AiInterviewPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); 
 
-  // This effect manages the onend behavior based on the isListening state
   useEffect(() => {
     const recognition = recognitionRef.current;
     if (!recognition) return;
@@ -148,11 +151,10 @@ export default function AiInterviewPage() {
       if (isListening) {
         console.log("Speech recognition ended, restarting...");
         try {
-          // No need to call stopListening() here, just restart
           recognition.start();
         } catch(e) {
           console.error("Failed to restart recognition:", e);
-          setIsListening(false); // Set to false on failure to restart
+          setIsListening(false);
         }
       }
     };
@@ -193,6 +195,23 @@ export default function AiInterviewPage() {
   return (
     <div className="max-w-6xl mx-auto w-full p-0 sm:p-4">
       <div className="flex flex-col h-full bg-background text-foreground sm:p-4 gap-4 rounded-none sm:rounded-lg border-y sm:border border-border">
+        
+        {/* Header with interview details */}
+        {(topic || difficulty) && (
+             <div className="p-4 sm:p-0">
+                <Card className="bg-secondary/30">
+                    <CardHeader>
+                       <CardTitle className="font-headline text-2xl">Interview Session</CardTitle>
+                       <CardDescription>Your mock interview is ready. Good luck!</CardDescription>
+                       <div className="flex flex-wrap gap-2 pt-2">
+                         {topic && <Badge variant="secondary">Topic: {topic}</Badge>}
+                         {difficulty && <Badge variant="secondary" className="capitalize">Difficulty: {difficulty}</Badge>}
+                       </div>
+                    </CardHeader>
+                </Card>
+             </div>
+        )}
+
         <div className="flex-grow grid grid-cols-1 md:grid-cols-3 gap-4 p-4 sm:p-0">
           {/* Main Video Panel (User) */}
           <div className="md:col-span-2 relative w-full h-full bg-secondary rounded-lg overflow-hidden flex items-center justify-center min-h-[30vh] md:min-h-0 md:aspect-video">
@@ -287,3 +306,13 @@ export default function AiInterviewPage() {
     </div>
   );
 }
+
+
+export default function AiInterviewPage() {
+    return (
+        <Suspense fallback={<div><Skeleton className="h-24 w-full" /><Skeleton className="h-96 w-full mt-4" /></div>}>
+            <AiInterviewComponent />
+        </Suspense>
+    );
+}
+
