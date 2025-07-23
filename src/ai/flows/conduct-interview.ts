@@ -54,13 +54,18 @@ Here is the conversation history so far:
 
 
 async function textToSpeech(text: string) {
-    const { media } = await ai.generate({
-      model: googleAI.model('gemini-2.5-flash-preview-tts'),
-      config: {
+    const hasMarkers = /\(([^)]+)\)/.test(text);
+
+    const model = googleAI.model('gemini-2.5-flash-preview-tts');
+    let config: any = {
         responseModalities: ['AUDIO'],
-        speechConfig: {
-           multiSpeakerVoiceConfig: {
-            speakerVoiceConfigs: [
+        speechConfig: {}
+    };
+    let promptText = text;
+
+    if (hasMarkers) {
+        config.speechConfig.multiSpeakerVoiceConfig = {
+             speakerVoiceConfigs: [
               {
                 speaker: 'Interviewer',
                 voiceConfig: {
@@ -68,17 +73,21 @@ async function textToSpeech(text: string) {
                 },
               },
                {
-                speaker: 'Candidate',
+                speaker: 'Candidate', // Not used but good to have
                 voiceConfig: {
                   prebuiltVoiceConfig: { voiceName: 'Achernar' },
                 },
               },
             ],
-          },
-        },
-      },
-      prompt: `Interviewer: ${text}`,
-    });
+        };
+        promptText = `Interviewer: ${text}`;
+    } else {
+        config.speechConfig.voiceConfig = {
+            prebuiltVoiceConfig: { voiceName: 'Algenib' },
+        };
+    }
+    
+    const { media } = await ai.generate({ model, config, prompt: promptText });
 
     if (!media?.url) {
       throw new Error('TTS service failed to generate audio.');
