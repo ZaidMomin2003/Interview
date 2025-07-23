@@ -8,18 +8,13 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
-import { InterviewMessageSchema } from '@/ai/types/interview-types';
+import {
+    SummarizeInterviewInput,
+    SummarizeInterviewInputSchema,
+    SummarizeInterviewOutput,
+    SummarizeInterviewOutputSchema
+} from "@/ai/types/interview-types";
 
-export const SummarizeInterviewInputSchema = z.object({
-  messages: z.array(InterviewMessageSchema),
-});
-export type SummarizeInterviewInput = z.infer<typeof SummarizeInterviewInputSchema>;
-
-export const SummarizeInterviewOutputSchema = z.object({
-  summary: z.string().describe('A concise summary of the candidate\'s performance, highlighting strengths and areas for improvement.'),
-});
-export type SummarizeInterviewOutput = z.infer<typeof SummarizeInterviewOutputSchema>;
 
 export async function summarizeInterview(
   input: SummarizeInterviewInput
