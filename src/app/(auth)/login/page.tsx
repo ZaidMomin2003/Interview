@@ -13,7 +13,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Cpu, FileText, CodeXml, Video, CheckCircle, Star, Github } from 'lucide-react';
+import { Loader2, Cpu, FileText, CodeXml, Video, CheckCircle, Star } from 'lucide-react';
 
 const loginFormSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address." }),
@@ -29,6 +29,17 @@ const TrustFeature = ({ icon, title, description }: { icon: React.ReactNode, tit
         </div>
     </div>
 );
+
+const GoogleIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="24px" height="24px">
+      <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.61l6.88-6.88C35.84 2.61 30.34 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+      <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.42-4.55H24v8.51h12.8c-.57 3.01-2.2 5.56-4.81 7.32l7.6 5.89C44.43 38.13 47.16 31.95 46.98 24.55z" />
+      <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+      <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.6-5.89c-2.16 1.45-4.92 2.3-8.29 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+      <path fill="none" d="M0 0h48v48H0z" />
+    </svg>
+);
+
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -155,9 +166,16 @@ export default function LoginPage() {
                         <span className="bg-secondary px-2 text-muted-foreground">Or continue with</span>
                     </div>
                 </div>
-              <Button onClick={handleGoogleLogin} disabled={isLoading} className="w-full" variant="outline">
-                {isLoading ? <Loader2 className="animate-spin" /> : <><Github className="mr-2 h-5 w-5" /> Sign In with Google</>}
-              </Button>
+                <Button onClick={handleGoogleLogin} disabled={isLoading} className="w-full bg-background hover:bg-secondary/80 text-foreground" variant="outline">
+                    {isLoading ? (
+                        <Loader2 className="animate-spin" />
+                    ) : (
+                        <>
+                            <GoogleIcon />
+                            <span className="ml-2">Sign In with Google</span>
+                        </>
+                    )}
+                </Button>
             </CardContent>
             <CardFooter className="flex justify-center">
                 <p className="text-sm text-muted-foreground">
