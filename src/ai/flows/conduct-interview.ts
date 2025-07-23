@@ -3,39 +3,18 @@
  * @fileOverview A conversational AI agent for conducting mock interviews.
  *
  * - conductInterview - A function that handles a single turn in the interview.
- * - InterviewTurnInput - The input type for the conductInterview function.
- * - InterviewTurnOutput - The return type for the conductInterview function.
  */
 
 import {ai} from '@/ai/genkit';
 import {googleAI} from '@genkit-ai/googleai';
-import {z} from 'genkit';
 import wav from 'wav';
-
-export const InterviewMessageSchema = z.object({
-  role: z.enum(['user', 'model']),
-  content: z.string(),
-});
-export type InterviewMessage = z.infer<typeof InterviewMessageSchema>;
-
-export const InterviewTurnInputSchema = z.object({
-  topic: z.string().describe('The main topic for the interview (e.g., System Design, React).'),
-  difficulty: z
-    .string()
-    .describe(
-      'The difficulty level of the interview (e.g., entry-level, senior).'
-    ),
-  messages: z
-    .array(InterviewMessageSchema)
-    .describe('The history of the conversation so far.'),
-});
-export type InterviewTurnInput = z.infer<typeof InterviewTurnInputSchema>;
-
-export const InterviewTurnOutputSchema = z.object({
-  audioDataUri: z.string().describe('The base64 encoded data URI of the generated audio response.'),
-  text: z.string().describe('The text content of the AI\'s response.'),
-});
-export type InterviewTurnOutput = z.infer<typeof InterviewTurnOutputSchema>;
+import {
+    InterviewMessage,
+    InterviewTurnInput,
+    InterviewTurnInputSchema,
+    InterviewTurnOutput,
+    InterviewTurnOutputSchema
+} from "@/ai/types/interview-types";
 
 
 export async function conductInterview(

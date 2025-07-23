@@ -9,8 +9,9 @@ import { calculateSalary } from "@/ai/flows/calculate-salary";
 import { CalculateSalaryInput, CalculateSalaryInputSchema } from "@/ai/types/salary-types";
 import { enhanceResumeSection, EnhanceResumeSectionInput } from "@/ai/flows/enhance-resume-section";
 import { generateNotes, GenerateNotesInput } from "@/ai/flows/generate-notes";
-import { conductInterview as conductInterviewFlow, InterviewTurnInput, InterviewTurnInputSchema } from "@/ai/flows/conduct-interview";
-import { summarizeInterview as summarizeInterviewFlow, SummarizeInterviewInput, SummarizeInterviewInputSchema } from "@/ai/flows/summarize-interview";
+import { conductInterview as conductInterviewFlow } from "@/ai/flows/conduct-interview";
+import { summarizeInterview as summarizeInterviewFlow } from "@/ai/flows/summarize-interview";
+import { InterviewTurnInput, InterviewTurnInputSchema, SummarizeInterviewInput, SummarizeInterviewInputSchema } from "@/ai/types/interview-types";
 
 
 const experienceSchema = z.object({

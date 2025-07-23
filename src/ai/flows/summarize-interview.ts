@@ -9,7 +9,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
-import { InterviewMessageSchema } from './conduct-interview';
+import { InterviewMessageSchema } from '@/ai/types/interview-types';
 
 export const SummarizeInterviewInputSchema = z.object({
   messages: z.array(InterviewMessageSchema),
