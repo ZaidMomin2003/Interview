@@ -141,7 +141,7 @@ function AiInterviewComponent() {
     addHistoryItem({
         id: `interview-${Date.now()}`,
         type: 'AI Interview',
-        description: `Started a mock interview on "${topic}" (${difficulty}).`,
+        description: `Started a mock interview on "${topic || 'General'}" (${difficulty || 'standard'}).`,
         timestamp: new Date(),
     });
 
@@ -246,7 +246,14 @@ function AiInterviewComponent() {
           <div className="flex flex-col gap-4">
             <Card className="w-full h-48 md:h-full bg-secondary border-border flex flex-col items-center justify-center">
                <CardContent className="p-6 text-center">
-                 <Bot className="h-16 md:h-24 w-16 md:w-24 text-primary/70 mx-auto" />
+                  <Image
+                      src="https://placehold.co/128x128.png"
+                      alt="AI Interviewer"
+                      width={128}
+                      height={128}
+                      className="rounded-full object-cover h-24 w-24 md:h-32 md:w-32 border-4 border-primary/30"
+                      data-ai-hint="professional person"
+                  />
                  <p className="mt-4 font-headline text-lg text-foreground">AI Interviewer</p>
                  <p className="text-sm text-muted-foreground">Ready when you are.</p>
               </CardContent>
