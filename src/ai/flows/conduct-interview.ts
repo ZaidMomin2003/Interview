@@ -12,7 +12,7 @@ import {googleAI} from '@genkit-ai/googleai';
 import {z} from 'genkit';
 import wav from 'wav';
 
-const InterviewMessageSchema = z.object({
+export const InterviewMessageSchema = z.object({
   role: z.enum(['user', 'model']),
   content: z.string(),
 });
