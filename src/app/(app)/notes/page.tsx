@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Loader2, BookOpen, Wand2, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 
 const formSchema = z.object({
   topic: z.string().min(2, { message: 'Please enter a topic to get notes on.' }),
