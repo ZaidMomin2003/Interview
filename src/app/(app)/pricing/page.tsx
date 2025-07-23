@@ -1,4 +1,3 @@
-
 // src/app/(app)/pricing/page.tsx
 'use client';
 
@@ -28,13 +27,13 @@ const pricingTiers = [
     },
     {
       name: 'Gladiator',
-      monthlyPrice: 19,
-      yearlyPrice: 15,
+      monthlyPrice: 29,
+      yearlyPrice: 23,
       description: 'For those serious about landing their next big role.',
       features: [
-        '25 AI Mock Interviews',
-        '130 Coding Questions',
-        '70 Notes Generations',
+        '40 AI Mock Interviews',
+        '160 Coding Questions',
+        '100 Notes Generations',
         'Priority Email Support',
       ],
       cta: 'Choose Gladiator',
