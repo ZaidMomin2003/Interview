@@ -28,13 +28,6 @@ import { usePathname } from "next/navigation";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../ui/dialog";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import { Input } from "../ui/input";
 
 const menuItems = [
    {
@@ -43,7 +36,7 @@ const menuItems = [
     icon: LayoutDashboard,
   },
   {
-    id: "ai-interview",
+    href: "/ai-interview/start",
     label: "AI Interview",
     icon: Video,
   },
@@ -53,7 +46,7 @@ const menuItems = [
     icon: CodeXml,
   },
   {
-    id: "ai-notes",
+    href: "/notes",
     label: "AI Notes",
     icon: BookOpen,
   },
@@ -69,140 +62,10 @@ const menuItems = [
   },
 ];
 
-const interviewSetupSchema = z.object({
-  topic: z.string().min(1, "Please select a topic."),
-  difficulty: z.string().min(1, "Please select a difficulty level."),
-});
-
-const notesSetupSchema = z.object({
-  topic: z.string().min(2, "Please enter a topic."),
-});
-
-function InterviewSetupForm({ onSetupComplete }: { onSetupComplete: () => void }) {
-  const router = useRouter();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const form = useForm<z.infer<typeof interviewSetupSchema>>({
-    resolver: zodResolver(interviewSetupSchema),
-    defaultValues: {
-      topic: "",
-      difficulty: "",
-    },
-  });
-
-  function onSubmit(values: z.infer<typeof interviewSetupSchema>) {
-    setIsSubmitting(true);
-    const url = `/ai-interview?topic=${encodeURIComponent(values.topic)}&difficulty=${encodeURIComponent(values.difficulty)}`;
-    router.push(url);
-    onSetupComplete();
-  }
-
-  return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <FormField
-          control={form.control}
-          name="topic"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Interview Topic</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a topic..." />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="behavioral">Behavioral</SelectItem>
-                  <SelectItem value="technical-deep-dive">Technical Deep Dive</SelectItem>
-                  <SelectItem value="system-design">System Design</SelectItem>
-                  <SelectItem value="algorithms-data-structures">Algorithms & Data Structures</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="difficulty"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Difficulty Level</FormLabel>
-               <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a difficulty..." />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="entry-level">Entry-level / Intern</SelectItem>
-                  <SelectItem value="mid-level">Mid-level</SelectItem>
-                  <SelectItem value="senior">Senior</SelectItem>
-                  <SelectItem value="staff-principal">Staff / Principal</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit" className="w-full" disabled={isSubmitting}>
-          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Start Interview
-        </Button>
-      </form>
-    </Form>
-  );
-}
-
-function NotesSetupForm({ onSetupComplete }: { onSetupComplete: () => void }) {
-  const router = useRouter();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const form = useForm<z.infer<typeof notesSetupSchema>>({
-    resolver: zodResolver(notesSetupSchema),
-    defaultValues: { topic: "" },
-  });
-
-  function onSubmit(values: z.infer<typeof notesSetupSchema>) {
-    setIsSubmitting(true);
-    const url = `/notes/${encodeURIComponent(values.topic)}`;
-    router.push(url);
-    onSetupComplete();
-  }
-
-  return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <FormField
-          control={form.control}
-          name="topic"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Notes Topic</FormLabel>
-               <FormControl>
-                <Input placeholder="e.g., 'Big O Notation', 'React Hooks'" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit" className="w-full" disabled={isSubmitting}>
-          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Generate Notes
-        </Button>
-      </form>
-    </Form>
-  );
-}
-
-
 export function AppSidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const { logout } = useAuth();
-  const [isInterviewDialogOpen, setIsInterviewDialogOpen] = useState(false);
-  const [isNotesDialogOpen, setIsNotesDialogOpen] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -210,14 +73,6 @@ export function AppSidebar() {
       router.push('/login');
     } catch (error) {
       console.error("Error signing out: ", error);
-    }
-  };
-  
-  const handleMenuItemClick = (id?: string) => {
-    if (id === 'ai-interview') {
-      setIsInterviewDialogOpen(true);
-    } else if (id === 'ai-notes') {
-      setIsNotesDialogOpen(true);
     }
   };
 
@@ -241,29 +96,17 @@ export function AppSidebar() {
       <SidebarMenu className="flex-1">
         {menuItems.map((item) => (
           <SidebarMenuItem key={item.href || item.id}>
-            {item.href ? (
-               <SidebarMenuButton
-                asChild
-                isActive={pathname.startsWith(item.href)}
-                tooltip={item.label}
-                className="justify-start group-data-[collapsible=icon]:justify-center"
-              >
-                <Link href={item.href}>
-                  <item.icon />
-                  <span>{item.label}</span>
-                </Link>
-              </SidebarMenuButton>
-            ) : (
-               <SidebarMenuButton
-                onClick={() => handleMenuItemClick(item.id)}
-                isActive={pathname.startsWith(`/${item.id}`)}
-                tooltip={item.label}
-                className="justify-start group-data-[collapsible=icon]:justify-center"
-              >
-                 <item.icon />
-                 <span>{item.label}</span>
-              </SidebarMenuButton>
-            )}
+            <SidebarMenuButton
+              asChild
+              isActive={pathname.startsWith(item.href)}
+              tooltip={item.label}
+              className="justify-start group-data-[collapsible=icon]:justify-center"
+            >
+              <Link href={item.href}>
+                <item.icon />
+                <span>{item.label}</span>
+              </Link>
+            </SidebarMenuButton>
           </SidebarMenuItem>
         ))}
       </SidebarMenu>
@@ -301,30 +144,6 @@ export function AppSidebar() {
         </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
-
-    <Dialog open={isInterviewDialogOpen} onOpenChange={setIsInterviewDialogOpen}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle className="font-headline text-2xl">Setup Your Mock Interview</DialogTitle>
-          <DialogDescription>
-            Choose a topic and difficulty to begin your practice session.
-          </DialogDescription>
-        </DialogHeader>
-        <InterviewSetupForm onSetupComplete={() => setIsInterviewDialogOpen(false)} />
-      </DialogContent>
-    </Dialog>
-    
-     <Dialog open={isNotesDialogOpen} onOpenChange={setIsNotesDialogOpen}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle className="font-headline text-2xl">Generate AI Notes</DialogTitle>
-          <DialogDescription>
-            Enter a topic, and our AI will create detailed study notes for you.
-          </DialogDescription>
-        </DialogHeader>
-        <NotesSetupForm onSetupComplete={() => setIsNotesDialogOpen(false)} />
-      </DialogContent>
-    </Dialog>
     </>
   );
 }
