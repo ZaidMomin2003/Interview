@@ -81,17 +81,31 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const updateUser = async (data: Partial<OnboardingData>) => {
     if (auth.currentUser) {
         // You could update Firebase profile here if needed, e.g., displayName
-        // await updateProfile(auth.currentUser, { displayName: data.displayName });
+        await updateProfile(auth.currentUser, { displayName: data.displayName, photoURL: data.photoURL || auth.currentUser.photoURL });
         
         // Save additional onboarding data to local storage, keyed by UID
         const currentProfileData = localStorage.getItem(`${USER_PROFILE_STORAGE_PREFIX}${auth.currentUser.uid}`);
         const existingData = currentProfileData ? JSON.parse(currentProfileData) : {};
-        const newData = { ...existingData, ...data };
+        
+        // Exclude properties that shouldn't be stringified if they are complex objects like Date
+        const dataToSave = { ...data };
+        if (dataToSave.interviewDate instanceof Date) {
+            dataToSave.interviewDate = data.interviewDate.toISOString() as any;
+        }
+
+        const newData = { ...existingData, ...dataToSave };
 
         localStorage.setItem(`${USER_PROFILE_STORAGE_PREFIX}${auth.currentUser.uid}`, JSON.stringify(newData));
 
-        // Update the user state in the context
-        setUser(prevUser => prevUser ? { ...prevUser, ...newData } : null);
+        // Update the user state in the context, ensuring date is a Date object
+        setUser(prevUser => {
+          if (!prevUser) return null;
+          const updatedUser = { ...prevUser, ...data };
+          if(typeof updatedUser.interviewDate === 'string'){
+            updatedUser.interviewDate = new Date(updatedUser.interviewDate);
+          }
+          return updatedUser;
+        });
     }
   };
 

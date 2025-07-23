@@ -134,7 +134,8 @@ export default function OnboardingPage() {
   const getVisibleSteps = () => steps.filter(step => {
     if (step.id === 'welcome') return true;
     if (step.dependsOn) {
-      return watch(step.dependsOn as keyof OnboardingData) === step.expectedValue;
+      const watchedValue = watch(step.dependsOn as keyof OnboardingData);
+      return watchedValue && watchedValue === step.expectedValue;
     }
     return true;
   });
@@ -325,7 +326,7 @@ const TimelineStep = () => {
             <Calendar
                 mode="single"
                 selected={interviewDate}
-                onSelect={(date) => setValue('interviewDate', date, { shouldValidate: true })}
+                onSelect={(date) => setValue('interviewDate', date ?? undefined, { shouldValidate: true })}
                 className="rounded-md border bg-gray-800/50 border-gray-700"
             />
         </div>

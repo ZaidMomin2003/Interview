@@ -59,7 +59,7 @@ export default function ProfilePage() {
       const reader = new FileReader();
       reader.onload = (e) => {
         const result = e.target?.result as string;
-        updateUser({ ...user, photoURL: result });
+        updateUser({ photoURL: result });
         toast({
           title: 'Avatar updated!',
           description: 'Your new profile picture has been saved.',
@@ -166,7 +166,7 @@ export default function ProfilePage() {
                 {socialLinks.length > 0 ? (
                     <div className="space-y-3">
                         {socialLinks.map(link => (
-                            <SocialLink key={link.label} href={link.href!} icon={link.icon} label={link.label} />
+                           link.href && <SocialLink key={link.label} href={link.href} icon={link.icon} label={link.label} />
                         ))}
                     </div>
                 ) : (
