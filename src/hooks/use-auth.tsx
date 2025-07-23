@@ -18,6 +18,7 @@ import {
   OAuthProvider
 } from "firebase/auth";
 import { useUserData } from './use-user-data';
+import { Skeleton } from '@/components/ui/skeleton';
 
 // This will now only hold the core Firebase User object properties
 export interface CoreUser {
