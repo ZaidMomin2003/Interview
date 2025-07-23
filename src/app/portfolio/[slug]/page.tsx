@@ -1,7 +1,5 @@
 // src/app/portfolio/[slug]/page.tsx
-'use client';
-
-import { useAuth } from '@/hooks/use-auth'; // We can use this to get user data
+// Convert to a Server Component to correctly handle params and data fetching.
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -10,45 +8,52 @@ import { Code, GitBranch, Github, Linkedin, Globe, Trophy, Award, BarChartHorizo
 import Link from 'next/link';
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 import { Bar, BarChart, XAxis, YAxis, Tooltip } from 'recharts';
-import { useParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
 
 // Dummy data mirroring the builder and dashboard
-const portfolioData = {
-  theme: 'dark', // This would be fetched based on the slug
-  user: {
-    displayName: 'Ada Lovelace',
-    email: 'ada@talxify.com',
-    photoURL: 'https://placehold.co/128x128.png',
-    bio: 'Pioneering computer programmer and mathematician, known for my work on Charles Babbage\'s proposed mechanical general-purpose computer, the Analytical Engine.',
-    languages: ['Assembly', 'Calculus', 'Logic'],
-    linkedin: 'https://linkedin.com',
-    github: 'https://github.com',
-  },
-  dashboard: {
-    interviewsCompleted: 3,
-    codingQuestionsSolved: 42,
-    mcqsAnswered: 128,
-    interviewReadiness: 78,
-    weeklyProgress: [
-        { name: "Week 1", questions: 10, interviews: 1 },
-        { name: "Week 2", questions: 15, interviews: 1 },
-        { name: "Week 3", questions: 12, interviews: 0 },
-        { name: "Week 4", questions: 20, interviews: 1 },
-    ],
-  },
-  projects: [
-    { id: 1, title: 'Analytical Engine Notes', description: 'Published a series of comprehensive notes on the Analytical Engine, including what is considered to be the first algorithm intended to be processed by a machine.', tech: 'Paper, Ink, Logic', link: '#' },
-    { id: 2, title: 'Flyology Speculation', description: 'A personal project exploring the mechanics of flight, combining mathematical models with observational data.', tech: 'Mathematical Modelling, Observation', link: '#' },
-  ],
-  hackathons: [
-    { id: 1, name: 'London Tech Fair 1843', role: 'Exhibitor & Speaker', achievement: 'Presented the potential of the Analytical Engine, far beyond mere calculation.' },
-  ],
-  certificates: [
-    { id: 1, name: 'Fellowship of the Royal Society', issuer: 'The Royal Society', date: '1842' },
-  ]
+// In a real app, this would be fetched from a database based on the slug
+const getPortfolioData = async (slug: string) => {
+    console.log(`Fetching data for slug: ${slug}`);
+    // Simulating an async fetch
+    await new Promise(res => setTimeout(res, 100));
+
+    return {
+      theme: 'dark', 
+      user: {
+        displayName: 'Ada Lovelace',
+        email: 'ada@talxify.com',
+        photoURL: 'https://placehold.co/128x128.png',
+        bio: 'Pioneering computer programmer and mathematician, known for my work on Charles Babbage\'s proposed mechanical general-purpose computer, the Analytical Engine.',
+        languages: ['Assembly', 'Calculus', 'Logic'],
+        linkedin: 'https://linkedin.com',
+        github: 'https://github.com',
+      },
+      dashboard: {
+        interviewsCompleted: 3,
+        codingQuestionsSolved: 42,
+        mcqsAnswered: 128,
+        interviewReadiness: 78,
+        weeklyProgress: [
+            { name: "Week 1", questions: 10, interviews: 1 },
+            { name: "Week 2", questions: 15, interviews: 1 },
+            { name: "Week 3", questions: 12, interviews: 0 },
+            { name: "Week 4", questions: 20, interviews: 1 },
+        ],
+      },
+      projects: [
+        { id: 1, title: 'Analytical Engine Notes', description: 'Published a series of comprehensive notes on the Analytical Engine, including what is considered to be the first algorithm intended to be processed by a machine.', tech: 'Paper, Ink, Logic', link: '#' },
+        { id: 2, title: 'Flyology Speculation', description: 'A personal project exploring the mechanics of flight, combining mathematical models with observational data.', tech: 'Mathematical Modelling, Observation', link: '#' },
+      ],
+      hackathons: [
+        { id: 1, name: 'London Tech Fair 1843', role: 'Exhibitor & Speaker', achievement: 'Presented the potential of the Analytical Engine, far beyond mere calculation.' },
+      ],
+      certificates: [
+        { id: 1, name: 'Fellowship of the Royal Society', issuer: 'The Royal Society', date: '1842' },
+      ]
+    };
 };
+
 
 const chartConfig = {
   questions: {
@@ -72,11 +77,8 @@ const Section = ({ icon, title, children }: { icon: React.ReactNode, title: stri
 );
 
 
-export default function PortfolioPage() {
-  const params = useParams();
-  const slug = params?.slug;
-  // In a real app, you would fetch portfolio data based on the slug
-  // For now, we'll use the dummy data.
+export default async function PortfolioPage({ params }: { params: { slug: string }}) {
+  const portfolioData = await getPortfolioData(params.slug);
   const { theme, user, projects, hackathons, certificates, dashboard } = portfolioData;
 
   return (
