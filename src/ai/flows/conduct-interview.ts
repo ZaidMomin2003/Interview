@@ -108,13 +108,21 @@ const conductInterviewFlow = ai.defineFlow(
     outputSchema: InterviewTurnOutputSchema,
   },
   async input => {
-    // Generate the interviewer's text response.
-    const llmResponse = await interviewPrompt(input);
-    const responseText = llmResponse.text;
+    let responseText: string | undefined;
+    
+    // Implement a retry mechanism in case the model returns an empty response.
+    for (let i = 0; i < 3; i++) {
+        const llmResponse = await interviewPrompt(input);
+        const text = llmResponse.text;
+        if (text && text.trim() !== '') {
+            responseText = text;
+            break; // Success, exit the loop
+        }
+    }
 
-    // Validate the response before proceeding to TTS.
-    if (!responseText || responseText.trim() === '') {
-        throw new Error("The AI model returned an empty response.");
+    // If after retries, the response is still empty, throw an error.
+    if (!responseText) {
+        throw new Error("The AI model returned an empty response after multiple attempts.");
     }
     
     // Convert the text response to audio.
