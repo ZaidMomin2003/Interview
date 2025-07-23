@@ -6,8 +6,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Code, GitBranch, Github, Linkedin, Globe, Trophy, Award, BarChartHorizontalBig, Cpu, Video, CodeXml, CheckCircle, Target } from 'lucide-react';
 import Link from 'next/link';
-import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
-import { Bar, BarChart, XAxis, YAxis, Tooltip } from 'recharts';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { Bar, BarChart, XAxis, YAxis } from 'recharts';
 import { cn } from '@/lib/utils';
 
 
@@ -151,7 +151,7 @@ export default async function PortfolioPage({ params }: { params: { slug: string
                                       <BarChart accessibilityLayer data={dashboard.weeklyProgress} margin={{ top: 20, right: 20, bottom: 5, left: 0 }}>
                                           <XAxis dataKey="name" tickLine={false} axisLine={false} tickMargin={8} tickFormatter={(value) => value.slice(0, 6)} />
                                           <YAxis tickLine={false} axisLine={false} tickMargin={8} />
-                                          <Tooltip content={<ChartTooltipContent />} />
+                                          <ChartTooltip content={<ChartTooltipContent />} />
                                           <Bar dataKey="questions" fill="var(--color-questions)" radius={4} />
                                           <Bar dataKey="interviews" fill="var(--color-interviews)" radius={4} />
                                       </BarChart>
