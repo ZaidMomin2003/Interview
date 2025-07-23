@@ -1,30 +1,15 @@
 // src/app/(app)/dashboard/page.tsx
 'use client';
 import { useAuth } from "@/hooks/use-auth";
+import { useUserData } from "@/hooks/use-user-data";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CodeXml, FileText, ArrowRight, Video, Target, CheckCircle, PercentCircle, BarChartHorizontalBig, Info, BrainCircuit } from "lucide-react";
+import { CodeXml, FileText, ArrowRight, Video, BrainCircuit } from "lucide-react";
 import Link from "next/link";
 import { ChartContainer, ChartTooltipContent, ChartLegend, ChartLegendContent, ChartTooltip } from "@/components/ui/chart";
-import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, Tooltip, RadialBarChart, RadialBar, LabelList, LineChart, Line, CartesianGrid } from "recharts";
-
-
-// Placeholder data
-const progressData = {
-    interviews: { used: 3, total: 10 },
-    codingQuestions: { used: 42, total: 60 },
-    notes: { used: 12, total: 30 },
-};
-
-const dailyActivity = [
-  { day: "Mon", questions: 4, interviews: 1, notes: 2 },
-  { day: "Tue", questions: 3, interviews: 0, notes: 3 },
-  { day: "Wed", questions: 6, interviews: 0, notes: 1 },
-  { day: "Thu", questions: 5, interviews: 1, notes: 4 },
-  { day: "Fri", questions: 8, interviews: 0, notes: 2 },
-  { day: "Sat", questions: 2, interviews: 0, notes: 1 },
-  { day: "Sun", questions: 10, interviews: 1, notes: 5 },
-];
+import { RadialBarChart, RadialBar, LineChart, Line, CartesianGrid, XAxis, YAxis } from "recharts";
+import { useMemo } from "react";
+import { subDays, format, isAfter } from 'date-fns';
 
 const chartConfig = {
   questions: { label: "Questions", color: "hsl(var(--primary))" },
@@ -32,18 +17,77 @@ const chartConfig = {
   notes: { label: "Notes", color: "hsl(var(--foreground))" },
 };
 
-const readinessData = [{ name: 'readiness', value: 78, fill: 'hsl(var(--primary))' }];
-
-const topicsToImprove = [
-    { name: "Dynamic Programming", area: "Algorithms" },
-    { name: "System Design", area: "Concepts" },
-    { name: "Concurrency", area: "Languages" },
-];
-
+// Dummy data for plan limits
+const planLimits = {
+    interviews: 10,
+    codingQuestions: 60,
+    notes: 30,
+};
 
 export default function DashboardPage() {
   const { user } = useAuth();
+  const { history, bookmarks } = useUserData();
   const displayName = user?.displayName?.split(' ')[0] || 'developer';
+
+  const {
+    interviewsUsed,
+    questionsUsed,
+    notesUsed,
+    dailyActivity,
+    readinessScore,
+    topicsToImprove,
+  } = useMemo(() => {
+    // Calculate usage
+    const interviewsUsed = history.filter(item => item.type === 'AI Interview').length;
+    const questionsUsed = history.filter(item => item.type === 'Coding Challenge').length;
+    const notesUsed = history.filter(item => item.type === 'Notes Generation').length;
+    
+    // Calculate daily activity for the last 7 days
+    const last7Days = Array.from({ length: 7 }, (_, i) => subDays(new Date(), i)).reverse();
+    const dailyActivity = last7Days.map(day => {
+        const dayStr = format(day, 'E'); // Mon, Tue, etc.
+        const startOfDay = new Date(day.setHours(0,0,0,0));
+        const endOfDay = new Date(day.setHours(23,59,59,999));
+        
+        const dayHistory = history.filter(item => {
+            const itemDate = new Date(item.timestamp);
+            return itemDate >= startOfDay && itemDate <= endOfDay;
+        });
+        
+        return {
+            day: dayStr,
+            questions: dayHistory.filter(h => h.type === 'Coding Challenge').length,
+            interviews: dayHistory.filter(h => h.type === 'AI Interview').length,
+            notes: dayHistory.filter(h => h.type === 'Notes Generation').length,
+        };
+    });
+
+    // Calculate readiness score (simple version)
+    const recentHistory = history.filter(item => isAfter(item.timestamp, subDays(new Date(), 30)));
+    const score = Math.min(
+      Math.floor(
+        (interviewsUsed * 10 + questionsUsed * 2 + recentHistory.length) / 
+        (planLimits.interviews * 10 + planLimits.codingQuestions * 2) * 100
+      ), 100
+    );
+    
+    // Determine topics to improve from bookmarks
+    const codingBookmarks = bookmarks.filter(b => b.type === 'coding-question');
+    const topics = codingBookmarks.map(b => ({
+      name: b.title,
+      area: b.description?.split('|')[0]?.trim() || 'Practice Topic',
+    })).slice(0, 3); // Get top 3
+
+    return {
+        interviewsUsed,
+        questionsUsed,
+        notesUsed,
+        dailyActivity,
+        readinessScore: [{ name: 'readiness', value: score, fill: 'hsl(var(--primary))' }],
+        topicsToImprove: topics,
+    };
+
+  }, [history, bookmarks]);
 
   return (
     <div className="space-y-8 text-foreground">
@@ -68,7 +112,7 @@ export default function DashboardPage() {
                           <Video className="h-5 w-5 text-primary" />
                       </CardHeader>
                       <CardContent>
-                          <div className="text-2xl font-bold">{progressData.interviews.used} / {progressData.interviews.total}</div>
+                          <div className="text-2xl font-bold">{interviewsUsed} / {planLimits.interviews}</div>
                           <p className="text-xs text-muted-foreground">Credits remaining for this cycle</p>
                       </CardContent>
                   </Card>
@@ -78,7 +122,7 @@ export default function DashboardPage() {
                           <CodeXml className="h-5 w-5 text-primary" />
                       </CardHeader>
                       <CardContent>
-                          <div className="text-2xl font-bold">{progressData.codingQuestions.used} / {progressData.codingQuestions.total}</div>
+                          <div className="text-2xl font-bold">{questionsUsed} / {planLimits.codingQuestions}</div>
                           <p className="text-xs text-muted-foreground">Credits remaining for this cycle</p>
                       </CardContent>
                   </Card>
@@ -88,7 +132,7 @@ export default function DashboardPage() {
                           <BrainCircuit className="h-5 w-5 text-primary" />
                       </CardHeader>
                       <CardContent>
-                          <div className="text-2xl font-bold">{progressData.notes.used} / {progressData.notes.total}</div>
+                          <div className="text-2xl font-bold">{notesUsed} / {planLimits.notes}</div>
                            <p className="text-xs text-muted-foreground">Credits remaining for this cycle</p>
                       </CardContent>
                   </Card>
@@ -185,9 +229,9 @@ export default function DashboardPage() {
                   <CardDescription>Based on your recent performance.</CardDescription>
                 </CardHeader>
                 <CardContent className="flex items-center justify-center p-0">
-                  <ResponsiveContainer width="100%" height={200}>
+                  <ChartContainer config={chartConfig} className="mx-auto aspect-square h-full w-full max-h-[250px]">
                     <RadialBarChart 
-                        data={readinessData} 
+                        data={readinessScore} 
                         innerRadius="70%" 
                         outerRadius="100%" 
                         barSize={20}
@@ -207,21 +251,22 @@ export default function DashboardPage() {
                             dominantBaseline="middle"
                             className="fill-foreground text-4xl font-bold font-headline"
                         >
-                            {readinessData[0].value}%
+                            {readinessScore[0].value}%
                         </text>
                     </RadialBarChart>
-                  </ResponsiveContainer>
+                  </ChartContainer>
                 </CardContent>
               </Card>
 
               <Card className="bg-secondary/30 backdrop-blur-sm">
                   <CardHeader>
                       <CardTitle>Topics to Improve</CardTitle>
-                      <CardDescription>AI recommends focusing on these areas.</CardDescription>
+                      <CardDescription>Based on your bookmarked questions.</CardDescription>
                   </CardHeader>
                   <CardContent>
                       <div className="space-y-3">
-                          {topicsToImprove.map(topic => (
+                          {topicsToImprove.length > 0 ? (
+                            topicsToImprove.map(topic => (
                                <div key={topic.name} className="flex items-center justify-between p-3 rounded-lg bg-background/50 hover:bg-accent/50 transition-colors">
                                   <div>
                                     <span className="font-medium">{topic.name}</span>
@@ -231,7 +276,10 @@ export default function DashboardPage() {
                                       <Link href="/coding-practice">Practice <ArrowRight className="ml-1 h-3 w-3" /></Link>
                                   </Button>
                               </div>
-                          ))}
+                            ))
+                          ) : (
+                            <p className="text-center text-sm text-muted-foreground py-4">Bookmark coding questions to see recommendations here.</p>
+                          )}
                       </div>
                   </CardContent>
               </Card>
