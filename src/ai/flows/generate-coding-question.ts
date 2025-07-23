@@ -23,13 +23,23 @@ const GenerateCodingQuestionInputSchema = z.object({
   desiredTopics: z
     .string()
     .describe('The desired coding topics (e.g., data structures, algorithms, web development).'),
+  numberOfQuestions: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(5)
+    .describe('The number of questions to generate.'),
 });
 export type GenerateCodingQuestionInput = z.infer<typeof GenerateCodingQuestionInputSchema>;
 
-const GenerateCodingQuestionOutputSchema = z.object({
+const SingleQuestionSchema = z.object({
   question: z.string().describe('The generated coding question.'),
   topic: z.string().describe('The topic of the generated question'),
   difficulty: z.string().describe('The difficulty level of the generated question'),
+});
+
+const GenerateCodingQuestionOutputSchema = z.object({
+  questions: z.array(SingleQuestionSchema),
 });
 export type GenerateCodingQuestionOutput = z.infer<typeof GenerateCodingQuestionOutputSchema>;
 
@@ -46,9 +56,10 @@ const prompt = ai.definePrompt({
 Skill Level: {{{skillLevel}}}
 Preferred Languages: {{{preferredLanguages}}}
 Desired Topics: {{{desiredTopics}}}
+Number of Questions to Generate: {{{numberOfQuestions}}}
 
-Make sure the coding question is challenging, but also appropriate for the user's stated skill level.
-Return the topic and difficulty of the generated question as well.
+Make sure the coding questions are challenging, but also appropriate for the user's stated skill level.
+Return the topic and difficulty for each generated question.
 `,
 });
 

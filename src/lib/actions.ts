@@ -117,6 +117,7 @@ const questionGeneratorSchema = z.object({
     skillLevel: z.string().min(1, "Please select a skill level."),
     preferredLanguages: z.string().min(2, "Please enter preferred languages."),
     desiredTopics: z.string().min(2, "Please enter desired topics."),
+    numberOfQuestions: z.coerce.number().int().min(1, "Please enter a number between 1 and 5.").max(5, "Please enter a number between 1 and 5."),
 });
 
 export async function handleGenerateCodingQuestion(data: GenerateCodingQuestionInput) {

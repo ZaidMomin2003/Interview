@@ -21,8 +21,14 @@ const formSchema = z.object({
   code: z.string().min(10, { message: "Code must be at least 10 characters." }),
 });
 
+interface SingleQuestion {
+    question: string;
+    topic: string;
+    difficulty: string;
+}
+
 interface CodeEditorFeedbackProps {
-  question: GenerateCodingQuestionOutput;
+  question: SingleQuestion;
   language: string;
   onNewQuestion: () => void;
 }

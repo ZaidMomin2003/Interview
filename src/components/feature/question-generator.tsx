@@ -20,10 +20,11 @@ const formSchema = z.object({
   skillLevel: z.string().min(1, { message: "Please select a skill level." }),
   preferredLanguages: z.string().min(2, { message: "Please enter at least one language." }),
   desiredTopics: z.string().min(2, { message: "Please enter at least one topic." }),
+  numberOfQuestions: z.coerce.number().int().min(1, "Must be at least 1.").max(5, "Cannot be more than 5."),
 });
 
 export function QuestionGenerator() {
-  const [question, setQuestion] = useState<GenerateCodingQuestionOutput | null>(null);
+  const [questions, setQuestions] = useState<GenerateCodingQuestionOutput['questions'] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const { addHistoryItem } = useUserData();
@@ -31,24 +32,33 @@ export function QuestionGenerator() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      skillLevel: "",
-      preferredLanguages: "",
-      desiredTopics: "",
+      skillLevel: "intermediate",
+      preferredLanguages: "TypeScript, Python",
+      desiredTopics: "Data Structures",
+      numberOfQuestions: 1,
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    setQuestion(null);
+    setQuestions(null);
     try {
       const response = await handleGenerateCodingQuestion(values);
-      setQuestion(response);
-      addHistoryItem({
-          id: `cq-${Date.now()}`,
-          type: 'Coding Challenge',
-          description: `Generated a question on "${response.topic}" (${response.difficulty}).`,
-          timestamp: new Date(),
-      });
+      if (response.questions && response.questions.length > 0) {
+        setQuestions(response.questions);
+        addHistoryItem({
+            id: `cq-${Date.now()}`,
+            type: 'Coding Challenge',
+            description: `Generated ${response.questions.length} question(s) on "${response.questions[0].topic}".`,
+            timestamp: new Date(),
+        });
+      } else {
+        toast({
+            variant: "destructive",
+            title: "No questions generated",
+            description: "The AI did not return any questions. Please try different topics.",
+        });
+      }
     } catch (error) {
       toast({
         variant: "destructive",
@@ -61,13 +71,15 @@ export function QuestionGenerator() {
   }
   
   const handleGenerateNew = () => {
-    setQuestion(null);
+    setQuestions(null);
     form.handleSubmit(onSubmit)();
   };
+  
+  const currentQuestion = questions ? questions[0] : null;
 
   return (
     <div className="space-y-8">
-      {!question && (
+      {!currentQuestion && (
           <Card>
             <CardHeader>
               <CardTitle className="font-headline">Generate a Coding Question</CardTitle>
@@ -78,7 +90,7 @@ export function QuestionGenerator() {
             <CardContent>
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                  <div className="grid md:grid-cols-3 gap-4">
+                  <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <FormField
                       control={form.control}
                       name="skillLevel"
@@ -127,6 +139,19 @@ export function QuestionGenerator() {
                         </FormItem>
                       )}
                     />
+                    <FormField
+                      control={form.control}
+                      name="numberOfQuestions"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Number of Questions</FormLabel>
+                          <FormControl>
+                            <Input type="number" min={1} max={5} {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
                   <Button type="submit" disabled={isLoading}>
                     {isLoading ? (
@@ -142,15 +167,15 @@ export function QuestionGenerator() {
           </Card>
       )}
       
-      {isLoading && !question && (
+      {isLoading && !currentQuestion && (
          <div className="flex items-center justify-center p-12">
             <Loader2 className="h-8 w-8 animate-spin text-accent" />
         </div>
       )}
 
-      {question && (
+      {currentQuestion && (
         <CodeEditorFeedback 
-            question={question} 
+            question={currentQuestion} 
             language={form.getValues('preferredLanguages').split(',')[0]?.trim() || 'javascript'}
             onNewQuestion={handleGenerateNew}
         />
