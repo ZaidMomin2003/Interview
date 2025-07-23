@@ -5,10 +5,22 @@ import { useState } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Cpu, FileText, CodeXml, Video, Star, Github } from 'lucide-react';
+
+
+const signupFormSchema = z.object({
+  email: z.string().email({ message: "Please enter a valid email." }),
+  password: z.string().min(6, { message: "Password must be at least 6 characters." }),
+});
+
 
 const TrustFeature = ({ icon, title, description }: { icon: React.ReactNode, title: string, description: string}) => (
     <div className="flex items-start gap-4">
@@ -24,12 +36,18 @@ export default function SignUpPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
-  const { login } = useAuth();
+  const { loginWithGoogle, signupWithEmail } = useAuth();
+  
+  const form = useForm<z.infer<typeof signupFormSchema>>({
+    resolver: zodResolver(signupFormSchema),
+    defaultValues: { email: "", password: "" },
+  });
+
 
   async function handleGoogleSignUp() {
     setIsLoading(true);
     try {
-      await login();
+      await loginWithGoogle();
       toast({
         title: "Account Created",
         description: "Welcome! Let's get you set up.",
@@ -45,6 +63,27 @@ export default function SignUpPage() {
       setIsLoading(false);
     }
   }
+  
+  async function handleEmailSignUp(values: z.infer<typeof signupFormSchema>) {
+    setIsLoading(true);
+    try {
+      await signupWithEmail(values.email, values.password);
+       toast({
+        title: "Account Created",
+        description: "Welcome! Let's get you set up.",
+      });
+      router.push('/onboarding');
+    } catch (error: any) {
+        toast({
+            variant: 'destructive',
+            title: 'Sign Up Failed',
+            description: error.message || 'Could not create account. The email may already be in use.',
+        });
+    } finally {
+        setIsLoading(false);
+    }
+  }
+
 
   return (
     <div className="relative flex min-h-screen flex-col bg-background">
@@ -98,7 +137,36 @@ export default function SignUpPage() {
                 <CardDescription className="text-muted-foreground">Join the ascent. It's free to get started.</CardDescription>
               </CardHeader>
               <CardContent>
-                 <Button onClick={handleGoogleSignUp} disabled={isLoading} className="w-full">
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(handleEmailSignUp)} className="space-y-4">
+                        <FormField control={form.control} name="email" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Email</FormLabel>
+                                <FormControl><Input type="email" placeholder="ada@example.com" {...field} disabled={isLoading} /></FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )} />
+                         <FormField control={form.control} name="password" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Password</FormLabel>
+                                <FormControl><Input type="password" placeholder="••••••••" {...field} disabled={isLoading} /></FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )} />
+                        <Button type="submit" disabled={isLoading} className="w-full">
+                            {isLoading ? <Loader2 className="animate-spin" /> : 'Create Account'}
+                        </Button>
+                    </form>
+                </Form>
+                 <div className="relative my-4">
+                    <div className="absolute inset-0 flex items-center">
+                        <span className="w-full border-t border-border"></span>
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                        <span className="bg-secondary px-2 text-muted-foreground">Or continue with</span>
+                    </div>
+                </div>
+                 <Button onClick={handleGoogleSignUp} disabled={isLoading} className="w-full" variant="outline">
                     {isLoading ? <Loader2 className="animate-spin" /> : <><Github className="mr-2 h-5 w-5" /> Sign Up with Google</>}
                   </Button>
               </CardContent>

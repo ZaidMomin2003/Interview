@@ -10,6 +10,8 @@ import {
   signOut,
   signInWithPopup,
   GoogleAuthProvider,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
   updateProfile,
   type User as FirebaseUser
 } from "firebase/auth";
@@ -25,7 +27,9 @@ export interface AppUser extends Partial<OnboardingData> {
 type AuthContextType = {
   user: AppUser | null;
   loading: boolean;
-  login: () => Promise<void>;
+  loginWithGoogle: () => Promise<void>;
+  loginWithEmail: (email: string, password: string) => Promise<void>;
+  signupWithEmail: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   updateUser: (data: Partial<OnboardingData>) => Promise<void>;
 };
@@ -33,7 +37,9 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType>({
   user: null,
   loading: true,
-  login: async () => {},
+  loginWithGoogle: async () => {},
+  loginWithEmail: async () => {},
+  signupWithEmail: async () => {},
   logout: async () => {},
   updateUser: async () => {},
 });
@@ -67,11 +73,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => unsubscribe();
   }, []);
 
-  const login = async () => {
+  const loginWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
     await signInWithPopup(auth, provider);
     // onAuthStateChanged will handle setting the user state.
   };
+
+  const loginWithEmail = async (email: string, password: string) => {
+    await signInWithEmailAndPassword(auth, email, password);
+    // onAuthStateChanged will handle setting the user state.
+  }
+
+  const signupWithEmail = async (email: string, password: string) => {
+    await createUserWithEmailAndPassword(auth, email, password);
+    // onAuthStateChanged will handle setting the user state.
+  }
 
   const logout = async () => {
     await signOut(auth);
@@ -111,7 +127,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, updateUser }}>
+    <AuthContext.Provider value={{ user, loading, loginWithGoogle, loginWithEmail, signupWithEmail, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

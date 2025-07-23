@@ -5,10 +5,20 @@ import { useState } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Cpu, FileText, CodeXml, Video, CheckCircle, Star, Github } from 'lucide-react';
+
+const loginFormSchema = z.object({
+  email: z.string().email({ message: "Please enter a valid email address." }),
+  password: z.string().min(1, { message: "Please enter your password." }),
+});
 
 const TrustFeature = ({ icon, title, description }: { icon: React.ReactNode, title: string, description: string}) => (
     <div className="flex items-start gap-4">
@@ -24,12 +34,17 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
-  const { login } = useAuth();
+  const { loginWithGoogle, loginWithEmail } = useAuth();
+
+  const form = useForm<z.infer<typeof loginFormSchema>>({
+    resolver: zodResolver(loginFormSchema),
+    defaultValues: { email: "", password: "" },
+  });
 
   async function handleGoogleLogin() {
     setIsLoading(true);
     try {
-      await login();
+      await loginWithGoogle();
       router.push('/dashboard');
     } catch (error: any) {
       toast({
@@ -41,6 +56,23 @@ export default function LoginPage() {
       setIsLoading(false);
     }
   }
+
+  async function handleEmailLogin(values: z.infer<typeof loginFormSchema>) {
+    setIsLoading(true);
+    try {
+      await loginWithEmail(values.email, values.password);
+      router.push('/dashboard');
+    } catch (error: any) {
+       toast({
+        variant: 'destructive',
+        title: 'Login Failed',
+        description: error.message || 'Invalid credentials. Please try again.',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
 
   return (
     <div className="relative flex min-h-screen flex-col bg-background">
@@ -94,7 +126,36 @@ export default function LoginPage() {
               <CardDescription className="text-muted-foreground">Sign in to access your dashboard.</CardDescription>
             </CardHeader>
             <CardContent>
-              <Button onClick={handleGoogleLogin} disabled={isLoading} className="w-full">
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(handleEmailLogin)} className="space-y-4">
+                        <FormField control={form.control} name="email" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Email</FormLabel>
+                                <FormControl><Input type="email" placeholder="ada@example.com" {...field} disabled={isLoading} /></FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )} />
+                        <FormField control={form.control} name="password" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Password</FormLabel>
+                                <FormControl><Input type="password" placeholder="••••••••" {...field} disabled={isLoading} /></FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )} />
+                         <Button type="submit" disabled={isLoading} className="w-full">
+                            {isLoading ? <Loader2 className="animate-spin" /> : 'Sign In'}
+                        </Button>
+                    </form>
+                </Form>
+                 <div className="relative my-4">
+                    <div className="absolute inset-0 flex items-center">
+                        <span className="w-full border-t border-border"></span>
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                        <span className="bg-secondary px-2 text-muted-foreground">Or continue with</span>
+                    </div>
+                </div>
+              <Button onClick={handleGoogleLogin} disabled={isLoading} className="w-full" variant="outline">
                 {isLoading ? <Loader2 className="animate-spin" /> : <><Github className="mr-2 h-5 w-5" /> Sign In with Google</>}
               </Button>
             </CardContent>
