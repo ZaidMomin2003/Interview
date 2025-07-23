@@ -251,7 +251,7 @@ export default function SignUpPage() {
                         <span className="bg-secondary px-2 text-muted-foreground">Or continue with</span>
                     </div>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 gap-2">
                     <Button onClick={handleGoogleSignUp} disabled={isLoading} className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/80" variant="outline">
                         {isLoading ? <Loader2 className="animate-spin" /> : <><GoogleIcon /><span className="ml-2">Google</span></>}
                     </Button>
