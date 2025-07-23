@@ -8,3 +8,5 @@ import '@/ai/flows/optimize-resume.ts';
 import '@/ai/flows/calculate-salary.ts';
 import '@/ai/flows/enhance-resume-section.ts';
 import '@/ai/flows/generate-notes.ts';
+import '@/ai/flows/conduct-interview.ts';
+import '@/ai/flows/summarize-interview.ts';

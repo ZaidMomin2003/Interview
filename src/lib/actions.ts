@@ -9,6 +9,9 @@ import { calculateSalary } from "@/ai/flows/calculate-salary";
 import { CalculateSalaryInput, CalculateSalaryInputSchema } from "@/ai/types/salary-types";
 import { enhanceResumeSection, EnhanceResumeSectionInput } from "@/ai/flows/enhance-resume-section";
 import { generateNotes, GenerateNotesInput } from "@/ai/flows/generate-notes";
+import { conductInterview as conductInterviewFlow, InterviewTurnInput, InterviewTurnInputSchema } from "@/ai/flows/conduct-interview";
+import { summarizeInterview as summarizeInterviewFlow, SummarizeInterviewInput, SummarizeInterviewInputSchema } from "@/ai/flows/summarize-interview";
+
 
 const experienceSchema = z.object({
   jobTitle: z.string().min(2, "Job title is required"),
@@ -187,5 +190,34 @@ export async function handleGenerateNotes(data: GenerateNotesInput) {
     } catch (error) {
         console.error(error);
         throw new Error("Failed to generate notes. Please try again.");
+    }
+}
+
+
+// Server action for conducting an interview turn
+export async function conductInterview(data: InterviewTurnInput) {
+    const validatedFields = InterviewTurnInputSchema.safeParse(data);
+    if (!validatedFields.success) {
+        throw new Error(`Invalid input: ${validatedFields.error.message}`);
+    }
+    try {
+        return await conductInterviewFlow(validatedFields.data);
+    } catch (error) {
+        console.error('Error in conductInterview server action:', error);
+        throw new Error('The AI failed to respond. Please try again.');
+    }
+}
+
+// Server action for summarizing the interview
+export async function summarizeInterview(data: SummarizeInterviewInput) {
+    const validatedFields = SummarizeInterviewInputSchema.safeParse(data);
+    if (!validatedFields.success) {
+        throw new Error(`Invalid input: ${validatedFields.error.message}`);
+    }
+    try {
+        return await summarizeInterviewFlow(validatedFields.data);
+    } catch (error) {
+        console.error('Error in summarizeInterview server action:', error);
+        throw new Error('The AI failed to generate a summary.');
     }
 }
