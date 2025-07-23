@@ -4,7 +4,7 @@
 import { useState, useEffect, useContext, createContext, ReactNode, useCallback } from 'react';
 import { useAuth, type AppUser } from './use-auth';
 import { db } from '@/lib/firebase';
-import { doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove, onSnapshot } from 'firebase/firestore';
 
 
 export interface HistoryItem {
@@ -51,40 +51,45 @@ const UserDataContext = createContext<UserDataContextType>({
 export const UserDataProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useAuth();
   const [data, setData] = useState<UserData>({ history: [], bookmarks: [] });
-  const [isLoaded, setIsLoaded] = useState(false);
   
   const getUserDocRef = useCallback((userId: string) => doc(db, 'userData', userId), []);
 
   useEffect(() => {
-    const loadUserData = async () => {
-        if (user) {
-            const userDocRef = getUserDocRef(user.uid);
-            const docSnap = await getDoc(userDocRef);
+    if (!user) {
+      setData({ history: [], bookmarks: [] });
+      return;
+    }
 
-            if (docSnap.exists()) {
-                const firestoreData = docSnap.data() as UserData;
-                // Ensure timestamps are converted back to Date objects
-                firestoreData.history = firestoreData.history.map((item: any) => ({
-                    ...item,
-                    timestamp: item.timestamp.toDate(),
-                }));
-                 // Sort history by most recent first upon loading
-                firestoreData.history.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
-                setData(firestoreData);
-            } else {
-                // If no data exists, create an empty document for the new user
-                await setDoc(userDocRef, { history: [], bookmarks: [] });
-                setData({ history: [], bookmarks: [] });
-            }
-            setIsLoaded(true);
-        } else {
-            // Reset state when user logs out
-            setData({ history: [], bookmarks: [] });
-            setIsLoaded(false);
-        }
-    };
+    const userDocRef = getUserDocRef(user.uid);
     
-    loadUserData();
+    // Set up a real-time listener
+    const unsubscribe = onSnapshot(userDocRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const firestoreData = docSnap.data() as UserData;
+        // Ensure timestamps are converted back to Date objects
+        firestoreData.history = (firestoreData.history || []).map((item: any) => ({
+            ...item,
+            timestamp: item.timestamp.toDate(),
+        }));
+        // Sort history by most recent first upon loading/update
+        firestoreData.history.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+        setData({
+          history: firestoreData.history || [],
+          bookmarks: firestoreData.bookmarks || [],
+        });
+      } else {
+        // If no data exists, create an empty document for the new user
+        setDoc(userDocRef, { history: [], bookmarks: [] });
+        setData({ history: [], bookmarks: [] });
+      }
+    }, (error) => {
+      console.error("Error listening to user data:", error);
+      // Handle error, maybe set state to an error state
+    });
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
+    
   }, [user, getUserDocRef]);
 
 
@@ -95,28 +100,29 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
         id: item.id || `hist-${Date.now()}`,
         timestamp: new Date(),
     };
-    // Update local state immediately for responsiveness
-    setData(prevData => ({
-        ...prevData,
-        history: [newHistoryItem, ...prevData.history]
-    }));
-    // Persist to Firestore
+    
     const userDocRef = getUserDocRef(user.uid);
-    await updateDoc(userDocRef, {
-        history: arrayUnion(newHistoryItem)
-    });
+    try {
+        await updateDoc(userDocRef, {
+            history: arrayUnion(newHistoryItem)
+        });
+    } catch(e) {
+        // If the document doesn't exist, set it first
+        await setDoc(userDocRef, { history: [newHistoryItem], bookmarks: [] }, { merge: true });
+    }
   }, [user, getUserDocRef]);
 
   const addBookmark = useCallback(async (item: Bookmark) => {
      if (!user || data.bookmarks.some(b => b.id === item.id)) return;
-     setData(prevData => ({
-        ...prevData,
-        bookmarks: [item, ...prevData.bookmarks],
-      }));
+     
       const userDocRef = getUserDocRef(user.uid);
-      await updateDoc(userDocRef, {
-        bookmarks: arrayUnion(item)
-      });
+      try {
+        await updateDoc(userDocRef, {
+            bookmarks: arrayUnion(item)
+        });
+      } catch(e) {
+        await setDoc(userDocRef, { bookmarks: [item] }, { merge: true });
+      }
   }, [user, data.bookmarks, getUserDocRef]);
 
   const removeBookmark = useCallback(async (id: string) => {
@@ -124,10 +130,6 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
     const bookmarkToRemove = data.bookmarks.find(b => b.id === id);
     if (!bookmarkToRemove) return;
     
-    setData(prevData => ({
-      ...prevData,
-      bookmarks: prevData.bookmarks.filter(b => b.id !== id),
-    }));
     const userDocRef = getUserDocRef(user.uid);
     await updateDoc(userDocRef, {
         bookmarks: arrayRemove(bookmarkToRemove)
@@ -140,7 +142,6 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
   
   const clearData = useCallback(async () => {
      if (!user) return;
-     setData({ history: [], bookmarks: [] });
      const userDocRef = getUserDocRef(user.uid);
      await setDoc(userDocRef, { history: [], bookmarks: [] });
   }, [user, getUserDocRef]);
