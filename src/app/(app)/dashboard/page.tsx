@@ -16,17 +16,20 @@ const progressData = {
     mcqsAnswered: 128,
 };
 
-const weeklyProgress = [
-  { name: "Week 1", questions: 5, interviews: 1 },
-  { name: "Week 2", questions: 8, interviews: 1 },
-  { name: "Week 3", questions: 15, interviews: 0 },
-  { name: "Week 4", questions: 12, interviews: 1 },
-  { name: "Week 5", questions: 18, interviews: 1 },
-  { name: "Week 6", questions: 25, interviews: 1 },
+const dailyActivity = [
+  { day: "Mon", questions: 4, interviews: 1, notes: 2 },
+  { day: "Tue", questions: 3, interviews: 0, notes: 3 },
+  { day: "Wed", questions: 6, interviews: 0, notes: 1 },
+  { day: "Thu", questions: 5, interviews: 1, notes: 4 },
+  { day: "Fri", questions: 8, interviews: 0, notes: 2 },
+  { day: "Sat", questions: 2, interviews: 0, notes: 1 },
+  { day: "Sun", questions: 10, interviews: 1, notes: 5 },
 ];
 
 const chartConfig = {
-  questions: { label: "Questions Solved", color: "hsl(var(--primary))" },
+  questions: { label: "Questions", color: "hsl(var(--primary))" },
+  interviews: { label: "Interviews", color: "hsl(var(--accent))" },
+  notes: { label: "Notes", color: "hsl(var(--foreground))" },
 };
 
 const readinessData = [{ name: 'readiness', value: 78, fill: 'hsl(var(--primary))' }];
@@ -91,17 +94,17 @@ export default function DashboardPage() {
                   </Card>
               </div>
               
-              {/* Weekly Progress */}
+              {/* Daily Activity */}
               <Card className="bg-secondary/30 backdrop-blur-sm">
                   <CardHeader>
-                      <CardTitle>Weekly Progress</CardTitle>
-                      <CardDescription>Your activity over the last 6 weeks.</CardDescription>
+                      <CardTitle>Daily Activity</CardTitle>
+                      <CardDescription>Your activity over the last 7 days.</CardDescription>
                   </CardHeader>
                   <CardContent className="pl-2">
                      <ChartContainer config={chartConfig} className="h-[250px] w-full">
-                        <AreaChart
+                        <LineChart
                           accessibilityLayer
-                          data={weeklyProgress}
+                          data={dailyActivity}
                            margin={{
                             top: 10,
                             right: 30,
@@ -109,18 +112,12 @@ export default function DashboardPage() {
                             bottom: 0,
                           }}
                         >
-                          <defs>
-                            <linearGradient id="fillQuestions" x1="0" y1="0" x2="0" y2="1">
-                              <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.8}/>
-                              <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0.1}/>
-                            </linearGradient>
-                          </defs>
+                          <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="hsl(var(--border) / 0.5)" />
                            <XAxis
-                            dataKey="name"
+                            dataKey="day"
                             tickLine={false}
                             axisLine={false}
                             tickMargin={8}
-                            tickFormatter={(value) => value.slice(0, 6)}
                           />
                            <YAxis
                             tickLine={false}
@@ -129,25 +126,50 @@ export default function DashboardPage() {
                             tickCount={6}
                           />
                           <ChartTooltip
-                            cursor={false}
+                            cursor={true}
                             content={<ChartTooltipContent indicator="line" />}
                           />
-                          <Area 
+                          <ChartLegend content={<ChartLegendContent />} />
+                          <Line 
                             dataKey="questions" 
-                            type="natural" 
-                            fill="url(#fillQuestions)"
-                            stroke="hsl(var(--primary))"
-                            stackId="a" 
+                            type="monotone" 
+                            stroke="var(--color-questions)"
                             strokeWidth={2}
-                            dot={false}
-                             activeDot={{
+                            dot={{r: 4, fill: "var(--color-questions)"}}
+                            activeDot={{
                                 r: 6,
-                                stroke: "white",
+                                stroke: "var(--color-questions)",
                                 strokeWidth: 1,
-                                fill: "hsl(var(--primary))"
+                                fill: "hsl(var(--background))"
                             }}
                             />
-                        </AreaChart>
+                           <Line 
+                            dataKey="interviews" 
+                            type="monotone" 
+                            stroke="var(--color-interviews)"
+                            strokeWidth={2}
+                            dot={{r: 4, fill: "var(--color-interviews)"}}
+                             activeDot={{
+                                r: 6,
+                                stroke: "var(--color-interviews)",
+                                strokeWidth: 1,
+                                fill: "hsl(var(--background))"
+                            }}
+                            />
+                             <Line 
+                            dataKey="notes" 
+                            type="monotone" 
+                            stroke="var(--color-notes)"
+                            strokeWidth={2}
+                             dot={{r: 4, fill: "var(--color-notes)"}}
+                             activeDot={{
+                                r: 6,
+                                stroke: "var(--color-notes)",
+                                strokeWidth: 1,
+                                fill: "hsl(var(--background))"
+                            }}
+                            />
+                        </LineChart>
                       </ChartContainer>
                   </CardContent>
               </Card>
