@@ -23,6 +23,7 @@ import {
   CodeXml,
   Video,
   Loader2,
+  BookOpen,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -43,11 +44,6 @@ const menuItems = [
     label: "Dashboard",
     icon: LayoutDashboard,
   },
-   {
-    href: "/arena",
-    label: "Arena",
-    icon: Target,
-  },
   {
     id: "ai-interview",
     label: "AI Interview",
@@ -55,8 +51,13 @@ const menuItems = [
   },
   {
     href: "/coding-practice",
-    label: "Coding Gym",
+    label: "Code & AI Feedback",
     icon: CodeXml,
+  },
+  {
+    href: "/notes",
+    label: "AI Notes",
+    icon: BookOpen,
   },
   {
     href: "/resume-builder",
