@@ -17,13 +17,25 @@ const prompt = ai.definePrompt({
   output: {schema: GenerateMCQOutputSchema},
   prompt: `
     You are an expert interviewer at a top tech company.
-    Generate {{count}} Multiple Choice Question(s) on the topic of "{{topic}}" with a difficulty level of "{{difficulty}}".
+    Your task is to generate a JSON object containing a 'questions' array with {{count}} Multiple Choice Question(s) on the topic of "{{topic}}" and a difficulty level of "{{difficulty}}".
 
-    For each question:
-    1. Provide a clear and concise question.
-    2. Provide exactly 4 potential options.
-    3. Clearly indicate the correct option letter (e.g., "A", "B", "C", or "D").
-    4. Provide a detailed explanation of why the correct answer is right and the other options are wrong.
+    For each question in the array, you must provide:
+    1. A 'question' field with clear and concise question text.
+    2. An 'options' array with exactly 4 string values representing the potential answers.
+    3. An 'answer' field with the string of the correct option.
+    4. An 'explanation' field with a detailed explanation of why the correct answer is right and the other options are wrong.
+
+    Example for one question:
+    {
+      "questions": [
+        {
+          "question": "What is the time complexity of a binary search algorithm?",
+          "options": ["O(n)", "O(log n)", "O(n^2)", "O(1)"],
+          "answer": "O(log n)",
+          "explanation": "Binary search works on sorted arrays and halves the search space in each iteration, resulting in a logarithmic time complexity."
+        }
+      ]
+    }
   `,
 });
 
