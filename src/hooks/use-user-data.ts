@@ -10,10 +10,10 @@ import { updateProfile as updateAuthProfile } from "firebase/auth";
 
 export interface HistoryItem {
   id: string;
-  type: 'AI Interview' | 'Coding Challenge' | 'Resume Optimization' | 'Notes Generation';
+  type: 'AI Interview' | 'Coding Challenge' | 'Resume Optimization' | 'Notes Generation' | 'Resume Generation';
   description: string;
   timestamp: Date;
-  count?: number; // Optional: To track number of questions generated, etc.
+  count?: number;
 }
 
 export interface Bookmark {

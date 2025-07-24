@@ -13,8 +13,11 @@ import {
 import {
   CodeXml,
   Cpu,
+  FileText,
   LayoutDashboard,
   LogOut,
+  Mic,
+  DollarSign,
 } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/hooks/use-auth";
@@ -31,9 +34,24 @@ export function AppSidebar() {
       icon: <LayoutDashboard />,
     },
     {
+      href: "/resume-studio",
+      label: "Resume Studio",
+      icon: <FileText />,
+    },
+    {
+      href: "/interview-prep",
+      label: "AI Interview Prep",
+      icon: <Mic />,
+    },
+    {
       href: "/coding-gym",
       label: "Coding Gym",
       icon: <CodeXml />,
+    },
+    {
+      href: "/salary-calculator",
+      label: "Salary Calculator",
+      icon: <DollarSign />,
     },
   ];
 
