@@ -8,9 +8,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Timer, Play, Pause, Square } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { db } from '@/lib/firebase';
+import { doc, updateDoc } from 'firebase/firestore';
+import { useAuth } from '@/hooks/use-auth';
 
 export default function SyncTesterPage() {
-    const { profile, updateTimer, loading } = useUserData();
+    const { user } = useAuth();
+    const { profile, loading } = useUserData();
     const [duration, setDuration] = useState(60); // Default 60 seconds
     const [remainingTime, setRemainingTime] = useState(0);
 
@@ -28,8 +32,9 @@ export default function SyncTesterPage() {
             const remaining = Math.max(0, Math.round((endTime - now) / 1000));
             setRemainingTime(remaining);
 
-            if (remaining === 0) {
-                updateTimer({ isTimerRunning: false, endTime: null });
+            if (remaining === 0 && user) {
+                 const userDocRef = doc(db, 'users', user.uid);
+                 updateDoc(userDocRef, { 'timer.isTimerRunning': false, 'timer.endTime': null });
             }
         };
 
@@ -37,15 +42,25 @@ export default function SyncTesterPage() {
         const interval = setInterval(calculateRemaining, 1000);
 
         return () => clearInterval(interval);
-    }, [isTimerRunning, endTime, updateTimer]);
+    }, [isTimerRunning, endTime, user]);
 
     const handleStart = async () => {
+        if (!user) return;
         const newEndTime = Date.now() + duration * 1000;
-        await updateTimer({ endTime: newEndTime, isTimerRunning: true });
+        const userDocRef = doc(db, 'users', user.uid);
+        await updateDoc(userDocRef, {
+            'timer.isTimerRunning': true,
+            'timer.endTime': newEndTime,
+        });
     };
 
     const handleStop = async () => {
-        await updateTimer({ isTimerRunning: false, endTime: null });
+        if (!user) return;
+        const userDocRef = doc(db, 'users', user.uid);
+        await updateDoc(userDocRef, {
+            'timer.isTimerRunning': false,
+            'timer.endTime': null,
+        });
     };
     
     if (loading) {

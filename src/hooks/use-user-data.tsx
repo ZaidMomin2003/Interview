@@ -90,7 +90,6 @@ type UserDataContextType = {
   isBookmarked: (id: string) => boolean;
   updateUserProfile: (data: Partial<OnboardingData & { photoURL?: string }>) => Promise<void>;
   updatePortfolio: (data: Partial<PortfolioData>) => Promise<void>;
-  updateTimer: (data: Partial<TimerData>) => Promise<void>;
   clearData: () => Promise<void>;
 };
 
@@ -103,7 +102,6 @@ const UserDataContext = createContext<UserDataContextType>({
   isBookmarked: () => false,
   updateUserProfile: async () => {},
   updatePortfolio: async () => {},
-  updateTimer: async () => {},
   clearData: async () => {},
 });
 
@@ -229,15 +227,10 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
   const updatePortfolio = useCallback(async (data: Partial<PortfolioData>) => {
     if (!coreUser) throw new Error("User not authenticated");
     const userDocRef = doc(db, 'users', coreUser.uid);
-    await updateDoc(userDocRef, { portfolio: { ...profile?.portfolio, ...data } });
-  }, [coreUser, profile]);
-  
-  const updateTimer = useCallback(async (data: Partial<TimerData>) => {
-    if (!coreUser) throw new Error("User not authenticated");
-    const userDocRef = doc(db, 'users', coreUser.uid);
-    await updateDoc(userDocRef, { timer: { ...profile?.timer, ...data } });
-  }, [coreUser, profile]);
-
+    const docSnap = await getDoc(userDocRef);
+    const currentPortfolio = docSnap.exists() ? docSnap.data().portfolio : {};
+    await updateDoc(userDocRef, { portfolio: { ...currentPortfolio, ...data } });
+  }, [coreUser]);
 
   const addHistoryItem = useCallback(async (item: Omit<HistoryItem, 'id' | 'timestamp'>) => {
     if (!coreUser) return;
@@ -276,7 +269,7 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
   }, [coreUser]);
 
   return (
-    <UserDataContext.Provider value={{ profile, loading, addHistoryItem, addBookmark, removeBookmark, isBookmarked, updateUserProfile, updatePortfolio, updateTimer, clearData }}>
+    <UserDataContext.Provider value={{ profile, loading, addHistoryItem, addBookmark, removeBookmark, isBookmarked, updateUserProfile, updatePortfolio, clearData }}>
       {children}
     </UserDataContext.Provider>
   );
