@@ -118,7 +118,7 @@ export default function CodingGymPage() {
       const input: GenerateMCQInput = {
         topic: values.topic,
         difficulty: values.difficulty,
-        count: Number(values.count),
+        count: values.count,
       };
       
       const result = await generateMCQ(input);
@@ -127,7 +127,7 @@ export default function CodingGymPage() {
       await addHistoryItem({
         type: 'MCQ Challenge',
         description: `Generated ${values.count} ${values.difficulty} MCQ(s) on ${values.topic}.`,
-        count: Number(values.count),
+        count: values.count,
       });
 
       toast({
@@ -264,3 +264,5 @@ export default function CodingGymPage() {
     </div>
   );
 }
+
+    
