@@ -147,34 +147,36 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
     }
 
     const userDocRef = doc(db, 'users', coreUser.uid);
+
+    const buildProfile = (authData: CoreUser, dbData: DocumentData): AppUser => {
+        const history = (dbData.history || []).map((item: any) => ({
+            ...item,
+            timestamp: item.timestamp instanceof Timestamp ? item.timestamp.toDate() : new Date(item.timestamp),
+        })).sort((a: HistoryItem, b: HistoryItem) => b.timestamp.getTime() - a.timestamp.getTime());
+
+        const interviewDate = dbData.interviewDate;
+
+        return {
+            ...dbData,
+            uid: authData.uid,
+            email: authData.email,
+            displayName: authData.displayName,
+            photoURL: authData.photoURL,
+            history,
+            interviewDate: interviewDate ? (interviewDate instanceof Timestamp ? interviewDate.toDate() : new Date(interviewDate)) : undefined,
+            bookmarks: dbData.bookmarks || [],
+            portfolio: { ...defaultPortfolio, slug: authData.displayName?.toLowerCase().replace(/\s+/g, '-') || authData.uid, ...dbData.portfolio },
+            plan: { ...defaultPlan, ...dbData.plan },
+            sync: { ...defaultSync, ...dbData.sync },
+        } as AppUser;
+    }
+
     const unsubscribe = onSnapshot(userDocRef, (docSnap) => {
-      const buildProfile = (authData: CoreUser, dbData: DocumentData): AppUser => {
-          const history = (dbData.history || []).map((item: any) => ({
-              ...item,
-              timestamp: item.timestamp instanceof Timestamp ? item.timestamp.toDate() : new Date(item.timestamp),
-          })).sort((a: HistoryItem, b: HistoryItem) => b.timestamp.getTime() - a.timestamp.getTime());
-
-          const interviewDate = dbData.interviewDate;
-
-          return {
-              ...dbData,
-              uid: authData.uid,
-              email: authData.email,
-              displayName: authData.displayName,
-              photoURL: authData.photoURL,
-              history,
-              interviewDate: interviewDate ? (interviewDate instanceof Timestamp ? interviewDate.toDate() : new Date(interviewDate)) : undefined,
-              bookmarks: dbData.bookmarks || [],
-              portfolio: { ...defaultPortfolio, slug: authData.displayName?.toLowerCase().replace(/\s+/g, '-') || authData.uid, ...dbData.portfolio },
-              plan: { ...defaultPlan, ...dbData.plan },
-              sync: { ...defaultSync, ...dbData.sync },
-          } as AppUser;
-      }
-        
       if (docSnap.exists()) {
         const dbData = docSnap.data();
         setProfile(buildProfile(coreUser, dbData));
       } else {
+        // If doc doesn't exist, create it for the new user.
         const initialProfileData: Partial<AppUser> = {
           uid: coreUser.uid,
           email: coreUser.email,
@@ -189,6 +191,7 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
           plan: defaultPlan,
           sync: defaultSync,
         };
+        // Use setDoc to create the document.
         setDoc(userDocRef, initialProfileData, { merge: true });
         setProfile(buildProfile(coreUser, initialProfileData));
       }
@@ -229,10 +232,8 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
   const updatePortfolio = useCallback(async (data: Partial<PortfolioData>) => {
     if (!coreUser) throw new Error("User not authenticated");
     const userDocRef = doc(db, 'users', coreUser.uid);
-    const docSnap = await getDoc(userDocRef);
-    const currentPortfolio = docSnap.exists() ? docSnap.data().portfolio : {};
-    await updateDoc(userDocRef, { portfolio: { ...currentPortfolio, ...data } });
-  }, [coreUser]);
+    await updateDoc(userDocRef, { portfolio: { ...profile?.portfolio, ...data } });
+  }, [coreUser, profile]);
 
   const addHistoryItem = useCallback(async (item: Omit<HistoryItem, 'id' | 'timestamp'>) => {
     if (!coreUser) return;
