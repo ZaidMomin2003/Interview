@@ -181,8 +181,10 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
   }, [coreUser, getUserDocRef]);
   
   const isBookmarked = useCallback((id: string) => {
-    return profile?.bookmarks?.some(b => b.id === id) || false;
-  }, [profile?.bookmarks]);
+    // This function now directly uses the 'profile' state variable,
+    // which is guaranteed to be up-to-date by the onSnapshot listener.
+    return !!profile?.bookmarks?.some(b => b.id === id);
+  }, [profile]);
   
   const clearData = useCallback(async () => {
      if (!coreUser) return;
