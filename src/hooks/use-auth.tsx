@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect, useContext, createContext, ReactNode } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { auth } from '@/lib/firebase';
 import { 
   onAuthStateChanged, 
