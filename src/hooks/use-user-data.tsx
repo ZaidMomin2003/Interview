@@ -37,23 +37,23 @@ export interface AppUser extends Partial<OnboardingData> {
 type UserDataContextType = {
   profile: AppUser | null;
   loading: boolean;
-  addHistoryItem: (item: Omit<HistoryItem, 'id' | 'timestamp'> & { id?: string }) => void;
-  addBookmark: (item: Bookmark) => void;
-  removeBookmark: (id: string) => void;
+  addHistoryItem: (item: Omit<HistoryItem, 'id' | 'timestamp'> & { id?: string }) => Promise<void>;
+  addBookmark: (item: Bookmark) => Promise<void>;
+  removeBookmark: (id: string) => Promise<void>;
   isBookmarked: (id: string) => boolean;
   updateUserProfile: (data: Partial<OnboardingData & { photoURL?: string }>) => Promise<void>;
-  clearData: () => void;
+  clearData: () => Promise<void>;
 };
 
 const UserDataContext = createContext<UserDataContextType>({
   profile: null,
   loading: true,
-  addHistoryItem: () => {},
-  addBookmark: () => {},
-  removeBookmark: () => {},
+  addHistoryItem: async () => {},
+  addBookmark: async () => {},
+  removeBookmark: async () => {},
   isBookmarked: () => false,
   updateUserProfile: async () => {},
-  clearData: () => {},
+  clearData: async () => {},
 });
 
 
@@ -65,8 +65,10 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
   const getUserDocRef = useCallback((userId: string) => doc(db, 'users', userId), []);
 
   useEffect(() => {
-    if (authLoading) return;
-
+    if (authLoading) {
+      setLoading(true);
+      return;
+    }
     if (!coreUser) {
       setProfile(null);
       setLoading(false);
@@ -100,7 +102,7 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
 
       } else {
         // If no data exists, create a basic document for the new user.
-        const initialProfile = {
+        const initialProfileData = {
           uid: coreUser.uid,
           email: coreUser.email,
           displayName: coreUser.displayName,
@@ -108,8 +110,8 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
           history: [],
           bookmarks: [],
         };
-        setDoc(userDocRef, initialProfile);
-        setProfile(initialProfile as AppUser);
+        setDoc(userDocRef, initialProfileData);
+        setProfile(initialProfileData as AppUser);
       }
       setLoading(false);
     }, (error) => {
@@ -123,18 +125,21 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
 
 
   const updateUserProfile = async (data: Partial<OnboardingData & { photoURL?: string }>) => {
-    if (!coreUser) return;
+    if (!coreUser) throw new Error("User not authenticated");
 
+    const userDocRef = getUserDocRef(coreUser.uid);
+
+    // If updating displayName or photoURL, also update the Firebase Auth profile
     if (auth.currentUser) {
-        // Update Firebase Auth profile
-        await updateProfile(auth.currentUser, { 
-            displayName: data.displayName || auth.currentUser.displayName, 
-            photoURL: data.photoURL || auth.currentUser.photoURL 
-        });
+        const authUpdateData: { displayName?: string; photoURL?: string } = {};
+        if (data.displayName) authUpdateData.displayName = data.displayName;
+        if (data.photoURL) authUpdateData.photoURL = data.photoURL;
+        if (Object.keys(authUpdateData).length > 0) {
+            await updateProfile(auth.currentUser, authUpdateData);
+        }
     }
     
     // Update Firestore document
-    const userDocRef = getUserDocRef(coreUser.uid);
     await setDoc(userDocRef, data, { merge: true });
   };
 
@@ -148,7 +153,9 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
         id: item.id || `hist-${Date.now()}`,
         timestamp: new Date(),
     };
-    const updatedHistory = [newHistoryItem, ...(profile.history || [])];
+    // Fetch latest profile to avoid race conditions
+    const currentHistory = profile.history || [];
+    const updatedHistory = [newHistoryItem, ...currentHistory];
     await updateDoc(userDocRef, { history: updatedHistory });
   }, [coreUser, profile, getUserDocRef]);
 

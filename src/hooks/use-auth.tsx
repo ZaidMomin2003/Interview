@@ -16,7 +16,6 @@ import {
   type User as FirebaseUser
 } from "firebase/auth";
 import { Skeleton } from '@/components/ui/skeleton';
-import { useUserData } from './use-user-data';
 
 // This will now only hold the core Firebase User object properties
 export interface CoreUser {
@@ -115,21 +114,25 @@ export const useAuth = () => {
   return context;
 };
 
-// AuthGuard no longer needs a useRequireAuth hook, it can be simplified.
+// A simplified AuthGuard. It protects a route, and shows a loading skeleton.
+// The data-specific loading and onboarding checks are handled by other components.
 export function AuthGuard({ children }: { children: React.ReactNode }) {
     const { user, loading } = useAuth();
     const router = useRouter();
+    const pathname = usePathname();
 
     useEffect(() => {
-        if (!loading && !user) {
+        if (!loading && !user && pathname !== '/calculate-salary') {
             router.push('/login');
         }
-    }, [user, loading, router]);
+    }, [user, loading, router, pathname]);
 
-    // We also check the user data from useUserData to ensure the profile is loaded.
-    const { profile, loading: userDataLoading } = useUserData();
 
-    if (loading || userDataLoading || !user || !profile) {
+    if (loading || !user) {
+        // For auth-optional pages, just return children if loading/no user
+        if (pathname === '/calculate-salary') {
+            return <>{children}</>
+        }
         return (
              <div className="flex min-h-screen w-full bg-background">
                 <div className="hidden md:flex flex-col gap-4 p-2 border-r border-border bg-secondary/30 w-64">
@@ -148,6 +151,11 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
                 </div>
             </div>
         );
+    }
+    
+    // If we're on an auth-optional page but we *do* have a user, render the children
+    if(pathname === '/calculate-salary' && user) {
+        return <>{children}</>;
     }
     
     return <>{children}</>;

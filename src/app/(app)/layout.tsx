@@ -4,10 +4,11 @@
 import { AppHeader } from "@/components/layout/app-header";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { useAuth, AuthGuard } from "@/hooks/use-auth";
-import { usePathname, useRouter } from 'next/navigation';
-import { useEffect } from 'react';
-import { UserDataProvider, useUserData } from "@/hooks/use-user-data";
+import { AuthGuard } from "@/hooks/use-auth";
+import { usePathname } from 'next/navigation';
+import { UserDataProvider } from "@/hooks/use-user-data";
+import { OnboardingCheck } from "@/components/feature/onboarding-check";
+
 
 // Define paths that don't need the main app layout
 const NO_LAYOUT_PATHS = ['/onboarding'];
@@ -19,33 +20,17 @@ export default function AppLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { user, loading } = useAuth();
   const pathname = usePathname();
-  const router = useRouter();
 
-  // For auth-optional paths, we still show the layout if the user *is* logged in
-  if (!user && AUTH_OPTIONAL_PATHS.includes(pathname)) {
+  // For certain pages like the salary calculator, we can show them without the full app shell if the user isn't logged in.
+  // If they are logged in, they will be wrapped in the full layout by the AuthGuard below.
+  if (AUTH_OPTIONAL_PATHS.includes(pathname)) {
      return <>{children}</>;
   }
-
-  // The onboarding check will now happen inside the UserDataProvider
-  const OnboardingCheck = ({ children }: { children: React.ReactNode }) => {
-    const { profile, loading: userDataLoading } = useUserData();
-    
-    useEffect(() => {
-      const hasOnboarded = profile?.displayName;
-      if (!userDataLoading && user && !hasOnboarded && pathname !== '/onboarding') {
-        router.push('/onboarding');
-      }
-    }, [profile, userDataLoading, user, pathname, router]);
-
-    return <>{children}</>;
-  }
-
-
+  
+  // The Onboarding page has its own layout.
   if (NO_LAYOUT_PATHS.includes(pathname)) {
     return (
-      // Onboarding still needs the UserDataProvider to save the profile
       <UserDataProvider>
         <AuthGuard>
             {children}
@@ -54,18 +39,22 @@ export default function AppLayout({
     );
   }
 
+  // All other authenticated routes get the full application shell.
+  // The UserDataProvider wraps everything to ensure data is available.
+  // The AuthGuard protects the routes and handles loading states.
+  // The OnboardingCheck handles redirecting new users.
   return (
     <UserDataProvider>
         <AuthGuard>
             <OnboardingCheck>
                 <SidebarProvider>
-                <AppSidebar />
-                <SidebarInset>
-                    <AppHeader />
-                    <div className="relative min-h-screen lg:p-8 p-4 bg-background text-foreground">
-                        {children}
-                    </div>
-                </SidebarInset>
+                    <AppSidebar />
+                    <SidebarInset>
+                        <AppHeader />
+                        <div className="relative min-h-screen lg:p-8 p-4 bg-background text-foreground">
+                            {children}
+                        </div>
+                    </SidebarInset>
                 </SidebarProvider>
             </OnboardingCheck>
         </AuthGuard>
