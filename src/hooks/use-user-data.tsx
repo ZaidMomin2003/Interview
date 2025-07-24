@@ -82,8 +82,9 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
         
         const interviewDate = firestoreData.interviewDate;
 
-        setProfile(prevProfile => ({
-          ...prevProfile,
+        // Construct a completely new profile object from the database snapshot and core auth info.
+        // This avoids merging with a stale `prevProfile` and is the definitive fix.
+        setProfile({
           ...firestoreData,
           uid: coreUser.uid,
           email: coreUser.email,
@@ -92,9 +93,11 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
           history,
           interviewDate: interviewDate ? (interviewDate instanceof Timestamp ? interviewDate.toDate() : new Date(interviewDate)) : undefined,
           bookmarks: firestoreData.bookmarks || [],
-        }));
+        } as AppUser);
+
 
       } else {
+        // If the document doesn't exist, create it for the first time.
         const initialProfileData = {
           uid: coreUser.uid,
           email: coreUser.email,
@@ -138,6 +141,7 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
         dataToSave.interviewDate = Timestamp.fromDate(data.interviewDate);
     }
     
+    // Use setDoc with merge:true which is safer than updateDoc for creating/updating.
     await setDoc(userDocRef, dataToSave, { merge: true });
   };
 
@@ -152,6 +156,7 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
         timestamp: new Date(),
     };
     
+    // Rely on arrayUnion to atomically add the item.
     await updateDoc(userDocRef, {
         history: arrayUnion(newHistoryItem)
     });
@@ -160,6 +165,7 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
   const addBookmark = useCallback(async (item: Bookmark) => {
      if (!coreUser) return;
      const userDocRef = getUserDocRef(coreUser.uid);
+     // Rely on arrayUnion's idempotency. It won't add a duplicate if the exact object exists.
      await updateDoc(userDocRef, {
         bookmarks: arrayUnion(item)
      });
@@ -168,6 +174,7 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
   const removeBookmark = useCallback(async (item: Bookmark) => {
     if (!coreUser) return;
     const userDocRef = getUserDocRef(coreUser.uid);
+    // Use arrayRemove for atomic deletion from the array.
     await updateDoc(userDocRef, {
         bookmarks: arrayRemove(item)
     });
