@@ -114,6 +114,13 @@ export default function ProfilePage() {
 
   return (
     <div className="space-y-8">
+       <div>
+        <h1 className="text-3xl md:text-4xl font-bold font-headline flex items-center gap-2">
+            <User className="w-8 h-8"/>
+            User Profile
+        </h1>
+        <p className="text-muted-foreground mt-2">View and manage your account information.</p>
+      </div>
       <div className="flex flex-col sm:flex-row items-center gap-6">
         <div className="relative group">
            <Avatar className="h-24 w-24 border-4 border-primary">

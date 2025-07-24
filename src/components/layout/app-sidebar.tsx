@@ -23,6 +23,7 @@ import {
   Loader2,
   BookOpen,
   Timer,
+  User,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -37,29 +38,14 @@ const menuItems = [
     icon: LayoutDashboard,
   },
   {
-    href: "/ai-interview/start",
-    label: "AI Interview",
-    icon: Video,
-  },
-  {
-    href: "/coding-practice",
-    label: "Code & AI Feedback",
-    icon: CodeXml,
-  },
-  {
-    href: "/notes",
-    label: "AI Notes",
-    icon: BookOpen,
-  },
-  {
-    href: "/resume-builder",
-    label: "Resume Studio",
-    icon: FileText,
-  },
-  {
     href: "/portfolio-builder",
     label: "Portfolio",
     icon: GalleryVertical,
+  },
+   {
+    href: "/profile",
+    label: "Profile",
+    icon: User,
   },
    {
     href: "/sync-tester",
