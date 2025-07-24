@@ -54,6 +54,7 @@ export default function CodingGymPage() {
     try {
       const result = await generateCodingQuestion(values as GenerateCodingQuestionInput);
       setQuestions(result.questions);
+      // Correctly add the count to the history item
       await addHistoryItem({
         type: 'Coding Challenge',
         description: `Generated ${values.count} ${values.difficulty} question(s) on ${values.topic}.`,
@@ -137,7 +138,7 @@ export default function CodingGymPage() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Number</FormLabel>
-                     <Select onValueChange={(v) => field.onChange(parseInt(v,10))} defaultValue={String(field.value)}>
+                     <Select onValueChange={(v) => field.onChange(parseInt(v, 10))} defaultValue={String(field.value)}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select number" />
