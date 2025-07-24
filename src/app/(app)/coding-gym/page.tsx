@@ -115,9 +115,9 @@ export default function CodingGymPage() {
     setIsLoading(true);
     setQuestions([]);
     try {
-      // Ensure the 'count' is a number before passing to the AI flow
       const input: GenerateMCQInput = {
-        ...values,
+        topic: values.topic,
+        difficulty: values.difficulty,
         count: Number(values.count),
       };
       
@@ -127,14 +127,13 @@ export default function CodingGymPage() {
       await addHistoryItem({
         type: 'MCQ Challenge',
         description: `Generated ${values.count} ${values.difficulty} MCQ(s) on ${values.topic}.`,
-        count: values.count,
+        count: Number(values.count),
       });
 
       toast({
         title: "Success!",
         description: `Generated ${result.questions.length} questions.`,
-      })
-
+      });
     } catch (error) {
       console.error('Error generating questions:', error);
       toast({
