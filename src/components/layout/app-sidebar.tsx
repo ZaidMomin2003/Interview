@@ -78,24 +78,23 @@ export function AppSidebar() {
 
   return (
     <>
-    <Sidebar>
+    <Sidebar collapsible="icon">
       <SidebarHeader>
         <div className="flex items-center gap-2">
-           <Button variant="ghost" size="icon" className="shrink-0 md:hidden" asChild>
-             <SidebarTrigger/>
-           </Button>
            <Link href="/dashboard" className="flex items-center gap-2">
             <Cpu className="h-8 w-8 text-primary" />
             <span className="font-bold font-headline text-lg uppercase tracking-widest group-data-[collapsible=icon]:hidden">
               Talxify
             </span>
           </Link>
+           <div className="flex-1" />
+            <SidebarTrigger className="hidden md:flex" />
         </div>
       </SidebarHeader>
 
       <SidebarMenu className="flex-1">
         {menuItems.map((item) => (
-          <SidebarMenuItem key={item.href || item.id}>
+          <SidebarMenuItem key={item.href}>
             <SidebarMenuButton
               asChild
               isActive={pathname.startsWith(item.href)}
