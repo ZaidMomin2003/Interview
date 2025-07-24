@@ -11,14 +11,31 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import {
+  CodeXml,
   Cpu,
+  LayoutDashboard,
   LogOut,
 } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/hooks/use-auth";
+import { usePathname } from "next/navigation";
 
 export function AppSidebar() {
   const { logout } = useAuth();
+  const pathname = usePathname();
+
+  const menuItems = [
+    {
+      href: "/dashboard",
+      label: "Dashboard",
+      icon: <LayoutDashboard />,
+    },
+    {
+      href: "/coding-gym",
+      label: "Coding Gym",
+      icon: <CodeXml />,
+    },
+  ];
 
   return (
     <>
@@ -35,7 +52,22 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarMenu className="flex-1">
-        {/* All menu items have been removed as per the reset request */}
+         {menuItems.map((item) => (
+            <SidebarMenuItem key={item.href}>
+              <Link href={item.href}>
+                <SidebarMenuButton
+                  tooltip={item.label}
+                  isActive={pathname.startsWith(item.href)}
+                  className="justify-start"
+                >
+                  {item.icon}
+                  <span className="group-data-[collapsible=icon]:hidden">
+                    {item.label}
+                  </span>
+                </SidebarMenuButton>
+              </Link>
+            </SidebarMenuItem>
+          ))}
       </SidebarMenu>
       
       <SidebarFooter className="border-t mt-auto p-2 space-y-2">
