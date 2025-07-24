@@ -59,37 +59,48 @@ const UserDataContext = createContext<UserDataContextType>({
 export const UserDataProvider = ({ children }: { children: ReactNode }) => {
   const { user: coreUser, loading: authLoading } = useAuth();
   const [profile, setProfile] = useState<AppUser | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // We must wait for the auth state to be definitively resolved.
+    if (authLoading) {
+        setLoading(true);
+        return;
+    }
+
     if (!coreUser) {
       setProfile(null);
+      setLoading(false);
       return;
     }
 
     const userDocRef = doc(db, 'users', coreUser.uid);
-
     const unsubscribe = onSnapshot(userDocRef, (docSnap) => {
       if (docSnap.exists()) {
         const firestoreData = docSnap.data();
-        const history = (firestoreData.history || []).map((item: any) => ({
-            ...item,
-            timestamp: item.timestamp instanceof Timestamp ? item.timestamp.toDate() : new Date(item.timestamp),
-        })).sort((a: HistoryItem, b: HistoryItem) => b.timestamp.getTime() - a.timestamp.getTime());
+        
+        const buildProfile = (authData: CoreUser, dbData: any): AppUser => {
+            const history = (dbData.history || []).map((item: any) => ({
+                ...item,
+                timestamp: item.timestamp instanceof Timestamp ? item.timestamp.toDate() : new Date(item.timestamp),
+            })).sort((a: HistoryItem, b: HistoryItem) => b.timestamp.getTime() - a.timestamp.getTime());
 
-        const interviewDate = firestoreData.interviewDate;
+            const interviewDate = dbData.interviewDate;
 
-        setProfile({
-          ...firestoreData,
-          uid: coreUser.uid,
-          email: coreUser.email,
-          displayName: coreUser.displayName,
-          photoURL: coreUser.photoURL,
-          history,
-          interviewDate: interviewDate ? (interviewDate instanceof Timestamp ? interviewDate.toDate() : new Date(interviewDate)) : undefined,
-          bookmarks: firestoreData.bookmarks || [],
-        } as AppUser);
+            return {
+                ...dbData,
+                uid: authData.uid,
+                email: authData.email,
+                displayName: authData.displayName,
+                photoURL: authData.photoURL,
+                history,
+                interviewDate: interviewDate ? (interviewDate instanceof Timestamp ? interviewDate.toDate() : new Date(interviewDate)) : undefined,
+                bookmarks: dbData.bookmarks || [],
+            } as AppUser;
+        }
+        setProfile(buildProfile(coreUser, firestoreData));
       } else {
-        // If doc doesn't exist, create it.
+        // If doc doesn't exist, create it for the new user.
         const initialProfileData = {
           uid: coreUser.uid,
           email: coreUser.email,
@@ -101,18 +112,19 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
         setDoc(userDocRef, initialProfileData);
         setProfile(initialProfileData as AppUser);
       }
+      setLoading(false);
     }, (error) => {
       console.error("Error listening to user data:", error);
+      setLoading(false);
     });
 
     return () => unsubscribe();
-  }, [coreUser]);
+  }, [coreUser, authLoading]);
 
-  const updateUserProfile = async (data: Partial<OnboardingData & { photoURL?: string }>) => {
+  const updateUserProfile = useCallback(async (data: Partial<OnboardingData & { photoURL?: string }>) => {
     if (!coreUser) throw new Error("User not authenticated");
     const userDocRef = doc(db, 'users', coreUser.uid);
 
-    // Update Firebase Auth profile if needed
     if (auth.currentUser) {
         const authUpdateData: { displayName?: string; photoURL?: string } = {};
         if (data.displayName && data.displayName !== auth.currentUser.displayName) {
@@ -126,19 +138,18 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
         }
     }
     
-    // Prepare data for Firestore
     const dataToSave: any = { ...data };
     if (data.interviewDate) {
         dataToSave.interviewDate = Timestamp.fromDate(data.interviewDate);
     }
     
     await setDoc(userDocRef, dataToSave, { merge: true });
-  };
+  }, [coreUser]);
 
   const addHistoryItem = useCallback(async (item: Omit<HistoryItem, 'id' | 'timestamp'>) => {
     if (!coreUser) return;
     const userDocRef = doc(db, 'users', coreUser.uid);
-    const newHistoryItem = { ...item, id: `hist-${Date.now()}`, timestamp: new Date() };
+    const newHistoryItem = { ...item, id: `hist-${Date.now()}-${Math.random()}`, timestamp: new Date() };
     await updateDoc(userDocRef, { history: arrayUnion(newHistoryItem) });
   }, [coreUser]);
 
@@ -151,11 +162,18 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
   const removeBookmark = useCallback(async (item: Bookmark) => {
     if (!coreUser) return;
     const userDocRef = doc(db, 'users', coreUser.uid);
-    await updateDoc(userDocRef, { bookmarks: arrayRemove(item) });
+    const docSnap = await getDoc(userDocRef);
+    if (docSnap.exists()) {
+        const currentBookmarks = docSnap.data().bookmarks || [];
+        const bookmarkToRemove = currentBookmarks.find((b: Bookmark) => b.id === item.id);
+        if(bookmarkToRemove){
+            await updateDoc(userDocRef, { bookmarks: arrayRemove(bookmarkToRemove) });
+        }
+    }
   }, [coreUser]);
 
   const isBookmarked = useCallback((id: string) => {
-    return profile?.bookmarks?.some(b => b.id === id) || false;
+    return !!profile?.bookmarks?.some(b => b.id === id);
   }, [profile?.bookmarks]);
   
   const clearData = useCallback(async () => {
@@ -165,7 +183,7 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
   }, [coreUser]);
 
   return (
-    <UserDataContext.Provider value={{ profile, loading: authLoading || !profile, addHistoryItem, addBookmark, removeBookmark, isBookmarked, updateUserProfile, clearData }}>
+    <UserDataContext.Provider value={{ profile, loading, addHistoryItem, addBookmark, removeBookmark, isBookmarked, updateUserProfile, clearData }}>
       {children}
     </UserDataContext.Provider>
   );
