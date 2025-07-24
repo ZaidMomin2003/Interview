@@ -4,34 +4,36 @@
 
 import {z} from 'genkit';
 
-export const MCQSchema = z.object({
-  question: z.string().describe('The multiple choice question text.'),
-  options: z.array(z.string()).length(4).describe('An array of 4 potential answers for the question.'),
-  answer: z.string().describe('The correct answer from the options array.'),
-  explanation: z
+export const GenerateCodingQuestionInputSchema = z.object({
+  topic: z
     .string()
     .describe(
-      'A detailed explanation of why the answer is correct.'
+      'The programming topic for the question (e.g., Arrays, Dynamic Programming).'
     ),
-});
-export type MCQ = z.infer<typeof MCQSchema>;
-
-export const GenerateMCQInputSchema = z.object({
-  topic: z.string().describe('The programming topic for the questions (e.g., Arrays, Dynamic Programming).'),
   difficulty: z
     .string()
-    .describe('The difficulty level of the questions (e.g., Easy, Medium, Hard).'),
-  count: z.number().int().min(1).max(5).describe('The number of questions to generate.'),
+    .describe(
+      'The difficulty level of the question (e.g., Easy, Medium, Hard).'
+    ),
+  language: z
+    .string()
+    .describe('The programming language for the solution (e.g., Python, JavaScript).'),
 });
-export type GenerateMCQInput = z.infer<
-  typeof GenerateMCQInputSchema
+export type GenerateCodingQuestionInput = z.infer<
+  typeof GenerateCodingQuestionInputSchema
 >;
 
-export const GenerateMCQOutputSchema = z.object({
-  questions: z
-    .array(MCQSchema)
-    .describe('The array of generated multiple choice questions.'),
+export const GenerateCodingQuestionOutputSchema = z.object({
+  title: z.string().describe('The title of the generated coding question.'),
+  description: z
+    .string()
+    .describe('The detailed description of the problem statement.'),
+  solution: z
+    .string()
+    .describe(
+      'The code solution in the requested language, including an explanation.'
+    ),
 });
-export type GenerateMCQOutput = z.infer<
-  typeof GenerateMCQOutputSchema
+export type GenerateCodingQuestionOutput = z.infer<
+  typeof GenerateCodingQuestionOutputSchema
 >;

@@ -1,4 +1,3 @@
-
 // src/hooks/use-user-data.tsx
 "use client";
 
@@ -11,7 +10,7 @@ import { updateProfile as updateAuthProfile } from "firebase/auth";
 
 export interface HistoryItem {
   id: string;
-  type: 'AI Interview' | 'Coding Challenge' | 'Resume Optimization' | 'Notes Generation' | 'MCQ Challenge';
+  type: 'AI Interview' | 'Coding Challenge' | 'Resume Optimization' | 'Notes Generation';
   description: string;
   timestamp: Date;
   count?: number; // Optional: To track number of questions generated, etc.

@@ -7,11 +7,11 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import {
-  generateMCQ,
+  generateCodingQuestion,
 } from '@/ai/flows/generate-coding-question';
-import type { MCQ, GenerateMCQInput } from '@/ai/types/coding-question-types';
+import type { GenerateCodingQuestionOutput } from '@/ai/types/coding-question-types';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import {
@@ -21,125 +21,56 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Loader2, Sparkles, CheckCircle, XCircle } from 'lucide-react';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
+import { Loader2, Sparkles } from 'lucide-react';
 import { useUserData } from '@/hooks/use-user-data';
 import { useToast } from '@/hooks/use-toast';
-import { cn } from '@/lib/utils';
-import { Separator } from '@/components/ui/separator';
-import { Label } from '@/components/ui/label';
+import { marked } from 'marked';
 
 const formSchema = z.object({
   topic: z.string().min(1, 'Topic is required.'),
   difficulty: z.enum(['Easy', 'Medium', 'Hard']),
-  count: z.coerce.number().int().min(1).max(5),
+  language: z.string().min(1, 'Language is required.'),
 });
-
-function MCQCard({ mcq, index }: { mcq: MCQ, index: number }) {
-    const [selectedOption, setSelectedOption] = useState<string | null>(null);
-    const [showAnswer, setShowAnswer] = useState(false);
-
-    const isCorrect = selectedOption === mcq.answer;
-
-    const getOptionClass = (option: string) => {
-        if (!showAnswer) return '';
-        if (option === mcq.answer) return 'bg-green-500/20 border-green-500';
-        if (option === selectedOption && option !== mcq.answer) return 'bg-red-500/20 border-red-500';
-        return '';
-    };
-
-    return (
-         <Card>
-            <CardHeader>
-                <CardTitle>Question {index + 1}</CardTitle>
-                <CardDescription className="text-lg text-foreground pt-2">{mcq.question}</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <RadioGroup
-                    value={selectedOption || undefined}
-                    onValueChange={(val) => {
-                        setSelectedOption(val);
-                        setShowAnswer(false);
-                    }}
-                    disabled={showAnswer}
-                    className="space-y-2"
-                >
-                    {mcq.options.map((option, i) => (
-                        <div
-                            key={i}
-                            className={cn("flex items-center space-x-3 space-y-0 p-4 rounded-lg border transition-all", getOptionClass(option))}
-                        >
-                            <RadioGroupItem value={option} id={`option-${index}-${i}`} />
-                             <Label htmlFor={`option-${index}-${i}`} className="font-normal text-base w-full cursor-pointer">{option}</Label>
-                        </div>
-                    ))}
-                </RadioGroup>
-            </CardContent>
-            <CardFooter className="flex-col items-start gap-4">
-                 <Button onClick={() => setShowAnswer(true)} disabled={!selectedOption || showAnswer}>
-                    Check Answer
-                </Button>
-                {showAnswer && (
-                    <div className="w-full p-4 rounded-lg bg-secondary/50">
-                        <div className="flex items-center gap-2 mb-2">
-                             {isCorrect ? <CheckCircle className="text-green-500"/> : <XCircle className="text-red-500"/>}
-                            <h4 className="font-semibold text-lg">{isCorrect ? "Correct!" : "Incorrect"}</h4>
-                        </div>
-                        <p className="text-muted-foreground"><span className="font-bold text-foreground">Correct Answer: </span>{mcq.answer}</p>
-                        <Separator className="my-4"/>
-                        <p className="text-muted-foreground"><span className="font-bold text-foreground">Explanation: </span>{mcq.explanation}</p>
-                    </div>
-                )}
-            </CardFooter>
-        </Card>
-    );
-}
-
 
 export default function CodingGymPage() {
   const [isLoading, setIsLoading] = useState(false);
-  const [questions, setQuestions] = useState<MCQ[]>([]);
+  const [question, setQuestion] = useState<GenerateCodingQuestionOutput | null>(
+    null
+  );
   const { addHistoryItem } = useUserData();
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      topic: '',
+      topic: 'Arrays',
       difficulty: 'Medium',
-      count: 1,
+      language: 'JavaScript',
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    setQuestions([]);
+    setQuestion(null);
     try {
-      const input: GenerateMCQInput = {
-        topic: values.topic,
-        difficulty: values.difficulty,
-        count: values.count,
-      };
-      
-      const result = await generateMCQ(input);
-      setQuestions(result.questions);
-      
+      const result = await generateCodingQuestion(values);
+      setQuestion(result);
       await addHistoryItem({
-        type: 'MCQ Challenge',
-        description: `Generated ${values.count} ${values.difficulty} MCQ(s) on ${values.topic}.`,
-        count: values.count,
-      });
-
-      toast({
-        title: "Success!",
-        description: `Generated ${result.questions.length} questions.`,
+        type: 'Coding Challenge',
+        description: `Generated a ${values.difficulty} ${values.topic} question in ${values.language}.`,
       });
     } catch (error) {
-      console.error('Error generating questions:', error);
+      console.error('Error generating question:', error);
       toast({
         variant: 'destructive',
         title: 'Uh oh! Something went wrong.',
-        description: 'There was a problem generating your questions. Please try again.',
+        description: 'There was a problem generating your question. Please try again.',
       });
     } finally {
       setIsLoading(false);
@@ -151,15 +82,15 @@ export default function CodingGymPage() {
       <div>
         <h1 className="text-3xl md:text-4xl font-bold font-headline">Coding Gym</h1>
         <p className="text-muted-foreground mt-2">
-          Sharpen your skills with AI-generated multiple choice questions.
+          Sharpen your problem-solving skills with AI-generated coding challenges.
         </p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Generate MCQs</CardTitle>
+          <CardTitle>Generate a Coding Question</CardTitle>
           <CardDescription>
-            Select a topic, difficulty, and number of questions to generate.
+            Select a topic, difficulty, and language to generate your challenge.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -169,10 +100,10 @@ export default function CodingGymPage() {
                 control={form.control}
                 name="topic"
                 render={({ field }) => (
-                  <FormItem className="md:col-span-2">
+                  <FormItem>
                     <FormLabel>Topic</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g., JavaScript, Data Structures, Networking" {...field} />
+                      <Input placeholder="e.g., Arrays, Dynamic Programming" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -204,18 +135,21 @@ export default function CodingGymPage() {
 
               <FormField
                 control={form.control}
-                name="count"
+                name="language"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Number</FormLabel>
-                     <Select onValueChange={(v) => field.onChange(parseInt(v, 10))} defaultValue={String(field.value)}>
+                    <FormLabel>Language</FormLabel>
+                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select number" />
+                          <SelectValue placeholder="Select language" />
                         </Trigger>
                       </FormControl>
                       <SelectContent>
-                        {[1, 2, 3, 4, 5].map(n => <SelectItem key={n} value={String(n)}>{n}</SelectItem>)}
+                        <SelectItem value="JavaScript">JavaScript</SelectItem>
+                        <SelectItem value="Python">Python</SelectItem>
+                        <SelectItem value="Java">Java</SelectItem>
+                        <SelectItem value="C++">C++</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -237,32 +171,46 @@ export default function CodingGymPage() {
       </Card>
 
       {isLoading && (
-         <div className="space-y-4">
-            <Card>
-                <CardHeader>
-                    <CardTitle className="bg-muted h-6 w-3/4 rounded-md animate-pulse"></CardTitle>
-                </CardHeader>
-                 <CardContent className="space-y-4">
-                    <div className="bg-muted h-10 w-full rounded-md animate-pulse"></div>
-                    <div className="bg-muted h-10 w-full rounded-md animate-pulse"></div>
-                    <div className="bg-muted h-10 w-full rounded-md animate-pulse"></div>
-                    <div className="bg-muted h-10 w-full rounded-md animate-pulse"></div>
-                 </CardContent>
-            </Card>
-        </div>
+        <Card>
+          <CardHeader>
+            <CardTitle className="bg-muted h-8 w-3/4 rounded-md animate-pulse"></CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="bg-muted h-6 w-full rounded-md animate-pulse"></div>
+              <div className="bg-muted h-6 w-5/6 rounded-md animate-pulse"></div>
+              <div className="bg-muted h-6 w-3/4 rounded-md animate-pulse"></div>
+            </div>
+          </CardContent>
+        </Card>
       )}
 
-
-      {questions.length > 0 && (
-        <div className="space-y-4">
-          <h2 className="text-2xl font-bold font-headline">Generated Questions</h2>
-            {questions.map((q, index) => (
-                <MCQCard mcq={q} index={index} key={index} />
-            ))}
-        </div>
+      {question && (
+        <Card>
+          <CardHeader>
+            <CardTitle>{question.title}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div
+              className="prose prose-sm dark:prose-invert max-w-none"
+              dangerouslySetInnerHTML={{ __html: marked(question.description) }}
+            />
+            <Accordion type="single" collapsible className="w-full mt-6">
+              <AccordionItem value="item-1">
+                <AccordionTrigger>View Solution</AccordionTrigger>
+                <AccordionContent>
+                  <div
+                    className="prose prose-sm dark:prose-invert max-w-none"
+                    dangerouslySetInnerHTML={{
+                      __html: marked(question.solution),
+                    }}
+                  />
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </CardContent>
+        </Card>
       )}
     </div>
   );
 }
-
-    

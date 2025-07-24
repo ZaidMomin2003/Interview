@@ -1,4 +1,3 @@
-
 // src/app/(app)/dashboard/page.tsx
 "use client";
 
@@ -10,9 +9,7 @@ export default function DashboardPage() {
   const { profile } = useUserData();
 
   const questionsGenerated =
-    profile?.history
-      ?.filter((h) => h.type === "MCQ Challenge")
-      .reduce((total, h) => total + (h.count || 0), 0) || 0;
+    profile?.history?.filter((h) => h.type === "Coding Challenge").length || 0;
 
   return (
     <div className="space-y-4">
@@ -27,7 +24,7 @@ export default function DashboardPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              MCQs Generated
+              Questions Generated
             </CardTitle>
             <CodeXml className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
