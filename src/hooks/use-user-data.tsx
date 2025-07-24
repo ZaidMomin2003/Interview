@@ -55,6 +55,13 @@ export interface PortfolioData {
   certificates: PortfolioCertificate[];
 }
 
+export interface PlanData {
+  name: 'Cadet' | 'Gladiator' | 'Champion' | 'Legend';
+  interviews: number;
+  codingQuestions: number;
+  notes: number;
+}
+
 
 // The full user profile, combining auth data with our custom data.
 export interface AppUser extends Partial<OnboardingData> {
@@ -65,6 +72,7 @@ export interface AppUser extends Partial<OnboardingData> {
   history: HistoryItem[];
   bookmarks: Bookmark[];
   portfolio: PortfolioData;
+  plan: PlanData;
 }
 
 type UserDataContextType = {
@@ -98,6 +106,13 @@ const defaultPortfolio: PortfolioData = {
     projects: [],
     hackathons: [],
     certificates: [],
+};
+
+const defaultPlan: PlanData = {
+    name: 'Cadet',
+    interviews: 10,
+    codingQuestions: 60,
+    notes: 30,
 };
 
 
@@ -141,6 +156,7 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
                 interviewDate: interviewDate ? (interviewDate instanceof Timestamp ? interviewDate.toDate() : new Date(interviewDate)) : undefined,
                 bookmarks: dbData.bookmarks || [],
                 portfolio: { ...defaultPortfolio, slug: authData.displayName?.toLowerCase().replace(/\s+/g, '-') || authData.uid, ...dbData.portfolio },
+                plan: { ...defaultPlan, ...dbData.plan },
             } as AppUser;
         }
         setProfile(buildProfile(coreUser, dbData));
@@ -155,7 +171,8 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
           portfolio: {
             ...defaultPortfolio,
             slug: coreUser.displayName?.toLowerCase().replace(/\s+/g, '-') || coreUser.uid,
-          }
+          },
+          plan: defaultPlan,
         };
         setDoc(userDocRef, initialProfileData);
         setProfile(initialProfileData as AppUser);
@@ -227,9 +244,9 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [coreUser]);
 
-  const isBookmarked = useCallback((id: string) => {
+  const isBookmarked = (id: string) => {
     return !!profile?.bookmarks?.some(b => b.id === id);
-  }, [profile?.bookmarks]);
+  };
   
   const clearData = useCallback(async () => {
      if (!coreUser) return;

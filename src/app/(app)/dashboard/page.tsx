@@ -16,13 +16,6 @@ const chartConfig = {
   notes: { label: "Notes", color: "hsl(var(--foreground))" },
 };
 
-// Dummy data for plan limits
-const planLimits = {
-    interviews: 10,
-    codingQuestions: 60,
-    notes: 30,
-};
-
 export default function DashboardPage() {
   const { profile, loading } = useUserData();
 
@@ -67,7 +60,7 @@ export default function DashboardPage() {
   }
 
   // Derive data directly from profile to ensure real-time updates
-  const { history = [], bookmarks = [] } = profile;
+  const { history = [], bookmarks = [], plan } = profile;
   const displayName = profile.displayName?.split(' ')[0] || 'developer';
   
   // Calculate usage
@@ -100,7 +93,7 @@ export default function DashboardPage() {
   const score = Math.min(
     Math.floor(
       (interviewsUsed * 10 + questionsUsed * 2 + recentHistory.length) / 
-      (planLimits.interviews * 5 + planLimits.codingQuestions * 1 + planLimits.notes * 0.5 + 50) * 100
+      (plan.interviews * 5 + plan.codingQuestions * 1 + plan.notes * 0.5 + 50) * 100
     ), 100
   );
   const readinessScore = [{ name: 'readiness', value: score, fill: 'hsl(var(--primary))' }];
@@ -135,7 +128,7 @@ export default function DashboardPage() {
                           <Video className="h-5 w-5 text-primary" />
                       </CardHeader>
                       <CardContent>
-                          <div className="text-2xl font-bold">{interviewsUsed} / {planLimits.interviews}</div>
+                          <div className="text-2xl font-bold">{interviewsUsed} / {plan.interviews}</div>
                           <p className="text-xs text-muted-foreground">Credits remaining for this cycle</p>
                       </CardContent>
                   </Card>
@@ -145,7 +138,7 @@ export default function DashboardPage() {
                           <CodeXml className="h-5 w-5 text-primary" />
                       </CardHeader>
                       <CardContent>
-                          <div className="text-2xl font-bold">{questionsUsed} / {planLimits.codingQuestions}</div>
+                          <div className="text-2xl font-bold">{questionsUsed} / {plan.codingQuestions}</div>
                           <p className="text-xs text-muted-foreground">Credits remaining for this cycle</p>
                       </CardContent>
                   </Card>
@@ -155,7 +148,7 @@ export default function DashboardPage() {
                           <BrainCircuit className="h-5 w-5 text-primary" />
                       </CardHeader>
                       <CardContent>
-                          <div className="text-2xl font-bold">{notesUsed} / {planLimits.notes}</div>
+                          <div className="text-2xl font-bold">{notesUsed} / {plan.notes}</div>
                            <p className="text-xs text-muted-foreground">Credits remaining for this cycle</p>
                       </CardContent>
                   </Card>
