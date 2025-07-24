@@ -128,7 +128,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     }, [user, loading, router, pathname]);
 
 
-    if (loading || (!user && pathname !== '/calculate-salary')) {
+    if (loading || (!user && pathname !== '/calculate-salary' && pathname !== '/')) {
         return (
              <div className="flex min-h-screen w-full bg-background">
                 <div className="hidden md:flex flex-col gap-4 p-2 border-r border-border bg-secondary/30 w-64">
