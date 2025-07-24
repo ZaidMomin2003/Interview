@@ -9,6 +9,7 @@ import { ChartContainer, ChartTooltipContent, ChartLegend, ChartLegendContent, C
 import { RadialBarChart, RadialBar, LineChart, Line, CartesianGrid, XAxis, YAxis } from "recharts";
 import { useMemo } from "react";
 import { subDays, format, isAfter } from 'date-fns';
+import { Skeleton } from "@/components/ui/skeleton";
 
 const chartConfig = {
   questions: { label: "Questions", color: "hsl(var(--primary))" },
@@ -103,8 +104,43 @@ export default function DashboardPage() {
   }, [profile]);
   
   if (loading) {
-      // You can return a skeleton loader here if you wish
-      return <div>Loading dashboard...</div>;
+      return (
+        <div className="space-y-8 text-foreground">
+          <div className="max-w-7xl mx-auto">
+            <div>
+              <Skeleton className="h-12 w-1/3 mb-2" />
+              <Skeleton className="h-6 w-1/2" />
+            </div>
+            <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2 space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <Card className="bg-secondary/30 backdrop-blur-sm"><CardHeader><Skeleton className="h-5 w-2/3" /></CardHeader><CardContent><Skeleton className="h-8 w-1/2" /></CardContent></Card>
+                      <Card className="bg-secondary/30 backdrop-blur-sm"><CardHeader><Skeleton className="h-5 w-2/3" /></CardHeader><CardContent><Skeleton className="h-8 w-1/2" /></CardContent></Card>
+                      <Card className="bg-secondary/30 backdrop-blur-sm"><CardHeader><Skeleton className="h-5 w-2/3" /></CardHeader><CardContent><Skeleton className="h-8 w-1/2" /></CardContent></Card>
+                  </div>
+                   <Card className="bg-secondary/30 backdrop-blur-sm">
+                      <CardHeader><Skeleton className="h-6 w-1/4 mb-2" /><Skeleton className="h-4 w-1/3" /></CardHeader>
+                      <CardContent><Skeleton className="h-[250px] w-full" /></CardContent>
+                  </Card>
+              </div>
+              <div className="space-y-6">
+                  <Card className="bg-secondary/30 backdrop-blur-sm">
+                      <CardHeader><Skeleton className="h-6 w-1/2 mb-2" /><Skeleton className="h-4 w-2/3" /></CardHeader>
+                      <CardContent><Skeleton className="h-[250px] w-full rounded-full" /></CardContent>
+                  </Card>
+                  <Card className="bg-secondary/30 backdrop-blur-sm">
+                       <CardHeader><Skeleton className="h-6 w-1/2 mb-2" /><Skeleton className="h-4 w-2/3" /></CardHeader>
+                      <CardContent className="space-y-3">
+                        <Skeleton className="h-12 w-full" />
+                        <Skeleton className="h-12 w-full" />
+                        <Skeleton className="h-12 w-full" />
+                      </CardContent>
+                  </Card>
+              </div>
+            </div>
+          </div>
+        </div>
+      )
   }
 
   return (
