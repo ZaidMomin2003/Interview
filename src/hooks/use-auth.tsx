@@ -16,6 +16,8 @@ import {
   type User as FirebaseUser
 } from "firebase/auth";
 import { Skeleton } from '@/components/ui/skeleton';
+import { AppSidebar } from '@/components/layout/app-sidebar';
+import { SidebarProvider } from '@/components/ui/sidebar';
 
 // This will now only hold the core Firebase User object properties
 export interface CoreUser {
@@ -120,26 +122,29 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     const { user, loading } = useAuth();
     const router = useRouter();
     const pathname = usePathname();
+    const isAuthPage = pathname.startsWith('/login') || pathname.startsWith('/signup');
 
     useEffect(() => {
-        if (!loading && !user && pathname !== '/calculate-salary') {
+        if (!loading && !user && !isAuthPage && pathname !== '/calculate-salary' && pathname !== '/') {
             router.push('/login');
         }
-    }, [user, loading, router, pathname]);
+    }, [user, loading, router, pathname, isAuthPage]);
 
 
-    if (loading || (!user && pathname !== '/calculate-salary' && pathname !== '/')) {
+    if (loading) {
         return (
              <div className="flex min-h-screen w-full bg-background">
-                <div className="hidden md:flex flex-col gap-4 p-2 border-r border-border bg-secondary/30 w-64">
-                <div className="p-2 flex items-center gap-2"><Skeleton className="h-10 w-10 rounded-full bg-muted" /><Skeleton className="h-6 w-32 bg-muted" /></div>
-                <div className="p-2 space-y-2">
-                    <Skeleton className="h-8 w-full bg-muted" />
-                    <Skeleton className="h-8 w-full bg-muted" />
-                    <Skeleton className="h-8 w-full bg-muted" />
-                    <Skeleton className="h-8 w-full bg-muted" />
-                </div>
-                </div>
+                <SidebarProvider>
+                    <div className="hidden md:flex flex-col gap-4 p-2 border-r border-border bg-secondary/30 w-64">
+                    <div className="p-2 flex items-center gap-2"><Skeleton className="h-10 w-10 rounded-full bg-muted" /><Skeleton className="h-6 w-32 bg-muted" /></div>
+                    <div className="p-2 space-y-2">
+                        <Skeleton className="h-8 w-full bg-muted" />
+                        <Skeleton className="h-8 w-full bg-muted" />
+                        <Skeleton className="h-8 w-full bg-muted" />
+                        <Skeleton className="h-8 w-full bg-muted" />
+                    </div>
+                    </div>
+                </SidebarProvider>
                 <div className="flex-1 p-8">
                     <Skeleton className="h-12 w-1/2 mb-4 bg-muted" />
                     <Skeleton className="h-8 w-3/4 mb-8 bg-muted" />
@@ -147,6 +152,10 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
                 </div>
             </div>
         );
+    }
+
+    if (!user && !isAuthPage && pathname !== '/calculate-salary' && pathname !== '/') {
+        return null; // or a specific "redirecting" component
     }
     
     return <>{children}</>;

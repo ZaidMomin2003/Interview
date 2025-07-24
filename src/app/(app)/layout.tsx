@@ -8,6 +8,8 @@ import { AuthGuard } from "@/hooks/use-auth";
 import { usePathname } from 'next/navigation';
 import { UserDataProvider } from "@/hooks/use-user-data";
 import { OnboardingCheck } from "@/components/feature/onboarding-check";
+import { Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 
 // Define paths that don't need the main app layout
@@ -26,30 +28,42 @@ export default function AppLayout({
     return (
       <AuthGuard>
         <UserDataProvider>
-          {pathname === '/onboarding' ? <OnboardingCheck>{children}</OnboardingCheck> : children}
+          <OnboardingCheck>{children}</OnboardingCheck>
         </UserDataProvider>
       </AuthGuard>
     );
   }
 
-  // All other authenticated routes get the full application shell.
-  // The AuthGuard protects the routes and handles loading states.
-  // The UserDataProvider wraps everything to ensure data is available.
-  // The OnboardingCheck handles redirecting new users.
   return (
     <AuthGuard>
       <UserDataProvider>
-          <OnboardingCheck>
-              <SidebarProvider>
-                  <AppSidebar />
-                  <SidebarInset>
-                      <AppHeader />
-                      <div className="relative min-h-screen lg:p-8 p-4 bg-background text-foreground">
+          <SidebarProvider>
+              <AppSidebar />
+              <SidebarInset>
+                  <AppHeader />
+                  <main className="relative min-h-screen lg:p-8 p-4 bg-background text-foreground">
+                    <OnboardingCheck>
+                      <Suspense fallback={
+                          <div className="space-y-8">
+                              <Skeleton className="h-12 w-1/3" />
+                              <div className="grid grid-cols-3 gap-6">
+                                  <div className="col-span-2 space-y-6">
+                                      <Skeleton className="h-48" />
+                                      <Skeleton className="h-64" />
+                                  </div>
+                                  <div className="col-span-1 space-y-6">
+                                      <Skeleton className="h-64" />
+                                      <Skeleton className="h-48" />
+                                  </div>
+                              </div>
+                          </div>
+                      }>
                           {children}
-                      </div>
-                  </SidebarInset>
-              </SidebarProvider>
-          </OnboardingCheck>
+                      </Suspense>
+                    </OnboardingCheck>
+                  </main>
+              </SidebarInset>
+          </SidebarProvider>
       </UserDataProvider>
     </AuthGuard>
   );
