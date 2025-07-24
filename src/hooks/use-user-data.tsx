@@ -24,6 +24,38 @@ export interface Bookmark {
   href: string;
 }
 
+export interface PortfolioProject {
+  id: string;
+  title: string;
+  description: string;
+  tech: string;
+  link: string;
+}
+
+export interface PortfolioHackathon {
+  id: string;
+  name: string;
+  role: string;
+  achievement: string;
+}
+
+export interface PortfolioCertificate {
+  id: string;
+  name: string;
+  issuer: string;
+  date: string;
+}
+
+export interface PortfolioData {
+  slug: string;
+  theme: 'light' | 'dark';
+  includeDashboardStats: boolean;
+  projects: PortfolioProject[];
+  hackathons: PortfolioHackathon[];
+  certificates: PortfolioCertificate[];
+}
+
+
 // The full user profile, combining auth data with our custom data.
 export interface AppUser extends Partial<OnboardingData> {
   uid: string;
@@ -32,6 +64,7 @@ export interface AppUser extends Partial<OnboardingData> {
   photoURL: string | null;
   history: HistoryItem[];
   bookmarks: Bookmark[];
+  portfolio: PortfolioData;
 }
 
 type UserDataContextType = {
@@ -42,6 +75,7 @@ type UserDataContextType = {
   removeBookmark: (item: Bookmark) => Promise<void>;
   isBookmarked: (id: string) => boolean;
   updateUserProfile: (data: Partial<OnboardingData & { photoURL?: string }>) => Promise<void>;
+  updatePortfolio: (data: Partial<PortfolioData>) => Promise<void>;
   clearData: () => Promise<void>;
 };
 
@@ -53,8 +87,19 @@ const UserDataContext = createContext<UserDataContextType>({
   removeBookmark: async () => {},
   isBookmarked: () => false,
   updateUserProfile: async () => {},
+  updatePortfolio: async () => {},
   clearData: async () => {},
 });
+
+const defaultPortfolio: PortfolioData = {
+    slug: '',
+    theme: 'dark',
+    includeDashboardStats: true,
+    projects: [],
+    hackathons: [],
+    certificates: [],
+};
+
 
 export const UserDataProvider = ({ children }: { children: ReactNode }) => {
   const { user: coreUser, loading: authLoading } = useAuth();
@@ -62,7 +107,6 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // We must wait for the auth state to be definitively resolved.
     if (authLoading) {
         setLoading(true);
         return;
@@ -77,7 +121,7 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
     const userDocRef = doc(db, 'users', coreUser.uid);
     const unsubscribe = onSnapshot(userDocRef, (docSnap) => {
       if (docSnap.exists()) {
-        const firestoreData = docSnap.data();
+        const dbData = docSnap.data();
         
         const buildProfile = (authData: CoreUser, dbData: any): AppUser => {
             const history = (dbData.history || []).map((item: any) => ({
@@ -96,18 +140,22 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
                 history,
                 interviewDate: interviewDate ? (interviewDate instanceof Timestamp ? interviewDate.toDate() : new Date(interviewDate)) : undefined,
                 bookmarks: dbData.bookmarks || [],
+                portfolio: { ...defaultPortfolio, slug: authData.displayName?.toLowerCase().replace(/\s+/g, '-') || authData.uid, ...dbData.portfolio },
             } as AppUser;
         }
-        setProfile(buildProfile(coreUser, firestoreData));
+        setProfile(buildProfile(coreUser, dbData));
       } else {
-        // If doc doesn't exist, create it for the new user.
-        const initialProfileData = {
+        const initialProfileData: Partial<AppUser> = {
           uid: coreUser.uid,
           email: coreUser.email,
           displayName: coreUser.displayName,
           photoURL: coreUser.photoURL,
           history: [],
           bookmarks: [],
+          portfolio: {
+            ...defaultPortfolio,
+            slug: coreUser.displayName?.toLowerCase().replace(/\s+/g, '-') || coreUser.uid,
+          }
         };
         setDoc(userDocRef, initialProfileData);
         setProfile(initialProfileData as AppUser);
@@ -146,6 +194,13 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
     await setDoc(userDocRef, dataToSave, { merge: true });
   }, [coreUser]);
 
+  const updatePortfolio = useCallback(async (data: Partial<PortfolioData>) => {
+    if (!coreUser) throw new Error("User not authenticated");
+    const userDocRef = doc(db, 'users', coreUser.uid);
+    await updateDoc(userDocRef, { portfolio: { ...profile?.portfolio, ...data } });
+  }, [coreUser, profile]);
+
+
   const addHistoryItem = useCallback(async (item: Omit<HistoryItem, 'id' | 'timestamp'>) => {
     if (!coreUser) return;
     const userDocRef = doc(db, 'users', coreUser.uid);
@@ -183,7 +238,7 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
   }, [coreUser]);
 
   return (
-    <UserDataContext.Provider value={{ profile, loading, addHistoryItem, addBookmark, removeBookmark, isBookmarked, updateUserProfile, clearData }}>
+    <UserDataContext.Provider value={{ profile, loading, addHistoryItem, addBookmark, removeBookmark, isBookmarked, updateUserProfile, updatePortfolio, clearData }}>
       {children}
     </UserDataContext.Provider>
   );
