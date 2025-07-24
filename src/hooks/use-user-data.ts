@@ -2,7 +2,12 @@
 "use client";
 
 import { useState, useEffect, useContext, createContext, ReactNode, useCallback } from 'react';
-import { useAuth, type AppUser } from './use-auth';
+import { useAuth, type CoreUser } from './use-auth';
+import { db } from '@/lib/firebase';
+import { doc, setDoc, onSnapshot, Timestamp, updateDoc, arrayUnion, arrayRemove, getDoc } from 'firebase/firestore';
+import type { OnboardingData } from '@/app/(app)/onboarding/page';
+import { auth } from '@/lib/firebase';
+import { updateProfile as updateAuthProfile } from "firebase/auth";
 
 export interface HistoryItem {
   id: string;
@@ -19,109 +24,140 @@ export interface Bookmark {
   href: string;
 }
 
-interface UserData {
+// The full user profile, combining auth data with our custom data.
+export interface AppUser extends Partial<OnboardingData> {
+  uid: string;
+  email: string | null;
+  displayName: string | null;
+  photoURL: string | null;
   history: HistoryItem[];
   bookmarks: Bookmark[];
 }
 
 type UserDataContextType = {
-  history: HistoryItem[];
-  bookmarks: Bookmark[];
-  addHistoryItem: (item: Omit<HistoryItem, 'id' | 'timestamp'> & { id?: string }) => void;
-  addBookmark: (item: Bookmark) => void;
-  removeBookmark: (id: string) => void;
+  profile: AppUser | null;
+  loading: boolean;
+  addHistoryItem: (item: Omit<HistoryItem, 'id' | 'timestamp'>) => Promise<void>;
+  addBookmark: (item: Bookmark) => Promise<void>;
+  removeBookmark: (item: Bookmark) => Promise<void>;
   isBookmarked: (id: string) => boolean;
-  clearData: () => void;
+  updateUserProfile: (data: Partial<OnboardingData & { photoURL?: string }>) => Promise<void>;
 };
 
 const UserDataContext = createContext<UserDataContextType>({
-  history: [],
-  bookmarks: [],
-  addHistoryItem: () => {},
-  addBookmark: () => {},
-  removeBookmark: () => {},
+  profile: null,
+  loading: true,
+  addHistoryItem: async () => {},
+  addBookmark: async () => {},
+  removeBookmark: async () => {},
   isBookmarked: () => false,
-  clearData: () => {},
+  updateUserProfile: async () => {},
 });
 
-const USER_DATA_STORAGE_PREFIX = 'userData_';
-
 export const UserDataProvider = ({ children }: { children: ReactNode }) => {
-  const { user } = useAuth();
-  const [data, setData] = useState<UserData>({ history: [], bookmarks: [] });
-  const [isLoaded, setIsLoaded] = useState(false);
-  
-  const getStorageKey = useCallback((userId: string) => `${USER_DATA_STORAGE_PREFIX}${userId}`, []);
+  const { user: coreUser, loading: authLoading } = useAuth();
+  const [profile, setProfile] = useState<AppUser | null>(null);
 
   useEffect(() => {
-    if (user) {
-      const storedData = localStorage.getItem(getStorageKey(user.uid));
-      if (storedData) {
-        const parsedData = JSON.parse(storedData);
-        // Ensure date objects are correctly parsed
-        parsedData.history = parsedData.history.map((item: any) => ({
+    if (!coreUser) {
+      setProfile(null);
+      return;
+    }
+
+    const userDocRef = doc(db, 'users', coreUser.uid);
+
+    const unsubscribe = onSnapshot(userDocRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const firestoreData = docSnap.data();
+        const history = (firestoreData.history || []).map((item: any) => ({
             ...item,
-            timestamp: new Date(item.timestamp),
-        }));
-        setData(parsedData);
+            timestamp: item.timestamp instanceof Timestamp ? item.timestamp.toDate() : new Date(item.timestamp),
+        })).sort((a: HistoryItem, b: HistoryItem) => b.timestamp.getTime() - a.timestamp.getTime());
+
+        const interviewDate = firestoreData.interviewDate;
+
+        setProfile({
+          ...firestoreData,
+          uid: coreUser.uid,
+          email: coreUser.email,
+          displayName: coreUser.displayName,
+          photoURL: coreUser.photoURL,
+          history,
+          interviewDate: interviewDate ? (interviewDate instanceof Timestamp ? interviewDate.toDate() : new Date(interviewDate)) : undefined,
+          bookmarks: firestoreData.bookmarks || [],
+        } as AppUser);
       } else {
-        setData({ history: [], bookmarks: [] });
+        // If doc doesn't exist, create it.
+        const initialProfileData = {
+          uid: coreUser.uid,
+          email: coreUser.email,
+          displayName: coreUser.displayName,
+          photoURL: coreUser.photoURL,
+          history: [],
+          bookmarks: [],
+        };
+        setDoc(userDocRef, initialProfileData);
+        setProfile(initialProfileData as AppUser);
       }
-      setIsLoaded(true);
-    } else {
-      setIsLoaded(false);
-      setData({ history: [], bookmarks: [] });
-    }
-  }, [user, getStorageKey]);
-
-  useEffect(() => {
-    if (user && isLoaded) {
-      localStorage.setItem(getStorageKey(user.uid), JSON.stringify(data));
-    }
-  }, [data, user, isLoaded, getStorageKey]);
-
-
-  const addHistoryItem = useCallback((item: Omit<HistoryItem, 'id' | 'timestamp'> & { id?: string }) => {
-    setData(prevData => ({
-      ...prevData,
-      history: [{ ...item, id: item.id || `hist-${Date.now()}`, timestamp: new Date() }, ...prevData.history],
-    }));
-  }, []);
-
-  const addBookmark = useCallback((item: Bookmark) => {
-    setData(prevData => {
-      // Avoid duplicates
-      if (prevData.bookmarks.some(b => b.id === item.id)) {
-        return prevData;
-      }
-      return {
-        ...prevData,
-        bookmarks: [item, ...prevData.bookmarks],
-      };
+    }, (error) => {
+      console.error("Error listening to user data:", error);
     });
-  }, []);
 
-  const removeBookmark = useCallback((id: string) => {
-    setData(prevData => ({
-      ...prevData,
-      bookmarks: prevData.bookmarks.filter(b => b.id !== id),
-    }));
-  }, []);
-  
+    return () => unsubscribe();
+  }, [coreUser]);
+
+  const updateUserProfile = async (data: Partial<OnboardingData & { photoURL?: string }>) => {
+    if (!coreUser) throw new Error("User not authenticated");
+    const userDocRef = doc(db, 'users', coreUser.uid);
+
+    // Update Firebase Auth profile if needed
+    if (auth.currentUser) {
+        const authUpdateData: { displayName?: string; photoURL?: string } = {};
+        if (data.displayName && data.displayName !== auth.currentUser.displayName) {
+          authUpdateData.displayName = data.displayName;
+        }
+        if (data.photoURL && data.photoURL !== auth.currentUser.photoURL) {
+          authUpdateData.photoURL = data.photoURL;
+        }
+        if (Object.keys(authUpdateData).length > 0) {
+            await updateAuthProfile(auth.currentUser, authUpdateData);
+        }
+    }
+    
+    // Prepare data for Firestore
+    const dataToSave: any = { ...data };
+    if (data.interviewDate) {
+        dataToSave.interviewDate = Timestamp.fromDate(data.interviewDate);
+    }
+    
+    await setDoc(userDocRef, dataToSave, { merge: true });
+  };
+
+  const addHistoryItem = useCallback(async (item: Omit<HistoryItem, 'id' | 'timestamp'>) => {
+    if (!coreUser) return;
+    const userDocRef = doc(db, 'users', coreUser.uid);
+    const newHistoryItem = { ...item, id: `hist-${Date.now()}`, timestamp: new Date() };
+    await updateDoc(userDocRef, { history: arrayUnion(newHistoryItem) });
+  }, [coreUser]);
+
+  const addBookmark = useCallback(async (item: Bookmark) => {
+    if (!coreUser) return;
+    const userDocRef = doc(db, 'users', coreUser.uid);
+    await updateDoc(userDocRef, { bookmarks: arrayUnion(item) });
+  }, [coreUser]);
+
+  const removeBookmark = useCallback(async (item: Bookmark) => {
+    if (!coreUser) return;
+    const userDocRef = doc(db, 'users', coreUser.uid);
+    await updateDoc(userDocRef, { bookmarks: arrayRemove(item) });
+  }, [coreUser]);
+
   const isBookmarked = useCallback((id: string) => {
-    return data.bookmarks.some(b => b.id === id);
-  }, [data.bookmarks]);
-  
-  const clearData = useCallback(() => {
-     setData({ history: [], bookmarks: [] });
-     if (user) {
-        localStorage.removeItem(getStorageKey(user.uid));
-     }
-  }, [user, getStorageKey]);
-
+    return profile?.bookmarks?.some(b => b.id === id) || false;
+  }, [profile?.bookmarks]);
 
   return (
-    <UserDataContext.Provider value={{ ...data, addHistoryItem, addBookmark, removeBookmark, isBookmarked, clearData }}>
+    <UserDataContext.Provider value={{ profile, loading: authLoading || !profile, addHistoryItem, addBookmark, removeBookmark, isBookmarked, updateUserProfile }}>
       {children}
     </UserDataContext.Provider>
   );
