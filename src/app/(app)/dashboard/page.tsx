@@ -11,7 +11,7 @@ export default function DashboardPage() {
 
   const questionsGenerated =
     profile?.history
-      ?.filter((h) => h.type === "Coding Challenge")
+      ?.filter((h) => h.type === "MCQ Challenge")
       .reduce((total, h) => total + (h.count || 0), 0) || 0;
 
   return (
@@ -27,7 +27,7 @@ export default function DashboardPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Questions Generated
+              MCQs Generated
             </CardTitle>
             <CodeXml className="h-4 w-4 text-muted-foreground" />
           </CardHeader>

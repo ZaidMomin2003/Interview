@@ -6,13 +6,12 @@ import { useState, useEffect, useContext, createContext, ReactNode, useCallback 
 import { useAuth, type CoreUser } from './use-auth';
 import { db } from '@/lib/firebase';
 import { doc, setDoc, onSnapshot, Timestamp, updateDoc, arrayUnion, arrayRemove, getDoc, DocumentData } from 'firebase/firestore';
-import type { OnboardingData } from '@/app/(app)/onboarding/page';
 import { auth } from '@/lib/firebase';
 import { updateProfile as updateAuthProfile } from "firebase/auth";
 
 export interface HistoryItem {
   id: string;
-  type: 'AI Interview' | 'Coding Challenge' | 'Resume Optimization' | 'Notes Generation';
+  type: 'AI Interview' | 'Coding Challenge' | 'Resume Optimization' | 'Notes Generation' | 'MCQ Challenge';
   description: string;
   timestamp: Date;
   count?: number; // Optional: To track number of questions generated, etc.
@@ -72,7 +71,7 @@ export interface SyncData {
 
 
 // The full user profile, combining auth data with our custom data.
-export interface AppUser extends Partial<OnboardingData> {
+export interface AppUser {
   uid: string;
   email: string | null;
   displayName: string | null;
@@ -91,7 +90,7 @@ type UserDataContextType = {
   addBookmark: (item: Bookmark) => Promise<void>;
   removeBookmark: (item: Bookmark) => Promise<void>;
   isBookmarked: (id: string) => boolean;
-  updateUserProfile: (data: Partial<OnboardingData & { photoURL?: string }>) => Promise<void>;
+  updateUserProfile: (data: Partial<{ displayName?: string, photoURL?: string }>) => Promise<void>;
   updatePortfolio: (data: Partial<PortfolioData>) => Promise<void>;
   updateSyncData: (data: Partial<SyncData>) => Promise<void>;
   clearData: () => Promise<void>;
@@ -158,8 +157,6 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
             timestamp: item.timestamp instanceof Timestamp ? item.timestamp.toDate() : new Date(item.timestamp),
         })).sort((a: HistoryItem, b: HistoryItem) => b.timestamp.getTime() - a.timestamp.getTime());
 
-        const interviewDate = dbData.interviewDate;
-
         return {
             ...dbData,
             uid: authData.uid,
@@ -167,7 +164,6 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
             displayName: authData.displayName,
             photoURL: authData.photoURL,
             history,
-            interviewDate: interviewDate ? (interviewDate instanceof Timestamp ? interviewDate.toDate() : new Date(interviewDate)) : undefined,
             bookmarks: dbData.bookmarks || [],
             portfolio: { ...defaultPortfolio, slug: authData.displayName?.toLowerCase().replace(/\s+/g, '-') || authData.uid, ...dbData.portfolio },
             plan: { ...defaultPlan, ...dbData.plan },
@@ -206,7 +202,7 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
     return () => unsubscribe();
   }, [coreUser, authLoading]);
 
-  const updateUserProfile = useCallback(async (data: Partial<OnboardingData & { photoURL?: string }>) => {
+  const updateUserProfile = useCallback(async (data: Partial<{ displayName?: string, photoURL?: string }>) => {
     if (!coreUser) throw new Error("User not authenticated");
     const userDocRef = doc(db, 'users', coreUser.uid);
 
@@ -223,12 +219,7 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
         }
     }
     
-    const dataToSave: any = { ...data };
-    if (data.interviewDate) {
-        dataToSave.interviewDate = Timestamp.fromDate(data.interviewDate);
-    }
-    
-    await setDoc(userDocRef, dataToSave, { merge: true });
+    await setDoc(userDocRef, data, { merge: true });
   }, [coreUser]);
 
   const updatePortfolio = useCallback(async (data: Partial<PortfolioData>) => {

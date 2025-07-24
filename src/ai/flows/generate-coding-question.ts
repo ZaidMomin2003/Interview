@@ -1,37 +1,37 @@
 'use server';
 /**
- * @fileOverview A flow for generating coding questions.
+ * @fileOverview A flow for generating Multiple Choice Questions.
  */
 
 import {ai} from '@/ai/genkit';
 import {
-  CodingQuestionSchema,
-  GenerateCodingQuestionInput,
-  GenerateCodingQuestionInputSchema,
-  GenerateCodingQuestionOutput,
-  GenerateCodingQuestionOutputSchema,
+  GenerateMCQInputSchema,
+  GenerateMCQOutput,
+  GenerateMCQOutputSchema,
+  GenerateMCQInput,
 } from '@/ai/types/coding-question-types';
 
 const prompt = ai.definePrompt({
-  name: 'generateCodingQuestionPrompt',
-  input: {schema: GenerateCodingQuestionInputSchema},
-  output: {schema: GenerateCodingQuestionOutputSchema},
+  name: 'generateMCQPrompt',
+  input: {schema: GenerateMCQInputSchema},
+  output: {schema: GenerateMCQOutputSchema},
   prompt: `
     You are an expert interviewer at a top tech company.
-    Generate {{count}} coding question(s) on the topic of "{{topic}}" with a difficulty level of "{{difficulty}}".
+    Generate {{count}} Multiple Choice Question(s) on the topic of "{{topic}}" with a difficulty level of "{{difficulty}}".
 
     For each question:
-    1. Provide a clear and concise problem statement.
-    2. Provide a detailed, step-by-step solution. The solution should explain the thought process, algorithm, and time/space complexity.
-    3. Include a complete code example for the solution in a suitable language like Python or JavaScript.
+    1. Provide a clear and concise question.
+    2. Provide exactly 4 potential options.
+    3. Clearly indicate the correct option letter (e.g., "A", "B", "C", or "D").
+    4. Provide a detailed explanation of why the correct answer is right and the other options are wrong.
   `,
 });
 
-const generateCodingQuestionFlow = ai.defineFlow(
+const generateMCQFlow = ai.defineFlow(
   {
-    name: 'generateCodingQuestionFlow',
-    inputSchema: GenerateCodingQuestionInputSchema,
-    outputSchema: GenerateCodingQuestionOutputSchema,
+    name: 'generateMCQFlow',
+    inputSchema: GenerateMCQInputSchema,
+    outputSchema: GenerateMCQOutputSchema,
   },
   async (input) => {
     const {output} = await prompt(input);
@@ -39,8 +39,8 @@ const generateCodingQuestionFlow = ai.defineFlow(
   }
 );
 
-export async function generateCodingQuestion(
-  input: GenerateCodingQuestionInput
-): Promise<GenerateCodingQuestionOutput> {
-  return generateCodingQuestionFlow(input);
+export async function generateMCQ(
+  input: GenerateMCQInput
+): Promise<GenerateMCQOutput> {
+  return generateMCQFlow(input);
 }

@@ -7,11 +7,11 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import {
-  generateCodingQuestion,
+  generateMCQ,
 } from '@/ai/flows/generate-coding-question';
-import type { CodingQuestion, GenerateCodingQuestionInput } from '@/ai/types/coding-question-types';
+import type { MCQ, GenerateMCQInput } from '@/ai/types/coding-question-types';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import {
@@ -21,11 +21,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Loader2, Sparkles } from 'lucide-react';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Loader2, Sparkles, CheckCircle, XCircle } from 'lucide-react';
 import { useUserData } from '@/hooks/use-user-data';
 import { useToast } from '@/hooks/use-toast';
-import { marked } from 'marked';
+import { cn } from '@/lib/utils';
+import { Separator } from '@/components/ui/separator';
 
 const formSchema = z.object({
   topic: z.string().min(1, 'Topic is required.'),
@@ -33,9 +34,71 @@ const formSchema = z.object({
   count: z.coerce.number().int().min(1).max(5),
 });
 
+function MCQCard({ mcq, index }: { mcq: MCQ, index: number }) {
+    const [selectedOption, setSelectedOption] = useState<string | null>(null);
+    const [showAnswer, setShowAnswer] = useState(false);
+
+    const isCorrect = selectedOption === mcq.answer;
+
+    const getOptionClass = (option: string) => {
+        if (!showAnswer) return '';
+        if (option === mcq.answer) return 'bg-green-500/20 border-green-500';
+        if (option === selectedOption && option !== mcq.answer) return 'bg-red-500/20 border-red-500';
+        return '';
+    };
+
+    return (
+         <Card>
+            <CardHeader>
+                <CardTitle>Question {index + 1}</CardTitle>
+                <CardDescription className="text-lg text-foreground pt-2">{mcq.question}</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <RadioGroup
+                    value={selectedOption || undefined}
+                    onValueChange={(val) => {
+                        setSelectedOption(val);
+                        setShowAnswer(false);
+                    }}
+                    disabled={showAnswer}
+                >
+                    {mcq.options.map((option, i) => (
+                        <FormItem
+                            key={i}
+                            className={cn("flex items-center space-x-3 space-y-0 p-4 rounded-lg border transition-all", getOptionClass(option))}
+                        >
+                            <FormControl>
+                                <RadioGroupItem value={option} />
+                            </FormControl>
+                            <FormLabel className="font-normal text-base w-full cursor-pointer">{option}</FormLabel>
+                        </FormItem>
+                    ))}
+                </RadioGroup>
+            </CardContent>
+            <CardFooter className="flex-col items-start gap-4">
+                 <Button onClick={() => setShowAnswer(true)} disabled={!selectedOption || showAnswer}>
+                    Check Answer
+                </Button>
+                {showAnswer && (
+                    <div className="w-full p-4 rounded-lg bg-secondary/50">
+                        <div className="flex items-center gap-2 mb-2">
+                             {isCorrect ? <CheckCircle className="text-green-500"/> : <XCircle className="text-red-500"/>}
+                            <h4 className="font-semibold text-lg">{isCorrect ? "Correct!" : "Incorrect"}</h4>
+                        </div>
+                        <p className="text-muted-foreground"><span className="font-bold text-foreground">Correct Answer: </span>{mcq.answer}</p>
+                        <Separator className="my-4"/>
+                        <p className="text-muted-foreground"><span className="font-bold text-foreground">Explanation: </span>{mcq.explanation}</p>
+                    </div>
+                )}
+            </CardFooter>
+        </Card>
+    );
+}
+
+
 export default function CodingGymPage() {
   const [isLoading, setIsLoading] = useState(false);
-  const [questions, setQuestions] = useState<CodingQuestion[]>([]);
+  const [questions, setQuestions] = useState<MCQ[]>([]);
   const { addHistoryItem } = useUserData();
   const { toast } = useToast();
 
@@ -52,12 +115,12 @@ export default function CodingGymPage() {
     setIsLoading(true);
     setQuestions([]);
     try {
-      const result = await generateCodingQuestion(values as GenerateCodingQuestionInput);
+      const result = await generateMCQ(values as GenerateMCQInput);
       setQuestions(result.questions);
       // Correctly add the count to the history item
       await addHistoryItem({
-        type: 'Coding Challenge',
-        description: `Generated ${values.count} ${values.difficulty} question(s) on ${values.topic}.`,
+        type: 'MCQ Challenge',
+        description: `Generated ${values.count} ${values.difficulty} MCQ(s) on ${values.topic}.`,
         count: values.count,
       });
       toast({
@@ -81,13 +144,13 @@ export default function CodingGymPage() {
       <div>
         <h1 className="text-3xl md:text-4xl font-bold font-headline">Coding Gym</h1>
         <p className="text-muted-foreground mt-2">
-          Sharpen your skills with AI-generated coding challenges tailored to your needs.
+          Sharpen your skills with AI-generated multiple choice questions.
         </p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Generate Questions</CardTitle>
+          <CardTitle>Generate MCQs</CardTitle>
           <CardDescription>
             Select a topic, difficulty, and number of questions to generate.
           </CardDescription>
@@ -102,7 +165,7 @@ export default function CodingGymPage() {
                   <FormItem className="md:col-span-2">
                     <FormLabel>Topic</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g., Arrays, Recursion, System Design" {...field} />
+                      <Input placeholder="e.g., JavaScript, Data Structures, Networking" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -172,11 +235,12 @@ export default function CodingGymPage() {
                 <CardHeader>
                     <CardTitle className="bg-muted h-6 w-3/4 rounded-md animate-pulse"></CardTitle>
                 </CardHeader>
-            </Card>
-             <Card>
-                <CardHeader>
-                    <CardTitle className="bg-muted h-6 w-1/2 rounded-md animate-pulse"></CardTitle>
-                </CardHeader>
+                 <CardContent className="space-y-4">
+                    <div className="bg-muted h-10 w-full rounded-md animate-pulse"></div>
+                    <div className="bg-muted h-10 w-full rounded-md animate-pulse"></div>
+                    <div className="bg-muted h-10 w-full rounded-md animate-pulse"></div>
+                    <div className="bg-muted h-10 w-full rounded-md animate-pulse"></div>
+                 </CardContent>
             </Card>
         </div>
       )}
@@ -185,18 +249,9 @@ export default function CodingGymPage() {
       {questions.length > 0 && (
         <div className="space-y-4">
           <h2 className="text-2xl font-bold font-headline">Generated Questions</h2>
-          <Accordion type="single" collapsible className="w-full space-y-4">
             {questions.map((q, index) => (
-              <AccordionItem value={`item-${index}`} key={index} className="bg-card border rounded-lg">
-                <AccordionTrigger className="p-4 text-left text-lg hover:no-underline">
-                  {`Question ${index + 1}: ${q.question.substring(0, 80)}...`}
-                </AccordionTrigger>
-                <AccordionContent className="p-4 pt-0">
-                  <div className="prose prose-sm prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: marked(q.solution) }}></div>
-                </AccordionContent>
-              </AccordionItem>
+                <MCQCard mcq={q} index={index} key={index} />
             ))}
-          </Accordion>
         </div>
       )}
     </div>
