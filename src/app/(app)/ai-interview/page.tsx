@@ -14,7 +14,7 @@ import Image from 'next/image';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useUserData } from '@/hooks/use-user-data';
+import { useUserData, type Bookmark as BookmarkType } from '@/hooks/use-user-data';
 import { conductInterview, InterviewMessage, summarizeInterview } from '@/lib/actions';
 
 
@@ -51,18 +51,20 @@ function AiInterviewComponent() {
   }, [interviewId, isBookmarked]);
 
   const handleBookmark = () => {
+    const bookmark: BookmarkType = {
+        id: interviewId,
+        type: 'interview',
+        title: `Interview: ${topic}`,
+        description: `Difficulty: ${difficulty}. Summary: ${summary.substring(0, 100)}...`,
+        href: `/ai-interview?topic=${topic}&difficulty=${difficulty}`
+    };
+
     if (isBookmarked(interviewId)) {
-        removeBookmark(interviewId);
+        removeBookmark(bookmark);
         setIsBookmarkedState(false);
         toast({ title: "Bookmark Removed" });
     } else {
-        addBookmark({
-            id: interviewId,
-            type: 'interview',
-            title: `Interview: ${topic}`,
-            description: `Difficulty: ${difficulty}. Summary: ${summary.substring(0, 100)}...`,
-            href: `/ai-interview?topic=${topic}&difficulty=${difficulty}`
-        });
+        addBookmark(bookmark);
         setIsBookmarkedState(true);
         toast({
             title: "Summary Bookmarked!",
@@ -173,7 +175,6 @@ function AiInterviewComponent() {
     
     // Log history item
     addHistoryItem({
-        id: `interview-start-${Date.now()}`,
         type: 'AI Interview',
         description: `Started a mock interview on "${topic || 'General'}" (${difficulty || 'standard'}).`,
     });
@@ -404,3 +405,5 @@ export default function AiInterviewPage() {
         </Suspense>
     );
 }
+
+    

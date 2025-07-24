@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Suspense, useEffect, useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { GenerateNotesOutput } from '@/ai/flows/generate-notes';
-import { useUserData } from '@/hooks/use-user-data';
+import { useUserData, type Bookmark as BookmarkType } from '@/hooks/use-user-data';
 import { useToast } from '@/hooks/use-toast';
 
 // This is a server component that fetches data on the server.
@@ -45,10 +45,8 @@ function NotesContent({ topic, difficulty }: { topic: string, difficulty: string
         const result = await handleGenerateNotes({ topic, difficulty });
         setNotes(result);
         addHistoryItem({
-          id: `note-${Date.now()}`,
           type: 'Notes Generation',
           description: `Generated notes on "${result.title}".`,
-          timestamp: new Date(),
         });
       } catch (err) {
         console.error('Failed to generate notes:', err);
@@ -61,13 +59,14 @@ function NotesContent({ topic, difficulty }: { topic: string, difficulty: string
 
   const handleBookmark = () => {
     if (!notes) return;
-    addBookmark({
+    const bookmark: BookmarkType = {
       id: `note-${topic}-${difficulty}`,
       type: 'note',
       title: notes.title,
       description: `Difficulty: ${difficulty}. ${notes.introduction.substring(0, 100)}...`,
       href: `/notes/${encodeURIComponent(topic)}?difficulty=${difficulty}`,
-    });
+    };
+    addBookmark(bookmark);
     toast({
       title: 'Note Bookmarked!',
       description: 'You can find this note in your bookmarks.',
@@ -218,3 +217,5 @@ function NotesSkeleton({ topic }: { topic: string }) {
         </div>
     );
 }
+
+    

@@ -47,10 +47,8 @@ export function QuestionGenerator() {
       if (response.questions && response.questions.length > 0) {
         setQuestions(response.questions);
         addHistoryItem({
-            id: `cq-${Date.now()}`,
             type: 'Coding Challenge',
             description: `Generated ${response.questions.length} question(s) on "${response.questions[0].topic}".`,
-            timestamp: new Date(),
         });
       } else {
         toast({
@@ -183,3 +181,5 @@ export function QuestionGenerator() {
     </div>
   );
 }
+
+    

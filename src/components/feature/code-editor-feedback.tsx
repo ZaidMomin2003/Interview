@@ -15,7 +15,7 @@ import { Loader2, Bookmark } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { GenerateCodingQuestionOutput } from "@/ai/flows/generate-coding-question";
 import type { GetCodeFeedbackOutput } from "@/ai/flows/get-code-feedback";
-import { useUserData } from "@/hooks/use-user-data";
+import { useUserData, type Bookmark as BookmarkType } from "@/hooks/use-user-data";
 
 const formSchema = z.object({
   code: z.string().min(10, { message: "Code must be at least 10 characters." }),
@@ -66,13 +66,14 @@ export function CodeEditorFeedback({ question, language, onNewQuestion }: CodeEd
   }
 
   const handleBookmark = () => {
-    addBookmark({
+    const bookmark: BookmarkType = {
       id: `cq-${question.topic}-${question.difficulty}`,
       type: 'coding-question',
       title: question.topic,
       description: `${question.difficulty} | ${question.question.substring(0, 100)}...`,
       href: '/coding-practice',
-    });
+    };
+    addBookmark(bookmark);
     toast({
       title: "Question Bookmarked!",
       description: "You can find it in your bookmarks section."
@@ -168,3 +169,5 @@ export function CodeEditorFeedback({ question, language, onNewQuestion }: CodeEd
     </div>
   );
 }
+
+    

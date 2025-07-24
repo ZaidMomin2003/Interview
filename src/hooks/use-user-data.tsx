@@ -4,7 +4,7 @@
 import { useState, useEffect, useContext, createContext, ReactNode, useCallback } from 'react';
 import { useAuth, CoreUser } from './use-auth';
 import { db } from '@/lib/firebase';
-import { doc, setDoc, updateDoc, onSnapshot, Timestamp } from 'firebase/firestore';
+import { doc, setDoc, updateDoc, onSnapshot, Timestamp, FieldValue, arrayUnion, arrayRemove } from 'firebase/firestore';
 import type { OnboardingData } from '@/app/(app)/onboarding/page';
 import { auth } from '@/lib/firebase';
 import { updateProfile as updateAuthProfile } from "firebase/auth";
@@ -39,7 +39,7 @@ type UserDataContextType = {
   loading: boolean;
   addHistoryItem: (item: Omit<HistoryItem, 'id' | 'timestamp'> & { id?: string }) => Promise<void>;
   addBookmark: (item: Bookmark) => Promise<void>;
-  removeBookmark: (id: string) => Promise<void>;
+  removeBookmark: (item: Bookmark) => Promise<void>;
   isBookmarked: (id: string) => boolean;
   updateUserProfile: (data: Partial<OnboardingData & { photoURL?: string }>) => Promise<void>;
   clearData: () => Promise<void>;
@@ -143,8 +143,14 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
         }
     }
     
+    // Convert Date object to Firestore Timestamp if it exists
+    const dataToSave: any = { ...data };
+    if (data.interviewDate) {
+        dataToSave.interviewDate = Timestamp.fromDate(data.interviewDate);
+    }
+    
     // Update Firestore document
-    await setDoc(userDocRef, data, { merge: true });
+    await setDoc(userDocRef, dataToSave, { merge: true });
   };
 
 
@@ -158,39 +164,32 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
         timestamp: new Date(),
     };
     
-    setProfile(prevProfile => {
-      if (!prevProfile) return null;
-      const updatedHistory = [newHistoryItem, ...(prevProfile.history || [])];
-      updateDoc(userDocRef, { history: updatedHistory });
-      return { ...prevProfile, history: updatedHistory };
+    // Use arrayUnion to atomically add a new item to the history array
+    await updateDoc(userDocRef, {
+        history: arrayUnion(newHistoryItem)
     });
   }, [coreUser, getUserDocRef]);
 
   const addBookmark = useCallback(async (item: Bookmark) => {
      if (!coreUser) return;
-     const userDocRef = getUserDocRef(coreUser.uid);
      
-     setProfile(prevProfile => {
-        if (!prevProfile) return null;
-        const currentBookmarks = prevProfile.bookmarks || [];
-        if (currentBookmarks.some(b => b.id === item.id)) {
-            return prevProfile; // Avoid duplicates
-        }
-        const updatedBookmarks = [item, ...currentBookmarks];
-        updateDoc(userDocRef, { bookmarks: updatedBookmarks });
-        return { ...prevProfile, bookmarks: updatedBookmarks };
-     });
-  }, [coreUser, getUserDocRef]);
+     // Prevent adding duplicates locally before hitting the database
+     if (profile?.bookmarks.some(b => b.id === item.id)) {
+        return;
+     }
 
-  const removeBookmark = useCallback(async (id: string) => {
+     const userDocRef = getUserDocRef(coreUser.uid);
+     await updateDoc(userDocRef, {
+        bookmarks: arrayUnion(item)
+     });
+  }, [coreUser, getUserDocRef, profile]);
+
+  const removeBookmark = useCallback(async (item: Bookmark) => {
     if (!coreUser) return;
     const userDocRef = getUserDocRef(coreUser.uid);
     
-    setProfile(prevProfile => {
-        if (!prevProfile) return null;
-        const updatedBookmarks = (prevProfile.bookmarks || []).filter(b => b.id !== id);
-        updateDoc(userDocRef, { bookmarks: updatedBookmarks });
-        return { ...prevProfile, bookmarks: updatedBookmarks };
+    await updateDoc(userDocRef, {
+        bookmarks: arrayRemove(item)
     });
   }, [coreUser, getUserDocRef]);
   
@@ -218,3 +217,5 @@ export const useUserData = () => {
   }
   return context;
 };
+
+    
