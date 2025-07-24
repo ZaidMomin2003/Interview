@@ -7,7 +7,7 @@ import { db } from '@/lib/firebase';
 import { doc, setDoc, updateDoc, onSnapshot, Timestamp } from 'firebase/firestore';
 import type { OnboardingData } from '@/app/(app)/onboarding/page';
 import { auth } from '@/lib/firebase';
-import { updateProfile } from "firebase/auth";
+import { updateProfile as updateAuthProfile } from "firebase/auth";
 
 export interface HistoryItem {
   id: string;
@@ -132,10 +132,14 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
     // If updating displayName or photoURL, also update the Firebase Auth profile
     if (auth.currentUser) {
         const authUpdateData: { displayName?: string; photoURL?: string } = {};
-        if (data.displayName) authUpdateData.displayName = data.displayName;
-        if (data.photoURL) authUpdateData.photoURL = data.photoURL;
+        if (data.displayName && data.displayName !== auth.currentUser.displayName) {
+          authUpdateData.displayName = data.displayName;
+        }
+        if (data.photoURL && data.photoURL !== auth.currentUser.photoURL) {
+          authUpdateData.photoURL = data.photoURL;
+        }
         if (Object.keys(authUpdateData).length > 0) {
-            await updateProfile(auth.currentUser, authUpdateData);
+            await updateAuthProfile(auth.currentUser, authUpdateData);
         }
     }
     
@@ -145,7 +149,7 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
 
 
   const addHistoryItem = useCallback(async (item: Omit<HistoryItem, 'id' | 'timestamp'> & { id?: string }) => {
-    if (!coreUser || !profile) return;
+    if (!coreUser) return;
     const userDocRef = getUserDocRef(coreUser.uid);
     
     const newHistoryItem = {
@@ -153,30 +157,42 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
         id: item.id || `hist-${Date.now()}`,
         timestamp: new Date(),
     };
-    // Fetch latest profile to avoid race conditions
-    const currentHistory = profile.history || [];
-    const updatedHistory = [newHistoryItem, ...currentHistory];
-    await updateDoc(userDocRef, { history: updatedHistory });
-  }, [coreUser, profile, getUserDocRef]);
+    
+    setProfile(prevProfile => {
+      if (!prevProfile) return null;
+      const updatedHistory = [newHistoryItem, ...(prevProfile.history || [])];
+      updateDoc(userDocRef, { history: updatedHistory });
+      return { ...prevProfile, history: updatedHistory };
+    });
+  }, [coreUser, getUserDocRef]);
 
   const addBookmark = useCallback(async (item: Bookmark) => {
-     if (!coreUser || !profile) return;
+     if (!coreUser) return;
      const userDocRef = getUserDocRef(coreUser.uid);
      
-     const currentBookmarks = profile.bookmarks || [];
-     if (currentBookmarks.some(b => b.id === item.id)) return;
-
-     const updatedBookmarks = [item, ...currentBookmarks];
-     await updateDoc(userDocRef, { bookmarks: updatedBookmarks });
-  }, [coreUser, profile, getUserDocRef]);
+     setProfile(prevProfile => {
+        if (!prevProfile) return null;
+        const currentBookmarks = prevProfile.bookmarks || [];
+        if (currentBookmarks.some(b => b.id === item.id)) {
+            return prevProfile; // Avoid duplicates
+        }
+        const updatedBookmarks = [item, ...currentBookmarks];
+        updateDoc(userDocRef, { bookmarks: updatedBookmarks });
+        return { ...prevProfile, bookmarks: updatedBookmarks };
+     });
+  }, [coreUser, getUserDocRef]);
 
   const removeBookmark = useCallback(async (id: string) => {
-    if (!coreUser || !profile) return;
+    if (!coreUser) return;
     const userDocRef = getUserDocRef(coreUser.uid);
     
-    const updatedBookmarks = (profile.bookmarks || []).filter(b => b.id !== id);
-    await updateDoc(userDocRef, { bookmarks: updatedBookmarks });
-  }, [coreUser, profile, getUserDocRef]);
+    setProfile(prevProfile => {
+        if (!prevProfile) return null;
+        const updatedBookmarks = (prevProfile.bookmarks || []).filter(b => b.id !== id);
+        updateDoc(userDocRef, { bookmarks: updatedBookmarks });
+        return { ...prevProfile, bookmarks: updatedBookmarks };
+    });
+  }, [coreUser, getUserDocRef]);
   
   const isBookmarked = useCallback((id: string) => {
     return profile?.bookmarks?.some(b => b.id === id) || false;
