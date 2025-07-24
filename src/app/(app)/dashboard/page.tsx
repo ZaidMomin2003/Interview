@@ -7,7 +7,6 @@ import { CodeXml, FileText, ArrowRight, Video, BrainCircuit } from "lucide-react
 import Link from "next/link";
 import { ChartContainer, ChartTooltipContent, ChartLegend, ChartLegendContent, ChartTooltip } from "@/components/ui/chart";
 import { RadialBarChart, RadialBar, LineChart, Line, CartesianGrid, XAxis, YAxis } from "recharts";
-import { useMemo } from "react";
 import { subDays, format, isAfter } from 'date-fns';
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -27,83 +26,7 @@ const planLimits = {
 export default function DashboardPage() {
   const { profile, loading } = useUserData();
 
-  const {
-    displayName,
-    interviewsUsed,
-    questionsUsed,
-    notesUsed,
-    dailyActivity,
-    readinessScore,
-    topicsToImprove,
-  } = useMemo(() => {
-    if (!profile) {
-      return { 
-        displayName: 'developer', 
-        interviewsUsed: 0, 
-        questionsUsed: 0, 
-        notesUsed: 0, 
-        dailyActivity: [], 
-        readinessScore: [{ name: 'readiness', value: 0, fill: 'hsl(var(--primary))' }],
-        topicsToImprove: []
-      };
-    }
-    
-    const { history = [], bookmarks = [] } = profile;
-
-    // Calculate usage
-    const interviewsUsed = history.filter(item => item.type === 'AI Interview').length;
-    const questionsUsed = history.filter(item => item.type === 'Coding Challenge').length;
-    const notesUsed = history.filter(item => item.type === 'Notes Generation').length;
-    
-    // Calculate daily activity for the last 7 days
-    const last7Days = Array.from({ length: 7 }, (_, i) => subDays(new Date(), i)).reverse();
-    const dailyActivity = last7Days.map(day => {
-        const dayStr = format(day, 'E'); // Mon, Tue, etc.
-        const startOfDay = new Date(day.setHours(0,0,0,0));
-        const endOfDay = new Date(day.setHours(23,59,59,999));
-        
-        const dayHistory = history.filter(item => {
-            const itemDate = new Date(item.timestamp);
-            return itemDate >= startOfDay && itemDate <= endOfDay;
-        });
-        
-        return {
-            day: dayStr,
-            questions: dayHistory.filter(h => h.type === 'Coding Challenge').length,
-            interviews: dayHistory.filter(h => h.type === 'AI Interview').length,
-            notes: dayHistory.filter(h => h.type === 'Notes Generation').length,
-        };
-    });
-
-    // Calculate readiness score (simple version)
-    const recentHistory = history.filter(item => isAfter(item.timestamp, subDays(new Date(), 30)));
-    const score = Math.min(
-      Math.floor(
-        (interviewsUsed * 10 + questionsUsed * 2 + recentHistory.length) / 
-        (planLimits.interviews * 5 + planLimits.codingQuestions * 1 + planLimits.notes * 0.5 + 50) * 100
-      ), 100
-    );
-    
-    // Determine topics to improve from bookmarks
-    const codingBookmarks = bookmarks.filter(b => b.type === 'coding-question');
-    const topics = codingBookmarks.map(b => ({
-      name: b.title,
-      area: b.description?.split('|')[0]?.trim() || 'Practice Topic',
-    })).slice(0, 3); // Get top 3
-
-    return {
-        displayName: profile.displayName?.split(' ')[0] || 'developer',
-        interviewsUsed,
-        questionsUsed,
-        notesUsed,
-        dailyActivity,
-        readinessScore: [{ name: 'readiness', value: score, fill: 'hsl(var(--primary))' }],
-        topicsToImprove: topics,
-    };
-
-  }, [profile]);
-  
-  if (loading) {
+  if (loading || !profile) {
       return (
         <div className="space-y-8 text-foreground">
           <div className="max-w-7xl mx-auto">
@@ -142,6 +65,52 @@ export default function DashboardPage() {
         </div>
       )
   }
+
+  // Derive data directly from profile to ensure real-time updates
+  const { history = [], bookmarks = [] } = profile;
+  const displayName = profile.displayName?.split(' ')[0] || 'developer';
+  
+  // Calculate usage
+  const interviewsUsed = history.filter(item => item.type === 'AI Interview').length;
+  const questionsUsed = history.filter(item => item.type === 'Coding Challenge').length;
+  const notesUsed = history.filter(item => item.type === 'Notes Generation').length;
+
+  // Calculate daily activity for the last 7 days
+  const last7Days = Array.from({ length: 7 }, (_, i) => subDays(new Date(), i)).reverse();
+  const dailyActivity = last7Days.map(day => {
+      const dayStr = format(day, 'E'); // Mon, Tue, etc.
+      const startOfDay = new Date(day.setHours(0,0,0,0));
+      const endOfDay = new Date(day.setHours(23,59,59,999));
+      
+      const dayHistory = history.filter(item => {
+          const itemDate = new Date(item.timestamp);
+          return itemDate >= startOfDay && itemDate <= endOfDay;
+      });
+      
+      return {
+          day: dayStr,
+          questions: dayHistory.filter(h => h.type === 'Coding Challenge').length,
+          interviews: dayHistory.filter(h => h.type === 'AI Interview').length,
+          notes: dayHistory.filter(h => h.type === 'Notes Generation').length,
+      };
+  });
+
+  // Calculate readiness score
+  const recentHistory = history.filter(item => isAfter(new Date(item.timestamp), subDays(new Date(), 30)));
+  const score = Math.min(
+    Math.floor(
+      (interviewsUsed * 10 + questionsUsed * 2 + recentHistory.length) / 
+      (planLimits.interviews * 5 + planLimits.codingQuestions * 1 + planLimits.notes * 0.5 + 50) * 100
+    ), 100
+  );
+  const readinessScore = [{ name: 'readiness', value: score, fill: 'hsl(var(--primary))' }];
+
+  // Determine topics to improve
+  const codingBookmarks = bookmarks.filter(b => b.type === 'coding-question');
+  const topicsToImprove = codingBookmarks.map(b => ({
+    name: b.title,
+    area: b.description?.split('|')[0]?.trim() || 'Practice Topic',
+  })).slice(0, 3);
 
   return (
     <div className="space-y-8 text-foreground">
