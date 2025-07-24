@@ -172,17 +172,11 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
 
   const addBookmark = useCallback(async (item: Bookmark) => {
      if (!coreUser) return;
-     
-     // Prevent adding duplicates locally before hitting the database
-     if (profile?.bookmarks.some(b => b.id === item.id)) {
-        return;
-     }
-
      const userDocRef = getUserDocRef(coreUser.uid);
      await updateDoc(userDocRef, {
         bookmarks: arrayUnion(item)
      });
-  }, [coreUser, getUserDocRef, profile]);
+  }, [coreUser, getUserDocRef]);
 
   const removeBookmark = useCallback(async (item: Bookmark) => {
     if (!coreUser) return;
@@ -217,5 +211,3 @@ export const useUserData = () => {
   }
   return context;
 };
-
-    
