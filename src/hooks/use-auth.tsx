@@ -128,11 +128,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     }, [user, loading, router, pathname]);
 
 
-    if (loading || !user) {
-        // For auth-optional pages, just return children if loading/no user
-        if (pathname === '/calculate-salary') {
-            return <>{children}</>
-        }
+    if (loading || (!user && pathname !== '/calculate-salary')) {
         return (
              <div className="flex min-h-screen w-full bg-background">
                 <div className="hidden md:flex flex-col gap-4 p-2 border-r border-border bg-secondary/30 w-64">
@@ -151,11 +147,6 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
                 </div>
             </div>
         );
-    }
-    
-    // If we're on an auth-optional page but we *do* have a user, render the children
-    if(pathname === '/calculate-salary' && user) {
-        return <>{children}</>;
     }
     
     return <>{children}</>;
