@@ -1,12 +1,12 @@
 // src/app/(app)/sync-tester/page.tsx
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useUserData } from '@/hooks/use-user-data';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Timer, Play, Pause, Square } from 'lucide-react';
+import { Timer, Play, Square, Hash, RefreshCw } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { db } from '@/lib/firebase';
 import { doc, updateDoc } from 'firebase/firestore';
@@ -17,9 +17,11 @@ export default function SyncTesterPage() {
     const { profile, loading } = useUserData();
     const [duration, setDuration] = useState(60); // Default 60 seconds
     const [remainingTime, setRemainingTime] = useState(0);
+    const [newNumber, setNewNumber] = useState(0);
 
-    const isTimerRunning = profile?.timer?.isTimerRunning ?? false;
-    const endTime = profile?.timer?.endTime ?? null;
+    const isTimerRunning = profile?.sync?.isTimerRunning ?? false;
+    const endTime = profile?.sync?.endTime ?? null;
+    const syncedNumber = profile?.sync?.syncedNumber ?? 0;
 
     useEffect(() => {
         if (!isTimerRunning || !endTime) {
@@ -34,7 +36,7 @@ export default function SyncTesterPage() {
 
             if (remaining === 0 && user) {
                  const userDocRef = doc(db, 'users', user.uid);
-                 updateDoc(userDocRef, { 'timer.isTimerRunning': false, 'timer.endTime': null });
+                 updateDoc(userDocRef, { 'sync.isTimerRunning': false, 'sync.endTime': null });
             }
         };
 
@@ -44,13 +46,17 @@ export default function SyncTesterPage() {
         return () => clearInterval(interval);
     }, [isTimerRunning, endTime, user]);
 
+    useEffect(() => {
+      setNewNumber(syncedNumber);
+    }, [syncedNumber])
+
     const handleStart = async () => {
         if (!user) return;
         const newEndTime = Date.now() + duration * 1000;
         const userDocRef = doc(db, 'users', user.uid);
         await updateDoc(userDocRef, {
-            'timer.isTimerRunning': true,
-            'timer.endTime': newEndTime,
+            'sync.isTimerRunning': true,
+            'sync.endTime': newEndTime,
         });
     };
 
@@ -58,8 +64,16 @@ export default function SyncTesterPage() {
         if (!user) return;
         const userDocRef = doc(db, 'users', user.uid);
         await updateDoc(userDocRef, {
-            'timer.isTimerRunning': false,
-            'timer.endTime': null,
+            'sync.isTimerRunning': false,
+            'sync.endTime': null,
+        });
+    };
+    
+    const handleSyncNumber = async () => {
+        if (!user) return;
+        const userDocRef = doc(db, 'users', user.uid);
+        await updateDoc(userDocRef, {
+            'sync.syncedNumber': newNumber,
         });
     };
     
@@ -83,44 +97,72 @@ export default function SyncTesterPage() {
         <div className="space-y-8">
             <div>
                 <h1 className="text-3xl md:text-4xl font-bold font-headline flex items-center gap-2">
-                    <Timer className="w-8 h-8"/>
+                    <RefreshCw className="w-8 h-8"/>
                     Sync Tester
                 </h1>
-                <p className="text-muted-foreground mt-2">Use this timer to test real-time data synchronization across your devices.</p>
+                <p className="text-muted-foreground mt-2">Use these tools to test real-time data synchronization across your devices.</p>
             </div>
             
-            <Card className="max-w-md mx-auto bg-secondary/30">
-                <CardHeader className="text-center">
-                    <CardTitle className="font-headline text-primary text-3xl">Real-Time Timer</CardTitle>
-                    <CardDescription>Start the timer on one device and watch it count down on another.</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                    <div className="text-center">
-                        <p className="text-7xl font-bold font-mono text-foreground tracking-tighter">
-                            {formatTime(remainingTime)}
-                        </p>
-                    </div>
+            <div className="grid md:grid-cols-2 gap-8 items-start">
+              <Card className="bg-secondary/30">
+                  <CardHeader className="text-center">
+                      <CardTitle className="font-headline text-primary text-3xl flex items-center justify-center gap-2"><Timer /> Real-Time Timer</CardTitle>
+                      <CardDescription>Start the timer on one device and watch it count down on another.</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                      <div className="text-center">
+                          <p className="text-7xl font-bold font-mono text-foreground tracking-tighter">
+                              {formatTime(remainingTime)}
+                          </p>
+                      </div>
 
-                    {!isTimerRunning ? (
-                         <div className="flex flex-col sm:flex-row items-center gap-4">
-                            <Input
-                                type="number"
-                                value={duration}
-                                onChange={(e) => setDuration(Math.max(1, parseInt(e.target.value, 10) || 0))}
-                                className="text-center text-lg"
-                                min="1"
-                            />
-                            <Button onClick={handleStart} className="w-full sm:w-auto" size="lg">
-                                <Play className="mr-2 h-5 w-5"/> Start Timer
-                            </Button>
-                        </div>
-                    ) : (
-                        <Button onClick={handleStop} variant="destructive" className="w-full" size="lg">
-                            <Square className="mr-2 h-5 w-5" /> Stop Timer
-                        </Button>
-                    )}
-                </CardContent>
-            </Card>
+                      {!isTimerRunning ? (
+                           <div className="flex flex-col sm:flex-row items-center gap-4">
+                              <Input
+                                  type="number"
+                                  value={duration}
+                                  onChange={(e) => setDuration(Math.max(1, parseInt(e.target.value, 10) || 0))}
+                                  className="text-center text-lg"
+                                  min="1"
+                              />
+                              <Button onClick={handleStart} className="w-full sm:w-auto" size="lg">
+                                  <Play className="mr-2 h-5 w-5"/> Start
+                              </Button>
+                          </div>
+                      ) : (
+                          <Button onClick={handleStop} variant="destructive" className="w-full" size="lg">
+                              <Square className="mr-2 h-5 w-5" /> Stop
+                          </Button>
+                      )}
+                  </CardContent>
+              </Card>
+
+              <Card className="bg-secondary/30">
+                  <CardHeader className="text-center">
+                      <CardTitle className="font-headline text-primary text-3xl flex items-center justify-center gap-2"><Hash /> Real-Time Number</CardTitle>
+                      <CardDescription>Set a number on one device and watch it update on another.</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                      <div className="text-center">
+                          <p className="text-7xl font-bold font-mono text-foreground tracking-tighter">
+                              {syncedNumber}
+                          </p>
+                      </div>
+
+                       <div className="flex flex-col sm:flex-row items-center gap-4">
+                          <Input
+                              type="number"
+                              value={newNumber}
+                              onChange={(e) => setNewNumber(parseInt(e.target.value, 10) || 0)}
+                              className="text-center text-lg"
+                          />
+                          <Button onClick={handleSyncNumber} className="w-full sm:w-auto" size="lg">
+                              <RefreshCw className="mr-2 h-5 w-5"/> Sync Number
+                          </Button>
+                      </div>
+                  </CardContent>
+              </Card>
+            </div>
         </div>
     );
 }

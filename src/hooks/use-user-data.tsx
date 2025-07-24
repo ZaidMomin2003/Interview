@@ -4,7 +4,7 @@
 import { useState, useEffect, useContext, createContext, ReactNode, useCallback } from 'react';
 import { useAuth, type CoreUser } from './use-auth';
 import { db } from '@/lib/firebase';
-import { doc, setDoc, onSnapshot, Timestamp, updateDoc, arrayUnion, arrayRemove, getDoc } from 'firebase/firestore';
+import { doc, setDoc, onSnapshot, Timestamp, updateDoc, arrayUnion, arrayRemove, getDoc, DocumentData } from 'firebase/firestore';
 import type { OnboardingData } from '@/app/(app)/onboarding/page';
 import { auth } from '@/lib/firebase';
 import { updateProfile as updateAuthProfile } from "firebase/auth";
@@ -62,9 +62,10 @@ export interface PlanData {
   notes: number;
 }
 
-export interface TimerData {
+export interface SyncData {
     endTime: number | null;
     isTimerRunning: boolean;
+    syncedNumber: number;
 }
 
 
@@ -78,7 +79,7 @@ export interface AppUser extends Partial<OnboardingData> {
   bookmarks: Bookmark[];
   portfolio: PortfolioData;
   plan: PlanData;
-  timer: TimerData;
+  sync: SyncData;
 }
 
 type UserDataContextType = {
@@ -121,9 +122,10 @@ const defaultPlan: PlanData = {
     notes: 30,
 };
 
-const defaultTimer: TimerData = {
+const defaultSync: SyncData = {
     endTime: null,
     isTimerRunning: false,
+    syncedNumber: 0,
 };
 
 
@@ -146,31 +148,31 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
 
     const userDocRef = doc(db, 'users', coreUser.uid);
     const unsubscribe = onSnapshot(userDocRef, (docSnap) => {
+      const buildProfile = (authData: CoreUser, dbData: DocumentData): AppUser => {
+          const history = (dbData.history || []).map((item: any) => ({
+              ...item,
+              timestamp: item.timestamp instanceof Timestamp ? item.timestamp.toDate() : new Date(item.timestamp),
+          })).sort((a: HistoryItem, b: HistoryItem) => b.timestamp.getTime() - a.timestamp.getTime());
+
+          const interviewDate = dbData.interviewDate;
+
+          return {
+              ...dbData,
+              uid: authData.uid,
+              email: authData.email,
+              displayName: authData.displayName,
+              photoURL: authData.photoURL,
+              history,
+              interviewDate: interviewDate ? (interviewDate instanceof Timestamp ? interviewDate.toDate() : new Date(interviewDate)) : undefined,
+              bookmarks: dbData.bookmarks || [],
+              portfolio: { ...defaultPortfolio, slug: authData.displayName?.toLowerCase().replace(/\s+/g, '-') || authData.uid, ...dbData.portfolio },
+              plan: { ...defaultPlan, ...dbData.plan },
+              sync: { ...defaultSync, ...dbData.sync },
+          } as AppUser;
+      }
+        
       if (docSnap.exists()) {
         const dbData = docSnap.data();
-        
-        const buildProfile = (authData: CoreUser, dbData: any): AppUser => {
-            const history = (dbData.history || []).map((item: any) => ({
-                ...item,
-                timestamp: item.timestamp instanceof Timestamp ? item.timestamp.toDate() : new Date(item.timestamp),
-            })).sort((a: HistoryItem, b: HistoryItem) => b.timestamp.getTime() - a.timestamp.getTime());
-
-            const interviewDate = dbData.interviewDate;
-
-            return {
-                ...dbData,
-                uid: authData.uid,
-                email: authData.email,
-                displayName: authData.displayName,
-                photoURL: authData.photoURL,
-                history,
-                interviewDate: interviewDate ? (interviewDate instanceof Timestamp ? interviewDate.toDate() : new Date(interviewDate)) : undefined,
-                bookmarks: dbData.bookmarks || [],
-                portfolio: { ...defaultPortfolio, slug: authData.displayName?.toLowerCase().replace(/\s+/g, '-') || authData.uid, ...dbData.portfolio },
-                plan: { ...defaultPlan, ...dbData.plan },
-                timer: { ...defaultTimer, ...dbData.timer },
-            } as AppUser;
-        }
         setProfile(buildProfile(coreUser, dbData));
       } else {
         const initialProfileData: Partial<AppUser> = {
@@ -185,10 +187,10 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
             slug: coreUser.displayName?.toLowerCase().replace(/\s+/g, '-') || coreUser.uid,
           },
           plan: defaultPlan,
-          timer: defaultTimer,
+          sync: defaultSync,
         };
-        setDoc(userDocRef, initialProfileData);
-        setProfile(initialProfileData as AppUser);
+        setDoc(userDocRef, initialProfileData, { merge: true });
+        setProfile(buildProfile(coreUser, initialProfileData));
       }
       setLoading(false);
     }, (error) => {
