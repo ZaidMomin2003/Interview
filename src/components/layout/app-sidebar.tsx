@@ -100,7 +100,7 @@ export function AppSidebar() {
               className="justify-start group-data-[collapsible=icon]:justify-center"
             >
               <Link href={item.href}>
-                <item.icon />
+                <item.icon className="h-8 w-8" />
                 <span className="group-data-[collapsible=icon]:hidden">{item.label}</span>
               </Link>
             </SidebarMenuButton>
@@ -118,7 +118,7 @@ export function AppSidebar() {
               className="justify-start group-data-[collapsible=icon]:justify-center bg-primary text-primary-foreground hover:bg-primary/90"
             >
               <Link href="/pricing">
-                <Rocket />
+                <Rocket className="h-8 w-8" />
                 <span className="group-data-[collapsible=icon]:hidden">Upgrade Plan</span>
               </Link>
             </SidebarMenuButton>
@@ -127,7 +127,7 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton tooltip="Log Out" onClick={handleLogout} variant="ghost" className="text-muted-foreground hover:bg-destructive hover:text-destructive-foreground justify-start group-data-[collapsible=icon]:justify-center">
-              <LogOut />
+              <LogOut className="h-8 w-8" />
               <span className="group-data-[collapsible=icon]:hidden">Log Out</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
