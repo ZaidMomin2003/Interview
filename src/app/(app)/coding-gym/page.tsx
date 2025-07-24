@@ -7,9 +7,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import {
   generateCodingQuestion,
-  type CodingQuestion,
-  type GenerateCodingQuestionInput,
 } from '@/ai/flows/generate-coding-question';
+import type { CodingQuestion, GenerateCodingQuestionInput } from '@/ai/types/coding-question-types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
