@@ -115,18 +115,26 @@ export default function CodingGymPage() {
     setIsLoading(true);
     setQuestions([]);
     try {
-      const result = await generateMCQ(values as GenerateMCQInput);
+      // Ensure the 'count' is a number before passing to the AI flow
+      const input: GenerateMCQInput = {
+        ...values,
+        count: Number(values.count),
+      };
+      
+      const result = await generateMCQ(input);
       setQuestions(result.questions);
-      // Correctly add the count to the history item
+      
       await addHistoryItem({
         type: 'MCQ Challenge',
         description: `Generated ${values.count} ${values.difficulty} MCQ(s) on ${values.topic}.`,
         count: values.count,
       });
+
       toast({
         title: "Success!",
         description: `Generated ${result.questions.length} questions.`,
       })
+
     } catch (error) {
       console.error('Error generating questions:', error);
       toast({
@@ -182,7 +190,7 @@ export default function CodingGymPage() {
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select difficulty" />
-                        </SelectTrigger>
+                        </Trigger>
                       </FormControl>
                       <SelectContent>
                         <SelectItem value="Easy">Easy</SelectItem>
@@ -205,7 +213,7 @@ export default function CodingGymPage() {
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select number" />
-                        </SelectTrigger>
+                        </Trigger>
                       </FormControl>
                       <SelectContent>
                         {[1, 2, 3, 4, 5].map(n => <SelectItem key={n} value={String(n)}>{n}</SelectItem>)}
