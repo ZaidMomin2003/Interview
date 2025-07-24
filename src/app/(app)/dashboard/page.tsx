@@ -1,3 +1,4 @@
+
 // src/app/(app)/dashboard/page.tsx
 "use client";
 
@@ -9,7 +10,9 @@ export default function DashboardPage() {
   const { profile } = useUserData();
 
   const questionsGenerated =
-    profile?.history?.filter((h) => h.type === "Coding Challenge").length || 0;
+    profile?.history
+      ?.filter((h) => h.type === "Coding Challenge")
+      .reduce((total, h) => total + (h.count || 0), 0) || 0;
 
   return (
     <div className="space-y-4">

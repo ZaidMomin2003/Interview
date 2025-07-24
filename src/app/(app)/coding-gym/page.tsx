@@ -1,3 +1,4 @@
+
 // src/app/(app)/coding-gym/page.tsx
 "use client";
 
@@ -56,6 +57,7 @@ export default function CodingGymPage() {
       await addHistoryItem({
         type: 'Coding Challenge',
         description: `Generated ${values.count} ${values.difficulty} question(s) on ${values.topic}.`,
+        count: values.count,
       });
       toast({
         title: "Success!",
