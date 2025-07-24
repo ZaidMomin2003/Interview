@@ -87,8 +87,6 @@ export function AppSidebar() {
               Talxify
             </span>
           </Link>
-           <div className="flex-1" />
-            <SidebarTrigger className="hidden md:flex" />
         </div>
       </SidebarHeader>
 
@@ -103,7 +101,7 @@ export function AppSidebar() {
             >
               <Link href={item.href}>
                 <item.icon />
-                <span>{item.label}</span>
+                <span className="group-data-[collapsible=icon]:hidden">{item.label}</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -121,24 +119,20 @@ export function AppSidebar() {
             >
               <Link href="/pricing">
                 <Rocket />
-                <span>Upgrade Plan</span>
+                <span className="group-data-[collapsible=icon]:hidden">Upgrade Plan</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         
         <SidebarMenu>
-          <SidebarMenuItem className="group-data-[collapsible=icon]:hidden">
+          <SidebarMenuItem>
             <SidebarMenuButton tooltip="Log Out" onClick={handleLogout} variant="ghost" className="text-muted-foreground hover:bg-destructive hover:text-destructive-foreground justify-start group-data-[collapsible=icon]:justify-center">
               <LogOut />
-              <span>Log Out</span>
+              <span className="group-data-[collapsible=icon]:hidden">Log Out</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
-          
-           <SidebarMenuItem className="hidden group-data-[collapsible=icon]:block">
-            <SidebarMenuButton tooltip="Log Out" onClick={handleLogout} variant="ghost" className="text-muted-foreground hover:bg-destructive hover:text-destructive-foreground justify-start group-data-[collapsible=icon]:justify-center">
-              <LogOut />
-              <span className="sr-only">Log Out</span>
-            </SidebarMenuButton>
+          <SidebarMenuItem>
+              <SidebarTrigger className="w-full justify-start group-data-[collapsible=icon]:justify-center" />
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
