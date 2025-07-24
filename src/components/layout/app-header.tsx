@@ -4,8 +4,6 @@
 import { useUserData } from "@/hooks/use-user-data";
 import { Button } from "../ui/button";
 import { SidebarTrigger } from "../ui/sidebar";
-import { History, Bookmark, User } from "lucide-react";
-import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { ThemeToggle } from "./theme-toggle";
@@ -20,18 +18,6 @@ export function AppHeader() {
             <SidebarTrigger className="md:hidden" />
             <div className="flex-1" />
             <nav className="flex items-center gap-2">
-                 <Button variant="ghost" size="icon" asChild>
-                    <Link href="/history">
-                        <History className="h-5 w-5" />
-                        <span className="sr-only">History</span>
-                    </Link>
-                </Button>
-                <Button variant="ghost" size="icon" asChild>
-                    <Link href="/bookmarks">
-                        <Bookmark className="h-5 w-5" />
-                         <span className="sr-only">Bookmarks</span>
-                    </Link>
-                </Button>
                 <ThemeToggle />
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -46,19 +32,6 @@ export function AppHeader() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                         <DropdownMenuLabel>{profile?.displayName || 'My Account'}</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem asChild>
-                           <Link href="/profile">Profile</Link>
-                        </DropdownMenuItem>
-                         <DropdownMenuItem asChild>
-                           <Link href="/dashboard">Dashboard</Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                           <Link href="/pricing">Billing</Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                           <Link href="/#contact">Support</Link>
-                        </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
                     </DropdownMenuContent>
