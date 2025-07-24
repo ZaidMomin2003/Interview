@@ -5,13 +5,24 @@ import { useUserData } from '@/hooks/use-user-data';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Building, Briefcase, Code, GraduationCap, Link as LinkIcon, Mail, Phone, Target, CalendarDays, CaseSensitive, Pencil } from 'lucide-react';
+import { Building, Briefcase, Code, GraduationCap, Link as LinkIcon, Mail, Phone, Target, CalendarDays, CaseSensitive, Pencil, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 const InfoCard = ({ icon, title, children }: { icon: React.ReactNode, title: string, children: React.ReactNode }) => (
     <Card className="bg-secondary/30 border-border">
@@ -33,7 +44,7 @@ const SocialLink = ({ href, icon, label }: { href: string; icon: React.ReactNode
 );
 
 export default function ProfilePage() {
-  const { profile, updateUserProfile, loading } = useUserData();
+  const { profile, updateUserProfile, clearData, loading } = useUserData();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
@@ -44,6 +55,22 @@ export default function ProfilePage() {
   const handleAvatarClick = () => {
     fileInputRef.current?.click();
   };
+  
+  const handleClearData = async () => {
+    try {
+        await clearData();
+        toast({
+            title: "Data Cleared",
+            description: "Your history and bookmarks have been successfully cleared.",
+        });
+    } catch (error) {
+        toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Could not clear your data. Please try again.",
+        });
+    }
+  }
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -182,6 +209,31 @@ export default function ProfilePage() {
                     <p className="text-muted-foreground">No social links provided.</p>
                 )}
             </InfoCard>
+            <Card className="bg-destructive/10 border-destructive/50">
+                <CardHeader>
+                    <CardTitle className="text-destructive font-headline">Danger Zone</CardTitle>
+                    <CardDescription className="text-destructive/80">This action cannot be undone.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                         <Button variant="destructive">Clear All Activity Data</Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This will permanently delete all of your activity history and bookmarks. This action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={handleClearData}>Yes, clear my data</AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                </CardContent>
+            </Card>
         </div>
 
       </div>

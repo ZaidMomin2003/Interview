@@ -2,9 +2,9 @@
 "use client";
 
 import { useState, useEffect, useContext, createContext, ReactNode, useCallback } from 'react';
-import { useAuth, CoreUser } from './use-auth';
+import { useAuth, type CoreUser } from './use-auth';
 import { db } from '@/lib/firebase';
-import { doc, setDoc, updateDoc, onSnapshot, Timestamp, FieldValue, arrayUnion, arrayRemove } from 'firebase/firestore';
+import { doc, setDoc, onSnapshot, Timestamp, updateDoc, arrayUnion, arrayRemove, getDoc } from 'firebase/firestore';
 import type { OnboardingData } from '@/app/(app)/onboarding/page';
 import { auth } from '@/lib/firebase';
 import { updateProfile as updateAuthProfile } from "firebase/auth";
@@ -37,7 +37,7 @@ export interface AppUser extends Partial<OnboardingData> {
 type UserDataContextType = {
   profile: AppUser | null;
   loading: boolean;
-  addHistoryItem: (item: Omit<HistoryItem, 'id' | 'timestamp'> & { id?: string }) => Promise<void>;
+  addHistoryItem: (item: Omit<HistoryItem, 'id' | 'timestamp'>) => Promise<void>;
   addBookmark: (item: Bookmark) => Promise<void>;
   removeBookmark: (item: Bookmark) => Promise<void>;
   isBookmarked: (id: string) => boolean;
@@ -56,12 +56,9 @@ const UserDataContext = createContext<UserDataContextType>({
   clearData: async () => {},
 });
 
-
 export const UserDataProvider = ({ children }: { children: ReactNode }) => {
   const { user: coreUser, loading: authLoading } = useAuth();
   const [profile, setProfile] = useState<AppUser | null>(null);
-  
-  const getUserDocRef = useCallback((userId: string) => doc(db, 'users', userId), []);
 
   useEffect(() => {
     if (!coreUser) {
@@ -69,21 +66,18 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
 
-    const userDocRef = getUserDocRef(coreUser.uid);
-    
+    const userDocRef = doc(db, 'users', coreUser.uid);
+
     const unsubscribe = onSnapshot(userDocRef, (docSnap) => {
       if (docSnap.exists()) {
         const firestoreData = docSnap.data();
         const history = (firestoreData.history || []).map((item: any) => ({
             ...item,
             timestamp: item.timestamp instanceof Timestamp ? item.timestamp.toDate() : new Date(item.timestamp),
-        }));
-        history.sort((a: HistoryItem, b: HistoryItem) => b.timestamp.getTime() - a.timestamp.getTime());
-        
+        })).sort((a: HistoryItem, b: HistoryItem) => b.timestamp.getTime() - a.timestamp.getTime());
+
         const interviewDate = firestoreData.interviewDate;
 
-        // Construct a completely new profile object from the database snapshot and core auth info.
-        // This avoids merging with a stale `prevProfile` and is the definitive fix.
         setProfile({
           ...firestoreData,
           uid: coreUser.uid,
@@ -94,10 +88,8 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
           interviewDate: interviewDate ? (interviewDate instanceof Timestamp ? interviewDate.toDate() : new Date(interviewDate)) : undefined,
           bookmarks: firestoreData.bookmarks || [],
         } as AppUser);
-
-
       } else {
-        // If the document doesn't exist, create it for the first time.
+        // If doc doesn't exist, create it.
         const initialProfileData = {
           uid: coreUser.uid,
           email: coreUser.email,
@@ -114,15 +106,13 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
     });
 
     return () => unsubscribe();
-    
-  }, [coreUser, getUserDocRef]);
-
+  }, [coreUser]);
 
   const updateUserProfile = async (data: Partial<OnboardingData & { photoURL?: string }>) => {
     if (!coreUser) throw new Error("User not authenticated");
+    const userDocRef = doc(db, 'users', coreUser.uid);
 
-    const userDocRef = getUserDocRef(coreUser.uid);
-
+    // Update Firebase Auth profile if needed
     if (auth.currentUser) {
         const authUpdateData: { displayName?: string; photoURL?: string } = {};
         if (data.displayName && data.displayName !== auth.currentUser.displayName) {
@@ -136,61 +126,43 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
         }
     }
     
+    // Prepare data for Firestore
     const dataToSave: any = { ...data };
     if (data.interviewDate) {
         dataToSave.interviewDate = Timestamp.fromDate(data.interviewDate);
     }
     
-    // Use setDoc with merge:true which is safer than updateDoc for creating/updating.
     await setDoc(userDocRef, dataToSave, { merge: true });
   };
 
-
-  const addHistoryItem = useCallback(async (item: Omit<HistoryItem, 'id' | 'timestamp'> & { id?: string }) => {
+  const addHistoryItem = useCallback(async (item: Omit<HistoryItem, 'id' | 'timestamp'>) => {
     if (!coreUser) return;
-    const userDocRef = getUserDocRef(coreUser.uid);
-    
-    const newHistoryItem = {
-        ...item,
-        id: item.id || `hist-${Date.now()}`,
-        timestamp: new Date(),
-    };
-    
-    // Rely on arrayUnion to atomically add the item.
-    await updateDoc(userDocRef, {
-        history: arrayUnion(newHistoryItem)
-    });
-  }, [coreUser, getUserDocRef]);
+    const userDocRef = doc(db, 'users', coreUser.uid);
+    const newHistoryItem = { ...item, id: `hist-${Date.now()}`, timestamp: new Date() };
+    await updateDoc(userDocRef, { history: arrayUnion(newHistoryItem) });
+  }, [coreUser]);
 
   const addBookmark = useCallback(async (item: Bookmark) => {
-     if (!coreUser) return;
-     const userDocRef = getUserDocRef(coreUser.uid);
-     // Rely on arrayUnion's idempotency. It won't add a duplicate if the exact object exists.
-     await updateDoc(userDocRef, {
-        bookmarks: arrayUnion(item)
-     });
-  }, [coreUser, getUserDocRef]);
+    if (!coreUser) return;
+    const userDocRef = doc(db, 'users', coreUser.uid);
+    await updateDoc(userDocRef, { bookmarks: arrayUnion(item) });
+  }, [coreUser]);
 
   const removeBookmark = useCallback(async (item: Bookmark) => {
     if (!coreUser) return;
-    const userDocRef = getUserDocRef(coreUser.uid);
-    // Use arrayRemove for atomic deletion from the array.
-    await updateDoc(userDocRef, {
-        bookmarks: arrayRemove(item)
-    });
-  }, [coreUser, getUserDocRef]);
-  
+    const userDocRef = doc(db, 'users', coreUser.uid);
+    await updateDoc(userDocRef, { bookmarks: arrayRemove(item) });
+  }, [coreUser]);
+
   const isBookmarked = useCallback((id: string) => {
-    // This function now directly uses the 'profile' state variable,
-    // which is guaranteed to be up-to-date by the onSnapshot listener.
-    return !!profile?.bookmarks?.some(b => b.id === id);
-  }, [profile]);
+    return profile?.bookmarks?.some(b => b.id === id) || false;
+  }, [profile?.bookmarks]);
   
   const clearData = useCallback(async () => {
      if (!coreUser) return;
-     const userDocRef = getUserDocRef(coreUser.uid);
+     const userDocRef = doc(db, 'users', coreUser.uid);
      await updateDoc(userDocRef, { history: [], bookmarks: [] });
-  }, [coreUser, getUserDocRef]);
+  }, [coreUser]);
 
   return (
     <UserDataContext.Provider value={{ profile, loading: authLoading || !profile, addHistoryItem, addBookmark, removeBookmark, isBookmarked, updateUserProfile, clearData }}>
