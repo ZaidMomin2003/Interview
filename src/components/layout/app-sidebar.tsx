@@ -22,6 +22,7 @@ import {
   Video,
   Loader2,
   BookOpen,
+  Timer,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -59,6 +60,11 @@ const menuItems = [
     href: "/portfolio-builder",
     label: "Portfolio",
     icon: GalleryVertical,
+  },
+   {
+    href: "/sync-tester",
+    label: "Sync Tester",
+    icon: Timer,
   },
 ];
 

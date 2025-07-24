@@ -62,6 +62,11 @@ export interface PlanData {
   notes: number;
 }
 
+export interface TimerData {
+    endTime: number | null;
+    isTimerRunning: boolean;
+}
+
 
 // The full user profile, combining auth data with our custom data.
 export interface AppUser extends Partial<OnboardingData> {
@@ -73,6 +78,7 @@ export interface AppUser extends Partial<OnboardingData> {
   bookmarks: Bookmark[];
   portfolio: PortfolioData;
   plan: PlanData;
+  timer: TimerData;
 }
 
 type UserDataContextType = {
@@ -84,6 +90,7 @@ type UserDataContextType = {
   isBookmarked: (id: string) => boolean;
   updateUserProfile: (data: Partial<OnboardingData & { photoURL?: string }>) => Promise<void>;
   updatePortfolio: (data: Partial<PortfolioData>) => Promise<void>;
+  updateTimer: (data: Partial<TimerData>) => Promise<void>;
   clearData: () => Promise<void>;
 };
 
@@ -96,6 +103,7 @@ const UserDataContext = createContext<UserDataContextType>({
   isBookmarked: () => false,
   updateUserProfile: async () => {},
   updatePortfolio: async () => {},
+  updateTimer: async () => {},
   clearData: async () => {},
 });
 
@@ -113,6 +121,11 @@ const defaultPlan: PlanData = {
     interviews: 10,
     codingQuestions: 60,
     notes: 30,
+};
+
+const defaultTimer: TimerData = {
+    endTime: null,
+    isTimerRunning: false,
 };
 
 
@@ -157,6 +170,7 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
                 bookmarks: dbData.bookmarks || [],
                 portfolio: { ...defaultPortfolio, slug: authData.displayName?.toLowerCase().replace(/\s+/g, '-') || authData.uid, ...dbData.portfolio },
                 plan: { ...defaultPlan, ...dbData.plan },
+                timer: { ...defaultTimer, ...dbData.timer },
             } as AppUser;
         }
         setProfile(buildProfile(coreUser, dbData));
@@ -173,6 +187,7 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
             slug: coreUser.displayName?.toLowerCase().replace(/\s+/g, '-') || coreUser.uid,
           },
           plan: defaultPlan,
+          timer: defaultTimer,
         };
         setDoc(userDocRef, initialProfileData);
         setProfile(initialProfileData as AppUser);
@@ -216,6 +231,12 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
     const userDocRef = doc(db, 'users', coreUser.uid);
     await updateDoc(userDocRef, { portfolio: { ...profile?.portfolio, ...data } });
   }, [coreUser, profile]);
+  
+  const updateTimer = useCallback(async (data: Partial<TimerData>) => {
+    if (!coreUser) throw new Error("User not authenticated");
+    const userDocRef = doc(db, 'users', coreUser.uid);
+    await updateDoc(userDocRef, { timer: { ...profile?.timer, ...data } });
+  }, [coreUser, profile]);
 
 
   const addHistoryItem = useCallback(async (item: Omit<HistoryItem, 'id' | 'timestamp'>) => {
@@ -255,7 +276,7 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
   }, [coreUser]);
 
   return (
-    <UserDataContext.Provider value={{ profile, loading, addHistoryItem, addBookmark, removeBookmark, isBookmarked, updateUserProfile, updatePortfolio, clearData }}>
+    <UserDataContext.Provider value={{ profile, loading, addHistoryItem, addBookmark, removeBookmark, isBookmarked, updateUserProfile, updatePortfolio, updateTimer, clearData }}>
       {children}
     </UserDataContext.Provider>
   );
