@@ -27,6 +27,7 @@ import { useUserData } from '@/hooks/use-user-data';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
+import { Label } from '@/components/ui/label';
 
 const formSchema = z.object({
   topic: z.string().min(1, 'Topic is required.'),
@@ -61,17 +62,16 @@ function MCQCard({ mcq, index }: { mcq: MCQ, index: number }) {
                         setShowAnswer(false);
                     }}
                     disabled={showAnswer}
+                    className="space-y-2"
                 >
                     {mcq.options.map((option, i) => (
-                        <FormItem
+                        <div
                             key={i}
                             className={cn("flex items-center space-x-3 space-y-0 p-4 rounded-lg border transition-all", getOptionClass(option))}
                         >
-                            <FormControl>
-                                <RadioGroupItem value={option} />
-                            </FormControl>
-                            <FormLabel className="font-normal text-base w-full cursor-pointer">{option}</FormLabel>
-                        </FormItem>
+                            <RadioGroupItem value={option} id={`option-${index}-${i}`} />
+                             <Label htmlFor={`option-${index}-${i}`} className="font-normal text-base w-full cursor-pointer">{option}</Label>
+                        </div>
                     ))}
                 </RadioGroup>
             </CardContent>
