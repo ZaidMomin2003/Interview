@@ -37,17 +37,23 @@ export default function PomodoroPage() {
     }
 
     const loadSettings = async () => {
+      setLoading(true);
       const userDocRef = doc(db, 'users', profile.uid);
       const docSnap = await getDoc(userDocRef);
+
+      let userSettings = settings;
+      let userMode = mode;
+      let userTimeLeft;
+      let userIsActive = false;
+
       if (docSnap.exists() && docSnap.data().pomodoro) {
-        const userData = docSnap.data();
-        setSettings(userData.pomodoro.settings);
-        setMode(userData.pomodoro.mode || 'pomodoro');
-        setTimeLeft(userData.pomodoro.timeLeft || userData.pomodoro.settings.pomodoro * 60);
-        setIsActive(userData.pomodoro.isActive || false);
+        const pomodoroData = docSnap.data().pomodoro;
+        userSettings = pomodoroData.settings || settings;
+        userMode = pomodoroData.mode || 'pomodoro';
+        userTimeLeft = pomodoroData.timeLeft;
+        userIsActive = pomodoroData.isActive || false;
       } else {
-        // Initialize with default if not present
-         await setDoc(userDocRef, { 
+         await setDoc(userDocRef, {
           pomodoro: {
             settings,
             mode: 'pomodoro',
@@ -55,8 +61,12 @@ export default function PomodoroPage() {
             isActive: false
           }
         }, { merge: true });
-        setTimeLeft(settings.pomodoro * 60);
       }
+
+      setSettings(userSettings);
+      setMode(userMode);
+      setTimeLeft(userTimeLeft !== undefined ? userTimeLeft : userSettings[userMode] * 60);
+      setIsActive(userIsActive);
       setLoading(false);
     };
 
@@ -70,26 +80,26 @@ export default function PomodoroPage() {
         setTimeLeft((prevTime) => prevTime - 1);
       }, 1000);
     } else if (isActive && timeLeft === 0) {
-      // Handle session end (e.g., switch mode, play sound)
       setIsActive(false);
-      // Here you could add logic to auto-switch to the next mode
+      // Here you could add logic to auto-switch to the next mode and play a sound
     }
-
-    // Persist to Firestore
-    if (profile) {
-      const userDocRef = doc(db, 'users', profile.uid);
-      updateDoc(userDocRef, {
-        "pomodoro.timeLeft": timeLeft,
-        "pomodoro.isActive": isActive,
-        "pomodoro.mode": mode,
-      }).catch(err => console.error("Failed to update pomodoro state", err));
-    }
-
+    
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isActive, timeLeft, profile, mode]);
-  
+  }, [isActive, timeLeft]);
+
+  useEffect(() => {
+    if (!profile || loading) return;
+    const userDocRef = doc(db, 'users', profile.uid);
+    updateDoc(userDocRef, {
+      "pomodoro.timeLeft": timeLeft,
+      "pomodoro.isActive": isActive,
+      "pomodoro.mode": mode,
+      "pomodoro.settings": settings,
+    }).catch(err => console.error("Failed to update pomodoro state", err));
+  }, [timeLeft, isActive, mode, settings, profile, loading]);
+
   const switchMode = (newMode: PomodoroMode) => {
     setIsActive(false);
     setMode(newMode);
@@ -100,12 +110,12 @@ export default function PomodoroPage() {
     const { name, value } = e.target;
     const newSettings = { ...settings, [name]: Number(value) };
     setSettings(newSettings);
-     if (profile) {
-      const userDocRef = doc(db, 'users', profile.uid);
-      updateDoc(userDocRef, { "pomodoro.settings": newSettings });
+    // Auto-update timer if not active and on the changed mode
+    if (!isActive && mode === name) {
+        setTimeLeft(Number(value) * 60);
     }
   };
-  
+
   const toggleTimer = () => setIsActive(!isActive);
 
   const resetTimer = () => {
@@ -122,18 +132,34 @@ export default function PomodoroPage() {
   if (loading || userLoading) {
     return (
       <div className="space-y-8">
-        <Skeleton className="h-10 w-1/4" />
-        <Skeleton className="h-8 w-1/3" />
+        <div className="flex justify-between items-center">
+            <Skeleton className="h-10 w-1/3" />
+        </div>
         <Card className="max-w-md mx-auto">
           <CardHeader>
-            <Skeleton className="h-8 w-3/4 mx-auto" />
-            <Skeleton className="h-32 w-32 rounded-full mx-auto mt-4" />
+             <Skeleton className="h-10 w-full" />
           </CardHeader>
-          <CardContent className="flex justify-center space-x-4">
-            <Skeleton className="h-12 w-24" />
-            <Skeleton className="h-12 w-12" />
+          <CardContent className="flex flex-col items-center justify-center space-y-8 pt-6">
+            <Skeleton className="h-64 w-64 rounded-full" />
+            <div className="flex items-center space-x-4">
+                <Skeleton className="h-12 w-32" />
+                <Skeleton className="h-12 w-12" />
+            </div>
           </CardContent>
         </Card>
+         <Card className="max-w-md mx-auto">
+            <CardHeader>
+                <Skeleton className="h-8 w-1/4"/>
+                <Skeleton className="h-4 w-1/2"/>
+            </CardHeader>
+            <CardContent className="space-y-4">
+               <div className="grid grid-cols-3 gap-4">
+                    <Skeleton className="h-16 w-full"/>
+                    <Skeleton className="h-16 w-full"/>
+                    <Skeleton className="h-16 w-full"/>
+               </div>
+            </CardContent>
+         </Card>
       </div>
     )
   }
@@ -157,12 +183,12 @@ export default function PomodoroPage() {
                 </TabsList>
             </Tabs>
         </CardHeader>
-        <CardContent className="flex flex-col items-center justify-center space-y-8">
+        <CardContent className="flex flex-col items-center justify-center space-y-8 pt-6">
             <div className="relative w-64 h-64">
                 <svg className="w-full h-full" viewBox="0 0 100 100">
                     <circle className="text-secondary" strokeWidth="7" stroke="currentColor" fill="transparent" r="45" cx="50" cy="50" />
                     <circle
-                        className="text-primary"
+                        className="text-primary transition-all duration-1000 ease-linear"
                         strokeWidth="7"
                         strokeDasharray={2 * Math.PI * 45}
                         strokeDashoffset={2 * Math.PI * 45 * (1 - timeLeft / (settings[mode] * 60))}
@@ -191,7 +217,7 @@ export default function PomodoroPage() {
             </div>
         </CardContent>
       </Card>
-      
+
        <Card className="max-w-md mx-auto">
         <CardHeader>
           <CardTitle>Settings</CardTitle>
