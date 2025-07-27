@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { ThemeToggle } from "./theme-toggle";
 import { useAuth } from "@/hooks/use-auth";
+import Link from "next/link";
 
 export function AppHeader() {
     const { logout } = useAuth();
@@ -32,6 +33,14 @@ export function AppHeader() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                         <DropdownMenuLabel>{profile?.displayName || 'My Account'}</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        {profile?.portfolio?.slug && (
+                          <DropdownMenuItem asChild>
+                            <Link href={`/portfolio/${profile.portfolio.slug}`} target="_blank">
+                              View Public Portfolio
+                            </Link>
+                          </DropdownMenuItem>
+                        )}
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
                     </DropdownMenuContent>
