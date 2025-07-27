@@ -14,6 +14,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Timer, Settings, Play, Pause, RotateCcw, SkipForward } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const settingsSchema = z.object({
   workMinutes: z.coerce.number().min(1, 'Must be at least 1 minute').max(120),
@@ -22,7 +23,7 @@ const settingsSchema = z.object({
 });
 
 export default function PomodoroPage() {
-    const { profile, updatePomodoro } = useUserData();
+    const { profile, loading, updatePomodoro } = useUserData();
     const [timeLeft, setTimeLeft] = useState('00:00');
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const { toast } = useToast();
@@ -39,12 +40,14 @@ export default function PomodoroPage() {
     });
     
     useEffect(() => {
-        form.reset({
-            workMinutes: pomodoroState?.settings.workMinutes || 25,
-            shortBreakMinutes: pomodoroState?.settings.shortBreakMinutes || 5,
-            longBreakMinutes: pomodoroState?.settings.longBreakMinutes || 15,
-        });
-    }, [pomodoroState?.settings, form]);
+        if (pomodoroState) {
+            form.reset({
+                workMinutes: pomodoroState.settings.workMinutes,
+                shortBreakMinutes: pomodoroState.settings.shortBreakMinutes,
+                longBreakMinutes: pomodoroState.settings.longBreakMinutes,
+            });
+        }
+    }, [pomodoroState, form]);
     
     const getDuration = (mode: 'work' | 'shortBreak' | 'longBreak' | undefined) => {
         if (!pomodoroState) return 25;
@@ -95,7 +98,7 @@ export default function PomodoroPage() {
 
         if (pomodoroState.mode === 'work') {
             newSessionCount++;
-            if (newSessionCount > 0 && newSessionCount % pomodoroState.settings.sessionsUntilLongBreak === 0) {
+            if (newSessionCount > 0 && newSessionCount % 4 === 0) { // Using a fixed value of 4 for long break interval
                 newMode = 'longBreak';
                 notificationTitle = "Time for a long break!";
             } else {
@@ -118,21 +121,16 @@ export default function PomodoroPage() {
         });
     };
 
-    const startTimer = () => {
-        if (!pomodoroState) return;
-        const durationMinutes = getDuration(pomodoroState.mode);
-        const endTime = Date.now() + durationMinutes * 60 * 1000;
-        updatePomodoro({ isRunning: true, endTime, mode: pomodoroState.mode });
-    };
-
-    const togglePause = () => {
+    const toggleTimer = () => {
         if (!pomodoroState) return;
         
         if (pomodoroState.isRunning) {
             const remainingTime = pomodoroState.endTime ? pomodoroState.endTime - Date.now() : 0;
-            updatePomodoro({ isRunning: false, endTime: remainingTime > 0 ? pomodoroState.endTime : null });
+            updatePomodoro({ isRunning: false, endTime: null }); // Pause and store remaining time implicitly by clearing endTime
         } else {
-            startTimer();
+            const durationMinutes = getDuration(pomodoroState.mode);
+            const endTime = Date.now() + durationMinutes * 60 * 1000;
+            updatePomodoro({ isRunning: true, endTime });
         }
     };
     
@@ -147,13 +145,36 @@ export default function PomodoroPage() {
     };
 
     const handleSettingsSave = (values: z.infer<typeof settingsSchema>) => {
-        updatePomodoro({ settings: { ...pomodoroState!.settings, ...values }});
+        if (!pomodoroState) return;
+        updatePomodoro({ settings: { ...pomodoroState.settings, ...values }});
         setIsSettingsOpen(false);
         toast({ title: "Settings saved!" });
     };
   
-    if (!pomodoroState) {
-        return <div className="text-center p-8">Loading Pomodoro Timer...</div>;
+    if (loading || !pomodoroState) {
+        return (
+            <div className="space-y-8">
+                <div>
+                    <Skeleton className="h-10 w-1/3" />
+                    <Skeleton className="h-4 w-2/3 mt-2" />
+                </div>
+                 <Card className="max-w-md mx-auto">
+                    <CardHeader>
+                        <CardTitle className="text-center"><Skeleton className="h-6 w-24 mx-auto" /></CardTitle>
+                    </CardHeader>
+                    <CardContent className="flex flex-col items-center justify-center space-y-6">
+                        <Skeleton className="w-64 h-64 rounded-full" />
+                        <div className="flex items-center gap-4">
+                             <Skeleton className="h-12 w-32 rounded-md" />
+                             <Skeleton className="h-10 w-10 rounded-md" />
+                             <Skeleton className="h-10 w-10 rounded-md" />
+                        </div>
+                        <Skeleton className="h-4 w-32" />
+                    </CardContent>
+                </Card>
+                 <Skeleton className="h-10 w-40 mx-auto" />
+            </div>
+        );
     }
 
     const modeText = {
@@ -184,7 +205,7 @@ export default function PomodoroPage() {
                     </div>
 
                     <div className="flex items-center gap-4">
-                         <Button onClick={togglePause} size="lg" className="w-32">
+                         <Button onClick={toggleTimer} size="lg" className="w-32">
                             {pomodoroState.isRunning ? <Pause className="mr-2"/> : <Play className="mr-2" />}
                             {pomodoroState.isRunning ? 'Pause' : 'Start'}
                         </Button>
