@@ -4,13 +4,9 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useUserData } from '@/hooks/use-user-data';
-import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Play, Pause, RotateCcw } from 'lucide-react';
 
 type PomodoroMode = 'pomodoro' | 'shortBreak' | 'longBreak';
@@ -22,57 +18,12 @@ interface PomodoroSettings {
 }
 
 export default function PomodoroPage() {
-  const { profile, loading: userLoading } = useUserData();
   const [settings, setSettings] = useState<PomodoroSettings>({ pomodoro: 25, shortBreak: 5, longBreak: 15 });
   const [mode, setMode] = useState<PomodoroMode>('pomodoro');
   const [timeLeft, setTimeLeft] = useState(settings.pomodoro * 60);
   const [isActive, setIsActive] = useState(false);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (userLoading) return;
-    if (!profile) {
-      setLoading(false);
-      return;
-    }
-
-    const loadSettings = async () => {
-      setLoading(true);
-      const userDocRef = doc(db, 'users', profile.uid);
-      const docSnap = await getDoc(userDocRef);
-
-      let userSettings = settings;
-      let userMode = mode;
-      let userTimeLeft;
-      let userIsActive = false;
-
-      if (docSnap.exists() && docSnap.data().pomodoro) {
-        const pomodoroData = docSnap.data().pomodoro;
-        userSettings = pomodoroData.settings || settings;
-        userMode = pomodoroData.mode || 'pomodoro';
-        userTimeLeft = pomodoroData.timeLeft;
-        userIsActive = pomodoroData.isActive || false;
-      } else {
-         await setDoc(userDocRef, {
-          pomodoro: {
-            settings,
-            mode: 'pomodoro',
-            timeLeft: settings.pomodoro * 60,
-            isActive: false
-          }
-        }, { merge: true });
-      }
-
-      setSettings(userSettings);
-      setMode(userMode);
-      setTimeLeft(userTimeLeft !== undefined ? userTimeLeft : userSettings[userMode] * 60);
-      setIsActive(userIsActive);
-      setLoading(false);
-    };
-
-    loadSettings();
-  }, [profile, userLoading]);
-
+  // Effect for the countdown timer
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
     if (isActive && timeLeft > 0) {
@@ -80,25 +31,27 @@ export default function PomodoroPage() {
         setTimeLeft((prevTime) => prevTime - 1);
       }, 1000);
     } else if (isActive && timeLeft === 0) {
+      // Timer reached zero
       setIsActive(false);
-      // Here you could add logic to auto-switch to the next mode and play a sound
+      // Optional: Add a notification or sound here
+      // You could automatically switch modes, e.g., to a break after a pomodoro session
+      // For now, we'll just stop the timer.
     }
     
+    // Cleanup function to clear the interval
     return () => {
       if (interval) clearInterval(interval);
     };
   }, [isActive, timeLeft]);
 
+  // Effect to update the timer when the mode changes
   useEffect(() => {
-    if (!profile || loading) return;
-    const userDocRef = doc(db, 'users', profile.uid);
-    updateDoc(userDocRef, {
-      "pomodoro.timeLeft": timeLeft,
-      "pomodoro.isActive": isActive,
-      "pomodoro.mode": mode,
-      "pomodoro.settings": settings,
-    }).catch(err => console.error("Failed to update pomodoro state", err));
-  }, [timeLeft, isActive, mode, settings, profile, loading]);
+    // Only reset the timer if it's not currently active
+    if (!isActive) {
+      setTimeLeft(settings[mode] * 60);
+    }
+  }, [mode, settings, isActive]);
+
 
   const switchMode = (newMode: PomodoroMode) => {
     setIsActive(false);
@@ -108,11 +61,14 @@ export default function PomodoroPage() {
 
   const handleSettingsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    const newSettings = { ...settings, [name]: Number(value) };
+    // Ensure value is not negative
+    const newDuration = Math.max(1, Number(value));
+    const newSettings = { ...settings, [name]: newDuration };
     setSettings(newSettings);
-    // Auto-update timer if not active and on the changed mode
+    
+    // If the timer for the changed mode is not active, update its timeLeft
     if (!isActive && mode === name) {
-        setTimeLeft(Number(value) * 60);
+        setTimeLeft(newDuration * 60);
     }
   };
 
@@ -129,40 +85,6 @@ export default function PomodoroPage() {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  if (loading || userLoading) {
-    return (
-      <div className="space-y-8">
-        <div className="flex justify-between items-center">
-            <Skeleton className="h-10 w-1/3" />
-        </div>
-        <Card className="max-w-md mx-auto">
-          <CardHeader>
-             <Skeleton className="h-10 w-full" />
-          </CardHeader>
-          <CardContent className="flex flex-col items-center justify-center space-y-8 pt-6">
-            <Skeleton className="h-64 w-64 rounded-full" />
-            <div className="flex items-center space-x-4">
-                <Skeleton className="h-12 w-32" />
-                <Skeleton className="h-12 w-12" />
-            </div>
-          </CardContent>
-        </Card>
-         <Card className="max-w-md mx-auto">
-            <CardHeader>
-                <Skeleton className="h-8 w-1/4"/>
-                <Skeleton className="h-4 w-1/2"/>
-            </CardHeader>
-            <CardContent className="space-y-4">
-               <div className="grid grid-cols-3 gap-4">
-                    <Skeleton className="h-16 w-full"/>
-                    <Skeleton className="h-16 w-full"/>
-                    <Skeleton className="h-16 w-full"/>
-               </div>
-            </CardContent>
-         </Card>
-      </div>
-    )
-  }
 
   return (
     <div className="space-y-8">
@@ -227,15 +149,15 @@ export default function PomodoroPage() {
             <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-2">
                     <Label htmlFor="pomodoro">Pomodoro</Label>
-                    <Input id="pomodoro" name="pomodoro" type="number" value={settings.pomodoro} onChange={handleSettingsChange} />
+                    <Input id="pomodoro" name="pomodoro" type="number" value={settings.pomodoro} onChange={handleSettingsChange} min="1" />
                 </div>
                  <div className="space-y-2">
                     <Label htmlFor="shortBreak">Short Break</Label>
-                    <Input id="shortBreak" name="shortBreak" type="number" value={settings.shortBreak} onChange={handleSettingsChange} />
+                    <Input id="shortBreak" name="shortBreak" type="number" value={settings.shortBreak} onChange={handleSettingsChange} min="1"/>
                 </div>
                  <div className="space-y-2">
                     <Label htmlFor="longBreak">Long Break</Label>
-                    <Input id="longBreak" name="longBreak" type="number" value={settings.longBreak} onChange={handleSettingsChange} />
+                    <Input id="longBreak" name="longBreak" type="number" value={settings.longBreak} onChange={handleSettingsChange} min="1"/>
                 </div>
             </div>
         </CardContent>
