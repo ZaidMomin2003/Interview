@@ -15,6 +15,46 @@ import {
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
 import type { AppUser } from "@/hooks/use-user-data";
+import { useUserData } from "@/hooks/use-user-data";
+import { Card, CardContent } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+
+function PomodoroTimer() {
+    const { pomodoroState, profile, loading } = useUserData();
+
+    if (loading || !pomodoroState.isActive) {
+        return null;
+    }
+
+    const { timeLeft, mode } = pomodoroState;
+    const settings = profile?.pomodoroSettings || { pomodoro: 25, shortBreak: 5, longBreak: 15 };
+    const totalDuration = settings[mode] * 60;
+    const progress = (timeLeft / totalDuration) * 100;
+    
+    const formatTime = (seconds: number) => {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    };
+
+    const modeDisplay = {
+      pomodoro: "Focusing",
+      shortBreak: "Short Break",
+      longBreak: "Long Break"
+    }
+
+    return (
+        <Card className="bg-secondary/50 border-border/50">
+          <CardContent className="p-3">
+             <div className="flex justify-between items-center mb-2">
+                <p className="text-sm font-semibold">{modeDisplay[mode]}</p>
+                <p className="text-sm font-mono">{formatTime(timeLeft)}</p>
+             </div>
+             <Progress value={progress} className="h-2" />
+          </CardContent>
+        </Card>
+    )
+}
 
 export function AppSidebar({ user }: { user: AppUser | null }) {
   const { logout } = useAuth();
@@ -54,6 +94,7 @@ export function AppSidebar({ user }: { user: AppUser | null }) {
       </SidebarContent>
 
       <SidebarFooter>
+        <PomodoroTimer />
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton onClick={logout}>

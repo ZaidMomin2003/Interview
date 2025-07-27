@@ -8,6 +8,7 @@ import { Outfit, Syne } from 'next/font/google'
 import { AuthProvider } from '@/hooks/use-auth';
 import { ThemeProvider } from '@/hooks/use-theme';
 import { useSessionHandler } from '@/hooks/use-session-handler';
+import { UserDataProvider } from '@/hooks/use-user-data';
 
 const outfit = Outfit({
   subsets: ['latin'],
@@ -32,8 +33,10 @@ function ClientRootLayout({ children }: { children: React.ReactNode }) {
           enableSystem
           disableTransitionOnChange
       >
-          {children}
-          <Toaster />
+          <UserDataProvider>
+            {children}
+            <Toaster />
+          </UserDataProvider>
       </ThemeProvider>
   );
 }
