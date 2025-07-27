@@ -1,30 +1,26 @@
 // src/app/(app)/layout.tsx
-"use client";
-
-import { AuthGuard, AuthProvider } from '@/hooks/use-auth';
-import { UserDataProvider } from '@/hooks/use-user-data';
+import { AppHeader } from '@/components/layout/app-header';
 import { AppSidebar } from '@/components/layout/app-sidebar';
 import { SidebarProvider } from '@/components/ui/sidebar';
-import { AppHeader } from '@/components/layout/app-header';
+import { AuthGuard } from '@/hooks/use-auth';
+import { getCurrentUser } from '@/lib/session';
 
-export default function AppLayout({
+export default async function AppLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const user = await getCurrentUser();
+
   return (
-      <UserDataProvider>
-        <AuthGuard>
-          <SidebarProvider>
-            <AppSidebar />
-            <div className="flex flex-col flex-1">
-                <AppHeader />
-                <main className="flex-1 p-4 sm:p-6 lg:p-8">
-                  {children}
-                </main>
-            </div>
-          </SidebarProvider>
-        </AuthGuard>
-      </UserDataProvider>
+    <AuthGuard>
+      <SidebarProvider>
+        <AppSidebar user={user} />
+        <div className="flex flex-col flex-1">
+          <AppHeader user={user} />
+          <main className="flex-1 p-4 sm:p-6 lg:p-8">{children}</main>
+        </div>
+      </SidebarProvider>
+    </AuthGuard>
   );
 }

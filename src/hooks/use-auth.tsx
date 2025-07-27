@@ -16,7 +16,6 @@ import {
   type User as FirebaseUser
 } from "firebase/auth";
 import { Skeleton } from '@/components/ui/skeleton';
-import { AppSidebar } from '@/components/layout/app-sidebar';
 import { SidebarProvider } from '@/components/ui/sidebar';
 
 // This will now only hold the core Firebase User object properties
@@ -117,7 +116,6 @@ export const useAuth = () => {
 };
 
 // A simplified AuthGuard. It protects a route, and shows a loading skeleton.
-// The data-specific loading and onboarding checks are handled by other components.
 export function AuthGuard({ children }: { children: React.ReactNode }) {
     const { user, loading } = useAuth();
     const router = useRouter();
@@ -125,7 +123,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     const isAuthPage = pathname.startsWith('/login') || pathname.startsWith('/signup');
 
     useEffect(() => {
-        if (!loading && !user && !isAuthPage && pathname !== '/calculate-salary' && pathname !== '/') {
+        if (!loading && !user && !isAuthPage && pathname !== '/') {
             router.push('/login');
         }
     }, [user, loading, router, pathname, isAuthPage]);
@@ -133,28 +131,16 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
 
     if (loading) {
         return (
-             <div className="flex min-h-screen w-full bg-background">
-                <SidebarProvider>
-                    <div className="hidden md:flex flex-col gap-4 p-2 border-r border-border bg-secondary/30 w-64">
-                    <div className="p-2 flex items-center gap-2"><Skeleton className="h-10 w-10 rounded-full bg-muted" /><Skeleton className="h-6 w-32 bg-muted" /></div>
-                    <div className="p-2 space-y-2">
-                        <Skeleton className="h-8 w-full bg-muted" />
-                        <Skeleton className="h-8 w-full bg-muted" />
-                        <Skeleton className="h-8 w-full bg-muted" />
-                        <Skeleton className="h-8 w-full bg-muted" />
-                    </div>
-                    </div>
-                </SidebarProvider>
-                <div className="flex-1 p-8">
-                    <Skeleton className="h-12 w-1/2 mb-4 bg-muted" />
-                    <Skeleton className="h-8 w-3/4 mb-8 bg-muted" />
-                    <Skeleton className="h-64 w-full bg-muted" />
+             <div className="flex min-h-screen w-full bg-background items-center justify-center">
+                <div className="flex flex-col items-center gap-4">
+                  <Cpu className="h-12 w-12 text-primary animate-pulse" />
+                  <p className="text-muted-foreground">Initializing Session...</p>
                 </div>
             </div>
         );
     }
 
-    if (!user && !isAuthPage && pathname !== '/calculate-salary' && pathname !== '/') {
+    if (!user && !isAuthPage && pathname !== '/') {
         return null; // or a specific "redirecting" component
     }
     

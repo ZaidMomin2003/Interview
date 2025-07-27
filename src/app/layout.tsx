@@ -1,3 +1,5 @@
+// src/app/layout.tsx
+"use client";
 
 import type {Metadata} from 'next';
 import './globals.css';
@@ -5,7 +7,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { Outfit, Syne } from 'next/font/google'
 import { AuthProvider } from '@/hooks/use-auth';
 import { ThemeProvider } from '@/hooks/use-theme';
-
+import { useSessionHandler } from '@/hooks/use-session-handler';
 
 const outfit = Outfit({
   subsets: ['latin'],
@@ -17,11 +19,25 @@ const syne = Syne({
   variable: '--font-syne',
 })
 
+// This is a client component because it contains the main providers
+// and the session handler hook.
+function ClientRootLayout({ children }: { children: React.ReactNode }) {
+  // This hook manages setting/clearing the session cookie
+  useSessionHandler();
 
-export const metadata: Metadata = {
-  title: 'Talxify',
-  description: 'AI-powered career development platform for developers.',
-};
+  return (
+      <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+      >
+          {children}
+          <Toaster />
+      </ThemeProvider>
+  );
+}
+
 
 export default function RootLayout({
   children,
@@ -31,17 +47,11 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${outfit.variable} ${syne.variable} font-body antialiased`}>
-        <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-        >
-            <AuthProvider>
+        <AuthProvider>
+          <ClientRootLayout>
             {children}
-            </AuthProvider>
-            <Toaster />
-        </ThemeProvider>
+          </ClientRootLayout>
+        </AuthProvider>
       </body>
     </html>
   );
