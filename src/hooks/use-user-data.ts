@@ -62,10 +62,19 @@ export interface PlanData {
   notes: number;
 }
 
-export interface SyncData {
+export interface PomodoroSettings {
+    workMinutes: number;
+    shortBreakMinutes: number;
+    longBreakMinutes: number;
+    sessionsUntilLongBreak: number;
+}
+
+export interface PomodoroState {
+    settings: PomodoroSettings;
+    isRunning: boolean;
+    mode: 'work' | 'shortBreak' | 'longBreak';
     endTime: number | null;
-    isTimerRunning: boolean;
-    syncedNumber: number;
+    sessionCount: number;
 }
 
 
@@ -79,7 +88,7 @@ export interface AppUser {
   bookmarks: Bookmark[];
   portfolio: PortfolioData;
   plan: PlanData;
-  sync: SyncData;
+  pomodoro: PomodoroState;
 }
 
 type UserDataContextType = {
@@ -91,7 +100,7 @@ type UserDataContextType = {
   isBookmarked: (id: string) => boolean;
   updateUserProfile: (data: Partial<{ displayName?: string, photoURL?: string }>) => Promise<void>;
   updatePortfolio: (data: Partial<PortfolioData>) => Promise<void>;
-  updateSyncData: (data: Partial<SyncData>) => Promise<void>;
+  updatePomodoro: (data: Partial<PomodoroState>) => Promise<void>;
   clearData: () => Promise<void>;
 };
 
@@ -104,7 +113,7 @@ const UserDataContext = createContext<UserDataContextType>({
   isBookmarked: () => false,
   updateUserProfile: async () => {},
   updatePortfolio: async () => {},
-  updateSyncData: async () => {},
+  updatePomodoro: async () => {},
   clearData: async () => {},
 });
 
@@ -124,10 +133,17 @@ const defaultPlan: PlanData = {
     notes: 30,
 };
 
-const defaultSync: SyncData = {
+const defaultPomodoro: PomodoroState = {
+    settings: {
+        workMinutes: 25,
+        shortBreakMinutes: 5,
+        longBreakMinutes: 15,
+        sessionsUntilLongBreak: 4,
+    },
+    isRunning: false,
+    mode: 'work',
     endTime: null,
-    isTimerRunning: false,
-    syncedNumber: 0,
+    sessionCount: 0,
 };
 
 
@@ -166,7 +182,11 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
             bookmarks: dbData.bookmarks || [],
             portfolio: { ...defaultPortfolio, slug: authData.displayName?.toLowerCase().replace(/\s+/g, '-') || authData.uid, ...dbData.portfolio },
             plan: { ...defaultPlan, ...dbData.plan },
-            sync: { ...defaultSync, ...dbData.sync },
+            pomodoro: {
+                ...defaultPomodoro,
+                ...dbData.pomodoro,
+                settings: { ...defaultPomodoro.settings, ...(dbData.pomodoro?.settings || {}) }
+            },
         } as AppUser;
     }
 
@@ -187,7 +207,7 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
             slug: coreUser.displayName?.toLowerCase().replace(/\s+/g, '-') || coreUser.uid,
           },
           plan: defaultPlan,
-          sync: defaultSync,
+          pomodoro: defaultPomodoro,
         };
         setDoc(userDocRef, initialProfileData, { merge: true });
         setProfile(buildProfile(coreUser, initialProfileData));
@@ -231,13 +251,21 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [coreUser]);
 
-  const updateSyncData = useCallback(async (data: Partial<SyncData>) => {
+  const updatePomodoro = useCallback(async (data: Partial<PomodoroState>) => {
     if (!coreUser) throw new Error("User not authenticated");
     const userDocRef = doc(db, 'users', coreUser.uid);
     const docSnap = await getDoc(userDocRef);
     if(docSnap.exists()){
-        const currentSync = docSnap.data().sync || {};
-        await updateDoc(userDocRef, { sync: { ...currentSync, ...data } });
+        const currentPomodoro = docSnap.data().pomodoro || {};
+        const newPomodoroState = {
+            ...currentPomodoro,
+            ...data,
+            settings: {
+                ...currentPomodoro.settings,
+                ...data.settings,
+            }
+        };
+        await updateDoc(userDocRef, { pomodoro: newPomodoroState });
     }
   }, [coreUser]);
 
@@ -278,7 +306,7 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
   }, [coreUser]);
 
   return (
-    <UserDataContext.Provider value={{ profile, loading, addHistoryItem, addBookmark, removeBookmark, isBookmarked, updateUserProfile, updatePortfolio, updateSyncData, clearData }}>
+    <UserDataContext.Provider value={{ profile, loading, addHistoryItem, addBookmark, removeBookmark, isBookmarked, updateUserProfile, updatePortfolio, updatePomodoro, clearData }}>
       {children}
     </UserDataContext.Provider>
   );

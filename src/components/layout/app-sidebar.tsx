@@ -18,10 +18,12 @@ import {
   LogOut,
   Mic,
   DollarSign,
+  Timer,
 } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/hooks/use-auth";
 import { usePathname } from "next/navigation";
+import { PomodoroTimer } from "@/components/feature/pomodoro-timer";
 
 export function AppSidebar() {
   const { logout } = useAuth();
@@ -89,6 +91,7 @@ export function AppSidebar() {
       </SidebarMenu>
       
       <SidebarFooter className="border-t mt-auto p-2 space-y-2">
+        <PomodoroTimer />
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton tooltip="Log Out" onClick={logout} variant="ghost" className="text-muted-foreground hover:bg-destructive hover:text-destructive-foreground justify-start group-data-[collapsible=icon]:justify-center">
