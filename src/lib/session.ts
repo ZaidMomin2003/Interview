@@ -2,7 +2,7 @@
 import 'server-only';
 import { cookies } from 'next/headers';
 import { getAuth } from 'firebase-admin/auth';
-import { initializeApp, getApps, App } from 'firebase-admin/app';
+import { initializeApp, getApps, App, cert } from 'firebase-admin/app';
 import { firebaseAdminConfig } from './firebase-server-config';
 import { doc, getDoc, getFirestore } from 'firebase-admin/firestore';
 import type { AppUser } from '@/hooks/use-user-data';
@@ -10,11 +10,11 @@ import type { AppUser } from '@/hooks/use-user-data';
 let adminApp: App;
 if (!getApps().length) {
   adminApp = initializeApp({
-    credential: {
+    credential: cert({
       projectId: firebaseAdminConfig.projectId,
       clientEmail: firebaseAdminConfig.clientEmail,
       privateKey: firebaseAdminConfig.privateKey,
-    },
+    }),
   });
 } else {
   adminApp = getApps()[0];
