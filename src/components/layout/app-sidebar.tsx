@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Cpu, LayoutDashboard, LogOut } from "lucide-react";
+import { Cpu, LayoutDashboard, LogOut, Timer } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import {
   Sidebar,
@@ -19,7 +19,7 @@ import type { AppUser } from "@/hooks/use-user-data";
 export function AppSidebar({ user }: { user: AppUser | null }) {
   const { logout } = useAuth();
   const pathname = usePathname();
-  const isActive = (path: string) => pathname === path;
+  const isActive = (path: string) => pathname.startsWith(path);
 
   return (
     <Sidebar>
@@ -39,6 +39,14 @@ export function AppSidebar({ user }: { user: AppUser | null }) {
               <Link href="/dashboard">
                 <LayoutDashboard />
                 Dashboard
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+           <SidebarMenuItem>
+            <SidebarMenuButton asChild isActive={isActive("/pomodoro")}>
+              <Link href="/pomodoro">
+                <Timer />
+                Pomodoro
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
