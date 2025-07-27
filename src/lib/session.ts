@@ -7,23 +7,31 @@ import { firebaseAdminConfig } from './firebase-server-config';
 import { doc, getDoc, getFirestore } from 'firebase-admin/firestore';
 import type { AppUser } from '@/hooks/use-user-data';
 
-let adminApp: App;
+let adminApp: App | undefined = undefined;
+
 if (!getApps().length) {
-  adminApp = initializeApp({
-    credential: cert({
-      projectId: firebaseAdminConfig.projectId,
-      clientEmail: firebaseAdminConfig.clientEmail,
-      privateKey: firebaseAdminConfig.privateKey,
-    }),
-  });
+  if (firebaseAdminConfig.projectId && firebaseAdminConfig.clientEmail && firebaseAdminConfig.privateKey) {
+    adminApp = initializeApp({
+      credential: cert({
+        projectId: firebaseAdminConfig.projectId,
+        clientEmail: firebaseAdminConfig.clientEmail,
+        privateKey: firebaseAdminConfig.privateKey,
+      }),
+    });
+  }
 } else {
   adminApp = getApps()[0];
 }
 
-const adminAuth = getAuth(adminApp);
-const adminDb = getFirestore(adminApp);
+const adminAuth = adminApp ? getAuth(adminApp) : undefined;
+const adminDb = adminApp ? getFirestore(adminApp) : undefined;
 
 export async function getCurrentUser(): Promise<AppUser | null> {
+  if (!adminAuth || !adminDb) {
+    console.error("Firebase Admin is not initialized. Check your server-side environment variables.");
+    return null;
+  }
+  
   const sessionCookie = cookies().get('session')?.value;
 
   if (!sessionCookie) {
