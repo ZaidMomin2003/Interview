@@ -17,6 +17,7 @@ import {
 } from "firebase/auth";
 import { Skeleton } from '@/components/ui/skeleton';
 import { SidebarProvider } from '@/components/ui/sidebar';
+import { Cpu } from 'lucide-react';
 
 // This will now only hold the core Firebase User object properties
 export interface CoreUser {
