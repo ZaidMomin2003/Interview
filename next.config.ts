@@ -1,3 +1,4 @@
+
 import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
@@ -17,6 +18,16 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       },
     ],
+  },
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      // This is the fix: Ignore 'async_hooks' on the client side
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        async_hooks: false,
+      };
+    }
+    return config;
   },
 };
 
