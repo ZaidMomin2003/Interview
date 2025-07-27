@@ -1,13 +1,40 @@
-
 // src/app/(app)/dashboard/page.tsx
-"use client";
-
-import { useUserData } from "@/hooks/use-user-data";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CodeXml, FileText, Video } from "lucide-react";
+import { getCurrentUser } from "@/lib/auth";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import type { AppUser } from "@/hooks/use-user-data";
 
-export default function DashboardPage() {
-  const { profile } = useUserData();
+async function getUserData(uid: string): Promise<AppUser | null> {
+    const userDocRef = doc(db, "users", uid);
+    const docSnap = await getDoc(userDocRef);
+
+    if (docSnap.exists()) {
+        return docSnap.data() as AppUser;
+    }
+    return null;
+}
+
+
+export default async function DashboardPage() {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    // This should ideally not happen due to the AuthGuard, but it's good practice
+    return (
+        <div>
+            <h1 className="text-3xl md:text-4xl font-bold font-headline">
+                Dashboard
+            </h1>
+            <p className="text-muted-foreground mt-2">
+                Please log in to view your dashboard.
+            </p>
+        </div>
+    );
+  }
+  
+  const profile = await getUserData(user.uid);
 
   const questionsGenerated =
     profile?.history?.filter((h) => h.type === "Coding Challenge").length || 0;
@@ -20,10 +47,10 @@ export default function DashboardPage() {
   return (
     <div className="space-y-4">
       <h1 className="text-3xl md:text-4xl font-bold font-headline">
-        Dashboard
+        Welcome, {profile?.displayName || 'Developer'}!
       </h1>
       <p className="text-muted-foreground mt-2">
-        Welcome to your career co-pilot. Here's a summary of your recent activity.
+        Here's a summary of your recent activity on your career co-pilot.
       </p>
 
        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
