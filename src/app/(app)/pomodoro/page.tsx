@@ -72,7 +72,10 @@ export default function PomodoroPage() {
                 if (remaining <= 0) {
                     clearInterval(intervalId);
                     setTimeLeft('00:00');
-                    handleTimerEnd();
+                    // Ensure handleTimerEnd is only called once
+                    if (pomodoroState.isRunning) {
+                        handleTimerEnd();
+                    }
                     return;
                 }
 
@@ -86,6 +89,7 @@ export default function PomodoroPage() {
         }
 
         return () => clearInterval(intervalId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pomodoroState]);
 
 
@@ -124,12 +128,12 @@ export default function PomodoroPage() {
     const toggleTimer = () => {
         if (!pomodoroState) return;
         
+        const now = Date.now();
         if (pomodoroState.isRunning) {
-            const remainingTime = pomodoroState.endTime ? pomodoroState.endTime - Date.now() : 0;
-            updatePomodoro({ isRunning: false, endTime: null }); // Pause and store remaining time implicitly by clearing endTime
+            updatePomodoro({ isRunning: false, endTime: null }); 
         } else {
             const durationMinutes = getDuration(pomodoroState.mode);
-            const endTime = Date.now() + durationMinutes * 60 * 1000;
+            const endTime = now + durationMinutes * 60 * 1000;
             updatePomodoro({ isRunning: true, endTime });
         }
     };
@@ -140,13 +144,13 @@ export default function PomodoroPage() {
     };
 
     const skipToNext = () => {
-        if (!pomodoroState) return;
+        if (!pomodoroState || !pomodoroState.isRunning) return;
         handleTimerEnd();
     };
 
     const handleSettingsSave = (values: z.infer<typeof settingsSchema>) => {
         if (!pomodoroState) return;
-        updatePomodoro({ settings: { ...pomodoroState.settings, ...values }});
+        updatePomodoro({ settings: { ...pomodoroState.settings, ...values }, isRunning: false, endTime: null });
         setIsSettingsOpen(false);
         toast({ title: "Settings saved!" });
     };
@@ -210,7 +214,7 @@ export default function PomodoroPage() {
                             {pomodoroState.isRunning ? 'Pause' : 'Start'}
                         </Button>
                          <Button onClick={resetTimer} variant="outline" size="icon"><RotateCcw/></Button>
-                         <Button onClick={skipToNext} variant="outline" size="icon"><SkipForward/></Button>
+                         <Button onClick={skipToNext} variant="outline" size="icon" disabled={!pomodoroState.isRunning}><SkipForward/></Button>
                     </div>
 
                     <p className="text-sm text-muted-foreground">
