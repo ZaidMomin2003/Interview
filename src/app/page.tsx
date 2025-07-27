@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import { Button } from '@/components/ui/button';
@@ -18,33 +17,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Area, AreaChart, Bar, BarChart, ResponsiveContainer, XAxis, YAxis, RadialBar, RadialBarChart } from 'recharts';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
-import Autoplay from "embla-carousel-autoplay";
-import { ThemeToggle } from '@/components/layout/theme-toggle';
 import { Switch } from '@/components/ui/switch';
-
-
-const weeklyProgressData = [
-    { name: "Week 1", questions: 10, interviews: 1 },
-    { name: "Week 2", questions: 15, interviews: 1 },
-    { name: "Week 3", questions: 12, interviews: 0 },
-    { name: "Week 4", questions: 20, interviews: 1 },
-];
-
-const chartConfig = {
-    questions: { label: "Questions Solved", color: "hsl(var(--primary))" },
-    interviews: { label: "Interviews", color: "hsl(var(--accent))" },
-};
-
-const readinessData = [{ name: 'readiness', value: 78, fill: 'hsl(var(--primary))' }];
-
-const topicsToImprove = [
-    { name: "Dynamic Programming", area: "Algorithms" },
-    { name: "System Design", area: "Concepts" },
-    { name: "Concurrency", area: "Languages" },
-];
 
 
 function AnimatedCounter({ to, label }: { to: number, label: string }) {
@@ -152,10 +125,6 @@ export default function LandingPage() {
   const { user, loading } = useAuth();
   const [isYearly, setIsYearly] = useState(false);
   
-  const autoplayPlugin = useRef(
-    Autoplay({ delay: 2000, stopOnInteraction: true, stopOnMouseEnter: true })
-  );
-
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
@@ -585,142 +554,14 @@ export default function LandingPage() {
                             ))}
                         </div>
                         {/* Main Content Mock */}
-                        <div className="col-span-12 md:col-span-9">
-                            <h2 className="text-2xl font-bold font-headline text-left mb-1 text-foreground">Welcome back, Developer</h2>
-                            <p className="text-left text-muted-foreground mb-4">Here's your progress overview.</p>
-                             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          
-                              {/* Left Column */}
-                              <div className="lg:col-span-2 space-y-6">
-                                  {/* Stats Cards */}
-                                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                      <Card className="bg-secondary/30 backdrop-blur-sm">
-                                          <CardHeader className="flex flex-row items-center justify-between pb-2">
-                                              <CardTitle className="text-sm font-medium text-foreground">Interviews Completed</CardTitle>
-                                              <VideoIcon className="h-4 w-4 text-muted-foreground" />
-                                          </CardHeader>
-                                          <CardContent>
-                                              <div className="text-2xl font-bold text-foreground">3</div>
-                                              <p className="text-xs text-muted-foreground">+1 since last week</p>
-                                          </CardContent>
-                                      </Card>
-                                      <Card className="bg-secondary/30 backdrop-blur-sm">
-                                          <CardHeader className="flex flex-row items-center justify-between pb-2">
-                                              <CardTitle className="text-sm font-medium text-foreground">Coding Questions Solved</CardTitle>
-                                              <CodeXml className="h-4 w-4 text-muted-foreground" />
-                                          </CardHeader>
-                                          <CardContent>
-                                              <div className="text-2xl font-bold text-foreground">42</div>
-                                              <p className="text-xs text-muted-foreground">+12 since last week</p>
-                                          </CardContent>
-                                      </Card>
-                                      <Card className="bg-secondary/30 backdrop-blur-sm">
-                                          <CardHeader className="flex flex-row items-center justify-between pb-2">
-                                              <CardTitle className="text-sm font-medium text-foreground">MCQs Answered</CardTitle>
-                                              <CheckCircle className="h-4 w-4 text-muted-foreground" />
-                                          </CardHeader>
-                                          <CardContent>
-                                              <div className="text-2xl font-bold text-foreground">128</div>
-                                              <p className="text-xs text-muted-foreground">92% accuracy</p>
-                                          </CardContent>
-                                      </Card>
-                                  </div>
-                                  
-                                  {/* Weekly Progress */}
-                                  <Card className="bg-secondary/30 backdrop-blur-sm">
-                                      <CardHeader>
-                                          <CardTitle className="text-foreground">Weekly Progress</CardTitle>
-                                      </CardHeader>
-                                      <CardContent className="pl-2">
-                                        <ChartContainer config={chartConfig} className="h-[250px] w-full">
-                                            <AreaChart
-                                                accessibilityLayer
-                                                data={weeklyProgressData}
-                                                margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-                                            >
-                                                <defs>
-                                                  <linearGradient id="fillQuestionsLanding" x1="0" y1="0" x2="0" y2="1">
-                                                    <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.8}/>
-                                                    <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0.1}/>
-                                                  </linearGradient>
-                                                </defs>
-                                                <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false}/>
-                                                <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false}/>
-                                                <ChartTooltip
-                                                    cursor={false}
-                                                    content={<ChartTooltipContent indicator="line" />}
-                                                />
-                                                <Area 
-                                                    dataKey="questions" 
-                                                    type="natural" 
-                                                    fill="url(#fillQuestionsLanding)"
-                                                    stroke="hsl(var(--primary))"
-                                                    strokeWidth={2}
-                                                    dot={false}
-                                                />
-                                            </AreaChart>
-                                        </ChartContainer>
-                                      </CardContent>
-                                  </Card>
-                              </div>
-
-                              {/* Right Column */}
-                              <div className="space-y-6">
-                                  <Card className="bg-secondary/30 backdrop-blur-sm">
-                                    <CardHeader>
-                                      <CardTitle className="text-foreground">Interview Readiness</CardTitle>
-                                    </CardHeader>
-                                    <CardContent className="flex items-center justify-center p-0">
-                                      <ResponsiveContainer width="100%" height={160}>
-                                        <RadialBarChart 
-                                            data={readinessData} 
-                                            innerRadius="70%" 
-                                            outerRadius="100%" 
-                                            barSize={20}
-                                            startAngle={90}
-                                            endAngle={-270}
-                                        >
-                                            <RadialBar
-                                                minAngle={15}
-                                                background
-                                                dataKey='value'
-                                                cornerRadius={10}
-                                            />
-                                            <text
-                                                x="50%"
-                                                y="50%"
-                                                textAnchor="middle"
-                                                dominantBaseline="middle"
-                                                className="fill-foreground text-4xl font-bold font-headline"
-                                            >
-                                                {readinessData[0].value}%
-                                            </text>
-                                        </RadialBarChart>
-                                      </ResponsiveContainer>
-                                    </CardContent>
-                                  </Card>
-
-                                  <Card className="bg-secondary/30 backdrop-blur-sm">
-                                      <CardHeader>
-                                          <CardTitle className="text-foreground">Topics to Improve</CardTitle>
-                                      </CardHeader>
-                                      <CardContent>
-                                          <div className="space-y-3">
-                                              {topicsToImprove.slice(0, 2).map(topic => (
-                                                  <div key={topic.name} className="flex items-center justify-between p-3 rounded-lg bg-background/50">
-                                                      <div>
-                                                        <span className="font-medium text-foreground">{topic.name}</span>
-                                                        <p className="text-xs text-muted-foreground">{topic.area}</p>
-                                                      </div>
-                                                      <ArrowRight className="h-4 w-4 text-foreground" />
-                                                  </div>
-                                              ))}
-                                          </div>
-                                      </CardContent>
-                                  </Card>
-                              </div>
-
-                            </div>
+                        <div className="col-span-12 md:col-span-9 flex items-center justify-center">
+                           <div className="text-center">
+                             <h2 className="text-2xl font-bold font-headline text-foreground">A Fresh Start</h2>
+                             <p className="text-muted-foreground mt-2">Your app has been reset. You're ready to build something new!</p>
+                             <Button asChild className="mt-6">
+                                <Link href="/signup">Get Started</Link>
+                             </Button>
+                           </div>
                         </div>
                     </div>
                 </Card>
@@ -1080,7 +921,3 @@ export default function LandingPage() {
     </div>
   );
 }
-
-    
-
-    
