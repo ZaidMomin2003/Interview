@@ -7,7 +7,7 @@ import { firebaseAdminConfig } from './firebase-server-config';
 import { doc, getDoc, getFirestore } from 'firebase-admin/firestore';
 import type { AppUser } from '@/hooks/use-user-data';
 
-let adminApp: App | undefined = undefined;
+let adminApp: App | undefined;
 
 if (!getApps().length) {
   if (firebaseAdminConfig.projectId && firebaseAdminConfig.clientEmail && firebaseAdminConfig.privateKey) {
@@ -18,6 +18,10 @@ if (!getApps().length) {
         privateKey: firebaseAdminConfig.privateKey,
       }),
     });
+  } else {
+    // A fallback for local development or environments where server-side auth is not configured.
+    // This will prevent crashes, but server-side user lookups will fail.
+    adminApp = initializeApp();
   }
 } else {
   adminApp = getApps()[0];
@@ -28,7 +32,7 @@ const adminDb = adminApp ? getFirestore(adminApp) : undefined;
 
 export async function getCurrentUser(): Promise<AppUser | null> {
   if (!adminAuth || !adminDb) {
-    console.error("Firebase Admin is not initialized. Check your server-side environment variables.");
+    // This condition might be met if initialization failed or was skipped.
     return null;
   }
   
@@ -51,7 +55,7 @@ export async function getCurrentUser(): Promise<AppUser | null> {
           email: decodedToken.email || null,
           displayName: decodedToken.name || null,
           photoURL: decodedToken.picture || null,
-        };
+        } as AppUser;
     }
 
     const dbData = userDoc.data()!;
@@ -65,7 +69,11 @@ export async function getCurrentUser(): Promise<AppUser | null> {
     } as AppUser
 
   } catch (error) {
-    console.error('Error verifying session cookie:', error);
+    if ((error as any).code === 'auth/id-token-expired' || (error as any).code === 'auth/session-cookie-expired') {
+        // The cookie is expired. This is not a server error.
+    } else {
+        console.error('Error verifying session cookie:', error);
+    }
     return null;
   }
 }
