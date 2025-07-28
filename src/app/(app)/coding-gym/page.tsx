@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
-import { Loader2, ArrowRight } from 'lucide-react';
+import { Loader2, ArrowRight, BrainCircuit, CodeXml, GitCompareArrows } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const codingSessionSchema = z.object({
@@ -21,6 +21,18 @@ const codingSessionSchema = z.object({
 });
 
 type CodingSessionFormValues = z.infer<typeof codingSessionSchema>;
+
+
+const FeatureListItem = ({ icon, title, description }: { icon: React.ReactNode, title: string, description: string }) => (
+    <div className="flex items-start gap-4">
+        <div className="p-2 bg-primary/20 text-primary rounded-lg mt-1">{icon}</div>
+        <div>
+            <h4 className="font-semibold text-foreground">{title}</h4>
+            <p className="text-sm text-muted-foreground">{description}</p>
+        </div>
+    </div>
+);
+
 
 export default function CodingGymPage() {
   const { toast } = useToast();
@@ -57,15 +69,36 @@ export default function CodingGymPage() {
   };
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Coding Gym</h1>
-        <p className="mt-2 text-muted-foreground">
-          Create a personalized practice session to sharpen your coding skills.
-        </p>
-      </div>
+    <div className="grid lg:grid-cols-2 gap-12 items-center min-h-[calc(100vh-12rem)]">
+        {/* Left Side: Description */}
+        <div className="space-y-8">
+            <div>
+                <h1 className="text-4xl font-bold font-headline tracking-tight text-primary">Coding Gym</h1>
+                <p className="mt-4 text-lg text-muted-foreground">
+                    Flex your problem-solving muscles. Create a personalized practice session, solve real-world coding challenges, and get instant, AI-powered feedback.
+                </p>
+            </div>
+            <div className="space-y-6">
+                <FeatureListItem 
+                    icon={<BrainCircuit className="h-6 w-6"/>} 
+                    title="Personalized Challenges" 
+                    description="Select your desired topic, difficulty, and number of questions to build a session that targets your weak spots."
+                />
+                <FeatureListItem 
+                    icon={<CodeXml className="h-6 w-6"/>} 
+                    title="AI Code Analysis" 
+                    description="Our AI doesn't just check for correctness; it analyzes your code for efficiency, readability, and best practices."
+                />
+                <FeatureListItem 
+                    icon={<GitCompareArrows className="h-6 w-6"/>} 
+                    title="Optimal Solutions" 
+                    description="Compare your solution side-by-side with an optimal one to understand different approaches and learn faster."
+                />
+            </div>
+        </div>
 
-      <Card className="max-w-2xl mx-auto">
+      {/* Right Side: Form */}
+      <Card className="max-w-2xl mx-auto w-full bg-secondary/30">
         <CardHeader>
           <CardTitle>Configure Your Practice Session</CardTitle>
           <CardDescription>
@@ -78,7 +111,7 @@ export default function CodingGymPage() {
               <FormField control={form.control} name="topic" render={({ field }) => (
                   <FormItem>
                       <FormLabel>Topic</FormLabel>
-                      <Select onValuechange={field.onChange} defaultValue={field.value} disabled={isLoading}>
+                      <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isLoading}>
                           <FormControl>
                               <SelectTrigger><SelectValue placeholder="e.g., Arrays, Linked Lists, Trees" /></SelectTrigger>
                           </FormControl>
@@ -98,7 +131,7 @@ export default function CodingGymPage() {
                  <FormField control={form.control} name="difficulty" render={({ field }) => (
                     <FormItem>
                         <FormLabel>Difficulty</FormLabel>
-                        <Select onValuechange={field.onChange} defaultValue={field.value} disabled={isLoading}>
+                        <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isLoading}>
                             <FormControl>
                                 <SelectTrigger><SelectValue /></SelectTrigger>
                             </FormControl>
