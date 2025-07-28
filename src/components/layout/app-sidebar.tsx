@@ -19,7 +19,7 @@ import type { AppUser } from "@/hooks/use-user-data";
 import { Button } from "@/components/ui/button";
 import { useUserData } from "@/hooks/use-user-data";
 import { useState, useEffect } from "react";
-import { differenceInDays, differenceInHours, differenceInMinutes, differenceInSeconds } from 'date-fns';
+import { differenceInDays, differenceInHours, differenceInMinutes, differenceInSeconds, differenceInMilliseconds } from 'date-fns';
 
 const navLinks = [
     { href: "/dashboard", icon: <LayoutDashboard />, label: "Dashboard" },
@@ -48,34 +48,70 @@ function FourSquaresIcon(props: React.SVGProps<SVGSVGElement>) {
     )
 }
 
-function Countdown({ to }: { to: Date }) {
-    const [now, setNow] = useState(new Date());
+function Countdown({ to, from }: { to: Date; from: Date }) {
+  const [now, setNow] = useState(new Date());
 
-    useEffect(() => {
-        const timer = setInterval(() => {
-            setNow(new Date());
-        }, 1000);
-        return () => clearInterval(timer);
-    }, []);
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setNow(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
-    const days = differenceInDays(to, now);
-    const hours = differenceInHours(to, now) % 24;
-    const minutes = differenceInMinutes(to, now) % 60;
-    const seconds = differenceInSeconds(to, now) % 60;
-    
-    if (now > to) {
-        return <span className="text-destructive">Time's up!</span>;
-    }
+  const totalDuration = differenceInMilliseconds(to, from);
+  const remainingDuration = differenceInMilliseconds(to, now);
+  const progress = totalDuration > 0 ? Math.max(0, (remainingDuration / totalDuration) * 100) : 0;
+  
+  const circumference = 2 * Math.PI * 45;
+  const strokeDashoffset = circumference - (progress / 100) * circumference;
 
+  const days = differenceInDays(to, now);
+  const hours = differenceInHours(to, now) % 24;
+  const minutes = differenceInMinutes(to, now) % 60;
+
+  if (now > to) {
     return (
-        <div className="flex justify-around text-center w-full">
-            <div><span className="font-bold text-lg">{days}</span><p className="text-xs text-muted-foreground">days</p></div>
-            <div><span className="font-bold text-lg">{hours}</span><p className="text-xs text-muted-foreground">hrs</p></div>
-            <div><span className="font-bold text-lg">{minutes}</span><p className="text-xs text-muted-foreground">mins</p></div>
-            <div><span className="font-bold text-lg">{seconds}</span><p className="text-xs text-muted-foreground">secs</p></div>
-        </div>
+      <div className="text-center text-destructive-foreground">
+        Time's up! Good luck!
+      </div>
     );
+  }
+
+  return (
+    <div className="relative w-full h-full flex items-center justify-center">
+        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100">
+            <circle
+                className="text-primary/10"
+                strokeWidth="5"
+                stroke="currentColor"
+                fill="transparent"
+                r="45"
+                cx="50"
+                cy="50"
+            />
+            <circle
+                className="text-primary-foreground transition-all duration-1000 ease-linear"
+                strokeWidth="5"
+                strokeDasharray={circumference}
+                strokeDashoffset={strokeDashoffset}
+                strokeLinecap="round"
+                stroke="currentColor"
+                fill="transparent"
+                r="45"
+                cx="50"
+                cy="50"
+                transform="rotate(-90 50 50)"
+            />
+        </svg>
+        <div className="flex justify-around text-center w-full z-10 text-primary-foreground">
+            <div><span className="font-bold text-xl">{days}</span><p className="text-xs opacity-70">days</p></div>
+            <div><span className="font-bold text-xl">{hours}</span><p className="text-xs opacity-70">hrs</p></div>
+            <div><span className="font-bold text-xl">{minutes}</span><p className="text-xs opacity-70">mins</p></div>
+        </div>
+    </div>
+  );
 }
+
 
 export function AppSidebar({ user }: { user: AppUser | null }) {
   const { logout } = useAuth();
@@ -83,9 +119,12 @@ export function AppSidebar({ user }: { user: AppUser | null }) {
   const pathname = usePathname();
   const isActive = (path: string) => pathname === path || (path !== '/dashboard' && pathname.startsWith(path));
 
-  const nextReminder = profile?.reminders?.length ? profile.reminders.reduce((prev, curr) => {
-      return new Date(curr.date) > new Date() && new Date(curr.date) < new Date(prev.date) ? curr : prev;
-  }) : null;
+  // Find the next upcoming reminder
+  const nextReminder = profile?.reminders?.length ? profile.reminders
+    .filter(r => new Date(r.date) > new Date())
+    .sort((a,b) => a.date - b.date)[0] : null;
+
+  const reminderStartDate = nextReminder ? new Date() : new Date(); // In a real app, you might store when reminder was set
 
   return (
     <Sidebar>
@@ -115,9 +154,14 @@ export function AppSidebar({ user }: { user: AppUser | null }) {
 
       <SidebarFooter className="gap-4">
         {nextReminder && (
-            <div className="p-3 rounded-lg bg-secondary space-y-2 group-data-[collapsible=icon]:hidden">
-                <p className="text-sm font-semibold truncate">{nextReminder.title}</p>
-                <Countdown to={new Date(nextReminder.date)} />
+            <div className="p-3 rounded-lg bg-gradient-to-br from-primary to-orange-400 text-primary-foreground shadow-lg shadow-primary/30 space-y-2 group-data-[collapsible=icon]:hidden relative overflow-hidden">
+                <div className="flex items-center justify-between">
+                    <p className="text-sm font-semibold truncate">{nextReminder.title}</p>
+                    <Rocket className="h-4 w-4 opacity-80" />
+                </div>
+                <div className="h-28 w-full">
+                  <Countdown to={new Date(nextReminder.date)} from={reminderStartDate} />
+                </div>
             </div>
         )}
          <Button asChild variant="default" className="w-full">
