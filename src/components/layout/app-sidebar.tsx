@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bot, BarChart3, FileText, History, Cpu, LayoutDashboard, LogOut, Timer, UserCircle } from "lucide-react";
+import { Bot, BarChart3, FileText, History, Cpu, LayoutDashboard, LogOut, Timer, UserCircle, Bookmark, Star } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import {
   Sidebar,
@@ -62,8 +62,10 @@ const navLinks = [
     { href: "/resume-studio", icon: <FileText />, label: "Resume Studio" },
     { href: "/coding-gym", icon: <BarChart3 />, label: "Coding Gym" },
     { href: "/portfolio", icon: <UserCircle />, label: "Portfolio" },
+    { href: "/bookmarks", icon: <Bookmark />, label: "Bookmarks" },
     { href: "/history", icon: <History />, label: "History" },
     { href: "/pomodoro", icon: <Timer />, label: "Pomodoro" },
+    { href: "/pricing", icon: <Star />, label: "Pricing" },
 ];
 
 export function AppSidebar({ user }: { user: AppUser | null }) {

@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useContext, createContext, ReactNode, useCallback } from 'react';
 import { useAuth, type CoreUser } from './use-auth';
-import type { Portfolio } from '@/ai/schemas';
+import type { Portfolio, Bookmark } from '@/ai/schemas';
 import { generateResumeReview } from '@/ai/flows/generate-resume-review-flow';
 import { generateCodingQuestion } from '@/ai/flows/generate-coding-question-flow';
 import { generateInterviewQuestion } from '@/ai/flows/generate-interview-question-flow';
@@ -47,6 +47,7 @@ export interface AppUser {
   portfolio: Portfolio;
   history: HistoryItem[];
   notes: Note[];
+  bookmarks: Bookmark[];
 }
 
 
@@ -99,6 +100,8 @@ type UserDataContextType = {
   updatePomodoroSettings: (settings: PomodoroSettings) => Promise<void>;
   updatePortfolio: (portfolio: Portfolio) => Promise<void>;
   addHistoryItem: (item: Omit<HistoryItem, 'id' | 'timestamp'>) => Promise<void>;
+  addBookmark: (bookmark: Omit<Bookmark, 'id' | 'timestamp'>) => Promise<void>;
+  removeBookmark: (bookmarkId: string) => Promise<void>;
   pomodoroState: PomodoroState;
   setPomodoroState: (state: Partial<PomodoroState>) => void;
   switchPomodoroMode: (mode: PomodoroState['mode']) => void;
@@ -118,6 +121,8 @@ const UserDataContext = createContext<UserDataContextType>({
   updatePomodoroSettings: async () => {},
   updatePortfolio: async () => {},
   addHistoryItem: async () => {},
+  addBookmark: async () => {},
+  removeBookmark: async () => {},
   pomodoroState: { mode: 'pomodoro', timeLeft: 25 * 60, isActive: false },
   setPomodoroState: () => {},
   switchPomodoroMode: () => {},
@@ -168,6 +173,7 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
         portfolio: storedProfile.portfolio || { ...DEFAULT_PORTFOLIO, displayName: coreUser.displayName || '' },
         history: storedProfile.history || [],
         notes: storedProfile.notes || [],
+        bookmarks: storedProfile.bookmarks || [],
     };
     
     setProfile(initialProfile);
@@ -233,6 +239,24 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
     updateProfileAndPersist({ history: updatedHistory });
   }, [profile, updateProfileAndPersist]);
 
+  const addBookmark = useCallback(async (item: Omit<Bookmark, 'id' | 'timestamp'>) => {
+    if (!profile) return;
+    const newBookmark: Bookmark = {
+        ...item,
+        id: crypto.randomUUID(),
+        timestamp: Date.now(),
+    };
+    const updatedBookmarks = [newBookmark, ...profile.bookmarks];
+    updateProfileAndPersist({ bookmarks: updatedBookmarks });
+  }, [profile, updateProfileAndPersist]);
+
+  const removeBookmark = useCallback(async (bookmarkId: string) => {
+    if (!profile) return;
+    const updatedBookmarks = profile.bookmarks.filter(b => b.id !== bookmarkId);
+    updateProfileAndPersist({ bookmarks: updatedBookmarks });
+  }, [profile, updateProfileAndPersist]);
+
+
   // --- Pomodoro Control Functions ---
   const internalSetPomodoroState = useCallback((newState: Partial<PomodoroState>) => {
       setPomodoroState(prevState => ({...prevState, ...newState}));
@@ -267,6 +291,8 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
         updatePomodoroSettings,
         updatePortfolio,
         addHistoryItem,
+        addBookmark,
+        removeBookmark,
         pomodoroState,
         setPomodoroState: internalSetPomodoroState,
         switchPomodoroMode,

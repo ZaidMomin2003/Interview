@@ -103,3 +103,13 @@ export const PortfolioSchema = z.object({
   projects: z.array(ProjectSchema).optional().default([]),
 });
 export type Portfolio = z.infer<typeof PortfolioSchema>;
+
+// Schema for Bookmarks
+export const BookmarkSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  url: z.string(),
+  type: z.enum(['interview', 'coding', 'note', 'other']),
+  timestamp: z.number(),
+});
+export type Bookmark = z.infer<typeof BookmarkSchema>;
