@@ -4,14 +4,13 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useUserData } from '@/hooks/use-user-data';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader2, Wand2, Mic } from 'lucide-react';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Loader2, ArrowRight } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { InterviewQuestionInputSchema } from '@/ai/schemas';
 import type { z } from 'zod';
@@ -19,38 +18,35 @@ import type { z } from 'zod';
 type InterviewPrepFormValues = z.infer<typeof InterviewQuestionInputSchema>;
 
 export default function InterviewPrepPage() {
-  const { generateInterviewQuestion, addHistoryItem } = useUserData();
   const { toast } = useToast();
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [question, setQuestion] = useState<string | null>(null);
 
   const form = useForm<InterviewPrepFormValues>({
     resolver: zodResolver(InterviewQuestionInputSchema),
     defaultValues: {
-      role: '',
-      level: 'Mid-Level',
+      role: 'Senior Frontend Engineer',
+      level: 'Senior',
       type: 'Technical',
     },
   });
 
-  const handleGenerateQuestion = async (values: InterviewPrepFormValues) => {
+  const handleStartInterview = async (values: InterviewPrepFormValues) => {
     setIsLoading(true);
-    setQuestion(null);
     try {
-      const result = await generateInterviewQuestion(values);
-      setQuestion(result.question);
-      await addHistoryItem({
-          type: 'interview',
-          title: `Interview Question for ${values.role}`,
-          content: result
+      // In a real app, you would create a session and get an ID
+      // For this demo, we'll just navigate to a hardcoded session ID
+      toast({
+        title: "Starting Interview...",
+        description: "Good luck! You will be redirected shortly.",
       });
+      router.push('/interview-prep/demo-session');
     } catch (error: any) {
       toast({
         variant: 'destructive',
-        title: 'Error Generating Question',
+        title: 'Error Starting Interview',
         description: error.message || 'An unexpected error occurred.',
       });
-    } finally {
       setIsLoading(false);
     }
   };
@@ -60,31 +56,30 @@ export default function InterviewPrepPage() {
       <div>
         <h1 className="text-3xl font-bold tracking-tight">AI Interview Prep</h1>
         <p className="mt-2 text-muted-foreground">
-          Generate realistic interview questions and practice your responses.
+          Configure your mock interview session to get started.
         </p>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-8 items-start">
-        {/* Left Side: Configuration */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Configure Your Mock Interview</CardTitle>
-            <CardDescription>
-              Tell the AI what kind of interview to conduct.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(handleGenerateQuestion)} className="space-y-4">
-                <FormField control={form.control} name="role" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Target Role</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g., Senior Frontend Engineer" {...field} disabled={isLoading} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
+      <Card className="max-w-2xl mx-auto">
+        <CardHeader>
+          <CardTitle>Configure Your Mock Interview</CardTitle>
+          <CardDescription>
+            Tell the AI what kind of interview to conduct. This will start a new session.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleStartInterview)} className="space-y-6">
+               <FormField control={form.control} name="role" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Target Role</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g., Senior Frontend Engineer" {...field} disabled={isLoading} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <div className="grid md:grid-cols-2 gap-6">
                 <FormField control={form.control} name="level" render={({ field }) => (
                   <FormItem>
                     <FormLabel>Seniority Level</FormLabel>
@@ -113,52 +108,15 @@ export default function InterviewPrepPage() {
                     <FormMessage />
                   </FormItem>
                 )} />
-                <Button type="submit" disabled={isLoading} className="w-full">
-                  {isLoading ? <Loader2 className="animate-spin" /> : <><Wand2 className="mr-2"/> Generate Question</>}
-                </Button>
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
-
-        {/* Right Side: Question and Recorder */}
-        <Card className="bg-secondary/50 sticky top-20">
-          <CardHeader>
-            <CardTitle>AI Interviewer</CardTitle>
-            <CardDescription>Your generated question will appear below.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6 min-h-[300px] flex flex-col justify-between">
-            {isLoading && (
-              <div className="space-y-3">
-                <Skeleton className="h-6 w-3/4" />
-                <Skeleton className="h-4 w-1/2" />
-                <Skeleton className="h-4 w-5/6" />
               </div>
-            )}
-            
-            {question && !isLoading && (
-              <p className="text-lg font-semibold leading-relaxed text-foreground">{question}</p>
-            )}
+              <Button type="submit" disabled={isLoading} className="w-full" size="lg">
+                {isLoading ? <Loader2 className="animate-spin" /> : <>Start Mock Interview <ArrowRight className="ml-2"/></>}
+              </Button>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
 
-            {!question && !isLoading && (
-              <div className="text-center text-muted-foreground py-10">
-                <p>Waiting for question...</p>
-              </div>
-            )}
-
-            <div className="text-center bg-background/50 p-4 rounded-lg border border-border">
-                <Button size="lg" className="rounded-full h-20 w-20" disabled={!question || isLoading}>
-                    <Mic className="h-8 w-8" />
-                    <span className="sr-only">Start Recording</span>
-                </Button>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  {question ? "Click to start recording your answer" : "Generate a question to begin"}
-                </p>
-            </div>
-          </CardContent>
-        </Card>
-
-      </div>
     </div>
   );
 }
