@@ -26,7 +26,6 @@ const navLinks = [
     { href: "/interview-prep", icon: <Bot />, label: "AI Interview" },
     { href: "/coding-gym", icon: <CodeXml />, label: "Coding Gym" },
     { href: "/notes", icon: <Notebook />, label: "AI Notes" },
-    { href: "/resume-studio", icon: <FileText />, label: "Resume Studio" },
     { href: "/portfolio", icon: <UserCircle />, label: "Portfolio" },
     { href: "/reminders", icon: <AlarmClock />, label: "Reminders" },
 ];
