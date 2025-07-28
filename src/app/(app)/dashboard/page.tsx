@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Bot, CodeXml, FileText, ArrowRight } from 'lucide-react';
 import { useUserData } from '@/hooks/use-user-data';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ActivityChart, ReadinessChart } from '../p/[userId]/charts';
+import { ActivityChart, ReadinessChart } from '@/app/p/[userId]/charts';
 import { format, subDays } from 'date-fns';
 import type { HistoryItem } from '@/ai/schemas';
 
