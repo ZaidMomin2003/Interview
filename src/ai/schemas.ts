@@ -77,10 +77,10 @@ export type ResumeReviewOutput = z.infer<typeof ResumeReviewOutputSchema>;
 
 // Zod Schemas for Portfolio
 const SocialsSchema = z.object({
-  github: z.string().url().optional().or(z.literal('')),
-  linkedin: z.string().url().optional().or(z.literal('')),
-  twitter: z.string().url().optional().or(z.literal('')),
-  website: z.string().url().optional().or(z.literal('')),
+  github: z.string().url().optional().or(z.literal('')).default(''),
+  linkedin: z.string().url().optional().or(z.literal('')).default(''),
+  twitter: z.string().url().optional().or(z.literal('')).default(''),
+  website: z.string().url().optional().or(z.literal('')).default(''),
 }).default({});
 
 const SkillSchema = z.object({
