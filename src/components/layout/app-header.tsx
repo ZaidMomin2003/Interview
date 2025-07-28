@@ -18,10 +18,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ThemeToggle } from "./theme-toggle";
 import { useRouter } from "next/navigation";
 import type { AppUser } from "@/hooks/use-user-data";
-import { History, Bookmark } from 'lucide-react';
+import { History, Bookmark, User, LayoutDashboard, CreditCard, LifeBuoy, LogOut } from 'lucide-react';
+import { useUserData } from "@/hooks/use-user-data";
 
 export function AppHeader({ user }: { user: AppUser | null }) {
   const { logout } = useAuth();
+  const { profile, loading } = useUserData();
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -30,7 +32,7 @@ export function AppHeader({ user }: { user: AppUser | null }) {
   };
 
   const renderUserMenu = () => {
-    if (!user) {
+    if (loading || !profile) {
       return <Skeleton className="h-8 w-8 rounded-full" />;
     }
 
@@ -43,11 +45,11 @@ export function AppHeader({ user }: { user: AppUser | null }) {
           >
             <Avatar className="h-8 w-8">
               <AvatarImage
-                src={user.photoURL || ""}
-                alt={user.displayName || "User"}
+                src={profile.photoURL || ""}
+                alt={profile.displayName || "User"}
               />
               <AvatarFallback>
-                {user.displayName?.charAt(0).toUpperCase() || "U"}
+                {profile.displayName?.charAt(0).toUpperCase() || "U"}
               </AvatarFallback>
             </Avatar>
           </Button>
@@ -56,22 +58,22 @@ export function AppHeader({ user }: { user: AppUser | null }) {
           <DropdownMenuLabel className="font-normal">
             <div className="flex flex-col space-y-1">
               <p className="text-sm font-medium leading-none">
-                {user.displayName}
+                {profile.displayName}
               </p>
               <p className="text-xs leading-none text-muted-foreground">
-                {user.email}
+                {profile.email}
               </p>
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-             <DropdownMenuItem onClick={() => router.push('/portfolio')}>Profile</DropdownMenuItem>
-             <DropdownMenuItem onClick={() => router.push('/dashboard')}>Dashboard</DropdownMenuItem>
-             <DropdownMenuItem onClick={() => router.push('/pricing')}>Billing</DropdownMenuItem>
-             <DropdownMenuItem>Support</DropdownMenuItem>
+             <DropdownMenuItem onClick={() => router.push('/portfolio')}><User className="mr-2 h-4 w-4"/>Profile</DropdownMenuItem>
+             <DropdownMenuItem onClick={() => router.push('/dashboard')}><LayoutDashboard className="mr-2 h-4 w-4"/>Dashboard</DropdownMenuItem>
+             <DropdownMenuItem onClick={() => router.push('/pricing')}><CreditCard className="mr-2 h-4 w-4"/>Billing</DropdownMenuItem>
+             <DropdownMenuItem onClick={() => {}}><LifeBuoy className="mr-2 h-4 w-4"/>Support</DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleLogout}>Log out</DropdownMenuItem>
+          <DropdownMenuItem onClick={handleLogout}><LogOut className="mr-2 h-4 w-4"/>Log out</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     );
