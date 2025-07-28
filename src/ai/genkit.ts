@@ -1,6 +1,4 @@
 // src/ai/genkit.ts
-'use server';
-
 import {genkit, Plugin, durable, DevLogger, GenkitError} from 'genkit';
 import {googleAI, GoogleAIPlugin} from '@genkit-ai/googleai';
 
