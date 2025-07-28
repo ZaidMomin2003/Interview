@@ -21,6 +21,17 @@ import { useUserData } from "@/hooks/use-user-data";
 import { useState, useEffect } from "react";
 import { differenceInDays, differenceInHours, differenceInMinutes, differenceInSeconds } from 'date-fns';
 import { useRouter } from "next/navigation";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 const navLinks = [
     { href: "/dashboard", icon: <LayoutDashboard />, label: "Dashboard" },
@@ -151,10 +162,26 @@ export function AppSidebar({ user }: { user: AppUser | null }) {
          </Button>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton onClick={logout}>
-              <LogOut />
-              Log Out
-            </SidebarMenuButton>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <SidebarMenuButton className="!bg-destructive/20 text-destructive-foreground/80 hover:!bg-destructive/30 hover:!text-destructive-foreground focus:!ring-destructive">
+                  <LogOut />
+                  Log Out
+                </SidebarMenuButton>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you sure you want to log out?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    You will be returned to the login page and your current session will be terminated.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={logout} className="bg-destructive hover:bg-destructive/90">Log Out</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
