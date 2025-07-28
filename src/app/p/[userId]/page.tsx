@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Github, Linkedin, Twitter, Globe, MapPin, Bot, CodeXml, FileText, Award, Trophy, ExternalLink } from 'lucide-react';
+import { Github, Linkedin, Twitter, Globe, MapPin, Bot, CodeXml, FileText, Award, Trophy, ExternalLink, Brush } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import type { AppUser, HistoryItem } from '@/hooks/use-user-data';
@@ -29,6 +29,18 @@ function PortfolioSkeleton() {
         <Card><CardContent className="p-6"><Skeleton className="h-32 w-full" /></CardContent></Card>
     </div>
   );
+}
+
+function PlaceholderCard({ icon, title, description }: { icon: React.ReactNode, title: string, description: string }) {
+    return (
+        <Card className="bg-secondary/30 border-dashed">
+            <CardContent className="p-6 text-center text-muted-foreground flex flex-col items-center justify-center">
+                {icon}
+                <h3 className="mt-4 font-semibold text-foreground">{title}</h3>
+                <p className="mt-1 text-sm">{description}</p>
+            </CardContent>
+        </Card>
+    )
 }
 
 const getWeeklyActivity = (history: HistoryItem[]) => {
@@ -139,7 +151,7 @@ export default function PublicPortfolioPage({ params }: { params: { userId: stri
                 {/* Header Section */}
                 <section className="flex flex-col sm:flex-row items-center gap-8">
                     <Avatar className="h-32 w-32 border-4 border-primary">
-                        <AvatarImage src={photoURL || undefined} alt={displayName} />
+                        <AvatarImage src={photoURL || undefined} alt={displayName || ''} />
                         <AvatarFallback>{displayName?.charAt(0).toUpperCase()}</AvatarFallback>
                     </Avatar>
                     <div className="space-y-2 text-center sm:text-left">
@@ -204,21 +216,28 @@ export default function PublicPortfolioPage({ params }: { params: { userId: stri
                 </section>
 
                 {/* Skills Section */}
-                {skills && skills.length > 0 && (
-                    <section>
-                        <h2 className="text-2xl font-bold font-headline mb-4 text-primary">Skills</h2>
+                <section>
+                    <h2 className="text-2xl font-bold font-headline mb-4 text-primary">Skills</h2>
+                    {skills && skills.length > 0 ? (
                         <div className="flex flex-wrap gap-2">
                             {skills.map((skill) => (
                                 <Badge key={skill.name} variant="outline" className="text-base py-1 px-3">{skill.name}</Badge>
                             ))}
                         </div>
-                    </section>
-                )}
+                    ) : (
+                         <PlaceholderCard 
+                            icon={<Brush className="h-10 w-10 text-muted-foreground/50"/>}
+                            title="No Skills Added"
+                            description="Add skills from the portfolio editor to showcase your expertise."
+                        />
+                    )}
+                </section>
+                
 
                 {/* Projects Section */}
-                {projects && projects.length > 0 && (
-                    <section>
-                        <h2 className="text-2xl font-bold font-headline mb-4 text-primary">Projects</h2>
+                <section>
+                    <h2 className="text-2xl font-bold font-headline mb-4 text-primary">Projects</h2>
+                    {projects && projects.length > 0 ? (
                         <div className="space-y-6">
                             {projects.map((project) => (
                                 <Card key={project.title} className="bg-secondary/50">
@@ -240,13 +259,19 @@ export default function PublicPortfolioPage({ params }: { params: { userId: stri
                                 </Card>
                             ))}
                         </div>
-                    </section>
-                )}
+                    ) : (
+                         <PlaceholderCard 
+                            icon={<CodeXml className="h-10 w-10 text-muted-foreground/50"/>}
+                            title="No Projects Added"
+                            description="Showcase your best work by adding projects in the portfolio editor."
+                        />
+                    )}
+                </section>
                 
                 {/* Certifications Section */}
-                {certifications && certifications.length > 0 && (
-                    <section>
-                        <h2 className="text-2xl font-bold font-headline mb-4 text-primary">Certifications</h2>
+                <section>
+                    <h2 className="text-2xl font-bold font-headline mb-4 text-primary">Certifications</h2>
+                    {certifications && certifications.length > 0 ? (
                         <div className="space-y-6">
                             {certifications.map((cert) => (
                                 <Card key={cert.name} className="bg-secondary/50">
@@ -271,13 +296,19 @@ export default function PublicPortfolioPage({ params }: { params: { userId: stri
                                 </Card>
                             ))}
                         </div>
-                    </section>
-                )}
+                    ) : (
+                         <PlaceholderCard 
+                            icon={<Award className="h-10 w-10 text-muted-foreground/50"/>}
+                            title="No Certifications Added"
+                            description="List your professional certifications to build credibility."
+                        />
+                    )}
+                </section>
                 
                 {/* Achievements Section */}
-                {achievements && achievements.length > 0 && (
-                    <section>
-                        <h2 className="text-2xl font-bold font-headline mb-4 text-primary">Achievements</h2>
+                <section>
+                    <h2 className="text-2xl font-bold font-headline mb-4 text-primary">Achievements</h2>
+                    {achievements && achievements.length > 0 ? (
                          <div className="space-y-4">
                             {achievements.map((ach) => (
                                 <div key={ach.description} className="flex items-start gap-4 p-4 rounded-lg bg-secondary/50">
@@ -289,8 +320,14 @@ export default function PublicPortfolioPage({ params }: { params: { userId: stri
                                 </div>
                             ))}
                         </div>
-                    </section>
-                )}
+                    ) : (
+                         <PlaceholderCard 
+                            icon={<Trophy className="h-10 w-10 text-muted-foreground/50"/>}
+                            title="No Achievements Added"
+                            description="Highlight your awards and key accomplishments."
+                        />
+                    )}
+                </section>
 
             </main>
              <footer className="text-center mt-20 text-sm text-muted-foreground">
