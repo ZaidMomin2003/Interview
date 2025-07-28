@@ -4,7 +4,6 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { useUserData } from '@/hooks/use-user-data';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -16,14 +15,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { addHistoryItem } from '@/services/firestore';
 import { useAuth } from '@/hooks/use-auth';
+import { InterviewQuestionInputSchema } from '@/ai/schemas';
+import type { z } from 'zod';
 
-const interviewPrepFormSchema = z.object({
-  role: z.string().min(1, 'Please enter a role.'),
-  level: z.enum(['Entry-Level', 'Mid-Level', 'Senior', 'Staff']),
-  type: z.enum(['Technical', 'Behavioral']),
-});
-
-type InterviewPrepFormValues = z.infer<typeof interviewPrepFormSchema>;
+type InterviewPrepFormValues = z.infer<typeof InterviewQuestionInputSchema>;
 
 export default function InterviewPrepPage() {
   const { user } = useAuth();
@@ -33,7 +28,7 @@ export default function InterviewPrepPage() {
   const [question, setQuestion] = useState<string | null>(null);
 
   const form = useForm<InterviewPrepFormValues>({
-    resolver: zodResolver(interviewPrepFormSchema),
+    resolver: zodResolver(InterviewQuestionInputSchema),
     defaultValues: {
       role: '',
       level: 'Mid-Level',
@@ -159,5 +154,3 @@ export default function InterviewPrepPage() {
     </div>
   );
 }
-
-    

@@ -4,7 +4,6 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { useUserData } from '@/hooks/use-user-data';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -16,23 +15,20 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { addHistoryItem } from '@/services/firestore';
 import { useAuth } from '@/hooks/use-auth';
+import { ResumeReviewInputSchema, type ResumeReviewOutput } from '@/ai/schemas';
+import type { z } from 'zod';
 
-const resumeReviewFormSchema = z.object({
-  resume: z.string().min(50, 'Please paste your full resume.'),
-  jobDescription: z.string().min(50, 'Please paste the full job description.'),
-});
-
-type ResumeReviewFormValues = z.infer<typeof resumeReviewFormSchema>;
+type ResumeReviewFormValues = z.infer<typeof ResumeReviewInputSchema>;
 
 export default function ResumeStudioPage() {
   const { user } = useAuth();
   const { generateResumeReview } = useUserData();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
-  const [review, setReview] = useState<{ review: string; score: number } | null>(null);
+  const [review, setReview] = useState<ResumeReviewOutput | null>(null);
 
   const form = useForm<ResumeReviewFormValues>({
-    resolver: zodResolver(resumeReviewFormSchema),
+    resolver: zodResolver(ResumeReviewInputSchema),
   });
 
   const handleGenerateReview = async (values: ResumeReviewFormValues) => {
@@ -138,5 +134,3 @@ export default function ResumeStudioPage() {
     </div>
   );
 }
-
-    

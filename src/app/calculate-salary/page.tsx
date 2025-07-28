@@ -9,20 +9,15 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Loader2, Wand2, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { estimateSalary, type EstimateSalaryOutput } from '@/ai/flows/estimate-salary-flow';
+import { estimateSalary } from '@/ai/flows/estimate-salary-flow';
+import { type EstimateSalaryOutput, EstimateSalaryInputSchema } from '@/ai/schemas';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 import { ChartContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 
-const salaryFormSchema = z.object({
-  role: z.string().min(2, 'Role is required.'),
-  experience: z.coerce.number().min(0, 'Experience cannot be negative.'),
-  skills: z.string().min(3, 'Please list at least one skill.'),
-  location: z.string().min(2, 'Location is required.'),
-});
+const salaryFormSchema = EstimateSalaryInputSchema;
 
 type SalaryFormValues = z.infer<typeof salaryFormSchema>;
 
@@ -188,5 +183,3 @@ export default function CalculateSalaryPage() {
     </div>
   );
 }
-
-    

@@ -4,20 +4,13 @@
  */
 
 import { ai } from '@/ai/genkit';
-import { z } from 'zod';
+import { 
+    NotesInputSchema, 
+    NotesOutputSchema,
+    type NotesInput,
+    type NotesOutput
+} from '@/ai/schemas';
 
-const NotesInputSchema = z.object({
-    topic: z.string().describe('The main topic of the text.'),
-    rawText: z.string().describe('The block of text to be summarized and structured.'),
-});
-
-export type NotesInput = z.infer<typeof NotesInputSchema>;
-
-const NotesOutputSchema = z.object({
-    notes: z.string().describe('Well-structured, summarized notes in Markdown format.'),
-});
-
-export type NotesOutput = z.infer<typeof NotesOutputSchema>;
 
 const prompt = ai.definePrompt({
     name: 'notesPrompt',
@@ -45,5 +38,3 @@ const generateNotesFlow = ai.defineFlow(
 export async function generateNotes(input: NotesInput): Promise<NotesOutput> {
   return generateNotesFlow(input);
 }
-
-    

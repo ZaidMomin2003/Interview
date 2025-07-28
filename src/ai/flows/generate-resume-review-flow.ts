@@ -4,21 +4,12 @@
  */
 
 import { ai } from '@/ai/genkit';
-import { z } from 'zod';
-
-const ResumeReviewInputSchema = z.object({
-  resume: z.string().describe('The full text of the user\'s resume.'),
-  jobDescription: z.string().describe('The full text of the target job description.'),
-});
-
-export type ResumeReviewInput = z.infer<typeof ResumeReviewInputSchema>;
-
-const ResumeReviewOutputSchema = z.object({
-  review: z.string().describe('Actionable feedback on how to improve the resume for the given job description.'),
-  score: z.number().int().min(0).max(100).describe('A score from 0-100 representing how well the resume matches the job description.'),
-});
-
-export type ResumeReviewOutput = z.infer<typeof ResumeReviewOutputSchema>;
+import { 
+    ResumeReviewInputSchema, 
+    ResumeReviewOutputSchema,
+    type ResumeReviewInput,
+    type ResumeReviewOutput
+} from '@/ai/schemas';
 
 
 const prompt = ai.definePrompt({
@@ -54,5 +45,3 @@ const generateResumeReviewFlow = ai.defineFlow(
 export async function generateResumeReview(input: ResumeReviewInput): Promise<ResumeReviewOutput> {
   return generateResumeReviewFlow(input);
 }
-
-    

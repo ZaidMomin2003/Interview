@@ -4,7 +4,6 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { useUserData } from '@/hooks/use-user-data';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -16,30 +15,21 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { addHistoryItem } from '@/services/firestore';
 import { useAuth } from '@/hooks/use-auth';
+import { CodingQuestionInputSchema, type CodingQuestionOutput } from '@/ai/schemas';
+import type { z } from 'zod';
 
-const codingQuestionFormSchema = z.object({
-  topic: z.string().min(1, 'Please select a topic.'),
-  difficulty: z.enum(['Easy', 'Medium', 'Hard']),
-});
-
-type CodingQuestionFormValues = z.infer<typeof codingQuestionFormSchema>;
-
-interface Question {
-    title: string;
-    question: string;
-    starter_code: string;
-}
+type CodingQuestionFormValues = z.infer<typeof CodingQuestionInputSchema>;
 
 export default function CodingGymPage() {
   const { user } = useAuth();
   const { generateCodingQuestion } = useUserData();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
-  const [question, setQuestion] = useState<Question | null>(null);
+  const [question, setQuestion] = useState<CodingQuestionOutput | null>(null);
   const [solution, setSolution] = useState('');
   
   const form = useForm<CodingQuestionFormValues>({
-    resolver: zodResolver(codingQuestionFormSchema),
+    resolver: zodResolver(CodingQuestionInputSchema),
     defaultValues: {
       difficulty: 'Easy',
     },
@@ -193,5 +183,3 @@ export default function CodingGymPage() {
     </div>
   );
 }
-
-    

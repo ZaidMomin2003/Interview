@@ -4,21 +4,13 @@
  */
 
 import { ai } from '@/ai/genkit';
-import { z } from 'zod';
+import { 
+    InterviewQuestionInputSchema, 
+    InterviewQuestionOutputSchema,
+    type InterviewQuestionInput,
+    type InterviewQuestionOutput
+} from '@/ai/schemas';
 
-const InterviewQuestionInputSchema = z.object({
-  role: z.string().describe('The job role the user is interviewing for (e.g., Senior Frontend Engineer).'),
-  level: z.enum(['Entry-Level', 'Mid-Level', 'Senior', 'Staff']).describe('The seniority level of the role.'),
-  type: z.enum(['Technical', 'Behavioral']).describe('The type of interview question.'),
-});
-
-export type InterviewQuestionInput = z.infer<typeof InterviewQuestionInputSchema>;
-
-const InterviewQuestionOutputSchema = z.object({
-  question: z.string().describe('The generated interview question.'),
-});
-
-export type InterviewQuestionOutput = z.infer<typeof InterviewQuestionOutputSchema>;
 
 const prompt = ai.definePrompt({
     name: 'interviewQuestionPrompt',
@@ -42,5 +34,3 @@ const generateInterviewQuestionFlow = ai.defineFlow(
 export async function generateInterviewQuestion(input: InterviewQuestionInput): Promise<InterviewQuestionOutput> {
   return generateInterviewQuestionFlow(input);
 }
-
-    

@@ -1,3 +1,4 @@
+// src/ai/genkit.ts
 'use server';
 
 import {genkit, Plugin, durable, DevLogger, GenkitError} from 'genkit';
@@ -21,9 +22,6 @@ function configureGoogleAI() {
 }
 
 export const ai = genkit({
-  plugins: [configureGoogleAI(), new DevLogger()],
-  logLevel: 'debug',
+  plugins: [configureGoogleAI()],
   enableTracingAndMetrics: true,
 });
-
-    

@@ -4,7 +4,6 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { useUserData } from '@/hooks/use-user-data';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -16,13 +15,10 @@ import { addHistoryItem } from '@/services/firestore';
 import { useAuth } from '@/hooks/use-auth';
 import { Skeleton } from '@/components/ui/skeleton';
 import { marked } from 'marked';
+import { NotesInputSchema } from '@/ai/schemas';
+import type { z } from 'zod';
 
-const notesFormSchema = z.object({
-  topic: z.string().min(3, 'Please enter a topic with at least 3 characters.'),
-  rawText: z.string().min(50, 'Please provide at least 50 characters of text to summarize.'),
-});
-
-type NotesFormValues = z.infer<typeof notesFormSchema>;
+type NotesFormValues = z.infer<typeof NotesInputSchema>;
 
 export default function NotesPage() {
   const { user } = useAuth();
@@ -32,7 +28,7 @@ export default function NotesPage() {
   const [generatedNotes, setGeneratedNotes] = useState<string | null>(null);
 
   const form = useForm<NotesFormValues>({
-    resolver: zodResolver(notesFormSchema),
+    resolver: zodResolver(NotesInputSchema),
     defaultValues: {
       topic: '',
       rawText: '',
@@ -144,5 +140,3 @@ export default function NotesPage() {
     </div>
   );
 }
-
-    

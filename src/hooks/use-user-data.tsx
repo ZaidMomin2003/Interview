@@ -8,6 +8,7 @@ import { generateResumeReview } from '@/ai/flows/generate-resume-review-flow';
 import { generateCodingQuestion } from '@/ai/flows/generate-coding-question-flow';
 import { generateInterviewQuestion } from '@/ai/flows/generate-interview-question-flow';
 import { generateNotes } from '@/ai/flows/generate-notes-flow';
+import { estimateSalary } from '@/ai/flows/estimate-salary-flow';
 
 export interface PomodoroSettings {
   pomodoro: number;
@@ -45,6 +46,7 @@ type UserDataContextType = {
   generateCodingQuestion: typeof generateCodingQuestion;
   generateInterviewQuestion: typeof generateInterviewQuestion;
   generateNotes: typeof generateNotes;
+  estimateSalary: typeof estimateSalary;
 };
 
 const UserDataContext = createContext<UserDataContextType>({
@@ -60,6 +62,7 @@ const UserDataContext = createContext<UserDataContextType>({
   generateCodingQuestion: async () => ({ question: '', starter_code: '', title: '' }),
   generateInterviewQuestion: async () => ({ question: '' }),
   generateNotes: async () => ({ notes: '' }),
+  estimateSalary: async () => ({ median: 0, percentile25: 0, percentile75: 0, rationale: '' }),
 });
 
 const DEFAULT_SETTINGS: PomodoroSettings = {
@@ -117,6 +120,7 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
         setPomodoroState(prevState => ({ ...prevState, timeLeft: prevState.timeLeft - 1 }));
       }, 1000);
     } else if (pomodoroState.isActive && pomodoroState.timeLeft === 0) {
+      // In a real app, you'd switch modes (e.g., from pomodoro to break)
       setPomodoroState(prevState => ({ ...prevState, isActive: false }));
     }
     return () => {
@@ -177,6 +181,7 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
         generateCodingQuestion,
         generateInterviewQuestion,
         generateNotes,
+        estimateSalary,
     }}>
       {children}
     </UserDataContext.Provider>
@@ -190,5 +195,3 @@ export const useUserData = () => {
   }
   return context;
 };
-
-    
