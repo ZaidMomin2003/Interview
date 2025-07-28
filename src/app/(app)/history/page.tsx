@@ -4,7 +4,7 @@
 import { useUserData } from '@/hooks/use-user-data';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Bot, BarChart3, FileText, StickyNote } from 'lucide-react';
+import { Bot, BarChart3, FileText, StickyNote, HelpCircle } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -14,6 +14,7 @@ const typeMap = {
     resume: { icon: <FileText className="h-5 w-5" />, color: "bg-green-500/20 text-green-300", label: "Resume Review" },
     coding: { icon: <BarChart3 className="h-5 w-5" />, color: "bg-purple-500/20 text-purple-300", label: "Coding Challenge" },
     notes: { icon: <StickyNote className="h-5 w-5" />, color: "bg-yellow-500/20 text-yellow-300", label: "Notes" },
+    other: { icon: <HelpCircle className="h-5 w-5" />, color: "bg-gray-500/20 text-gray-300", label: "Other Activity" },
 };
 
 export default function HistoryPage() {
@@ -66,7 +67,7 @@ export default function HistoryPage() {
                     <CardContent className="p-0">
                         <Accordion type="single" collapsible className="w-full">
                            {history.map((item, index) => {
-                                const details = typeMap[item.type];
+                                const details = typeMap[item.type as keyof typeof typeMap] || typeMap.other;
                                 return (
                                     <AccordionItem value={`item-${index}`} key={item.id}>
                                         <AccordionTrigger className="p-4 hover:no-underline hover:bg-secondary/50">
