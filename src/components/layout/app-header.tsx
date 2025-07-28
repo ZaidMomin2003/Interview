@@ -11,12 +11,14 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuGroup,
 } from "@/components/ui/dropdown-menu";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ThemeToggle } from "./theme-toggle";
 import { useRouter } from "next/navigation";
 import type { AppUser } from "@/hooks/use-user-data";
+import { History, Bookmark } from 'lucide-react';
 
 export function AppHeader({ user }: { user: AppUser | null }) {
   const { logout } = useAuth();
@@ -37,7 +39,7 @@ export function AppHeader({ user }: { user: AppUser | null }) {
         <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
-            className="relative h-8 w-auto justify-start gap-2"
+            className="relative h-8 w-8 rounded-full"
           >
             <Avatar className="h-8 w-8">
               <AvatarImage
@@ -48,12 +50,6 @@ export function AppHeader({ user }: { user: AppUser | null }) {
                 {user.displayName?.charAt(0).toUpperCase() || "U"}
               </AvatarFallback>
             </Avatar>
-            <div className="hidden sm:flex flex-col items-start">
-              <span className="text-sm font-medium">{user.displayName}</span>
-              <span className="text-xs text-muted-foreground -mt-1">
-                {user.email}
-              </span>
-            </div>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56" align="end" forceMount>
@@ -68,6 +64,13 @@ export function AppHeader({ user }: { user: AppUser | null }) {
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
+          <DropdownMenuGroup>
+             <DropdownMenuItem onClick={() => router.push('/portfolio')}>Profile</DropdownMenuItem>
+             <DropdownMenuItem onClick={() => router.push('/dashboard')}>Dashboard</DropdownMenuItem>
+             <DropdownMenuItem onClick={() => router.push('/pricing')}>Billing</DropdownMenuItem>
+             <DropdownMenuItem>Support</DropdownMenuItem>
+          </DropdownMenuGroup>
+          <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleLogout}>Log out</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -80,6 +83,14 @@ export function AppHeader({ user }: { user: AppUser | null }) {
         <SidebarTrigger />
       </div>
       <div className="flex-1" />
+       <Button variant="ghost" size="icon" onClick={() => router.push('/history')}>
+          <History className="h-5 w-5" />
+          <span className="sr-only">History</span>
+       </Button>
+       <Button variant="ghost" size="icon" onClick={() => router.push('/bookmarks')}>
+          <Bookmark className="h-5 w-5" />
+          <span className="sr-only">Bookmarks</span>
+       </Button>
       <ThemeToggle />
       {renderUserMenu()}
     </header>

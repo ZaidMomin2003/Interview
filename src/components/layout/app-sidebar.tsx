@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bot, BarChart3, FileText, History, Cpu, LayoutDashboard, LogOut, Timer, UserCircle, Bookmark, Star } from "lucide-react";
+import { Bot, BarChart3, FileText, History, LayoutDashboard, LogOut, UserCircle, Rocket, Library, Notebook } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import {
   Sidebar,
@@ -15,58 +15,34 @@ import {
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
 import type { AppUser } from "@/hooks/use-user-data";
-import { useUserData } from "@/hooks/use-user-data";
-import { Card, CardContent } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-
-function PomodoroTimer() {
-    const { pomodoroState, profile, loading } = useUserData();
-
-    if (loading || !pomodoroState.isActive) {
-        return null;
-    }
-
-    const { timeLeft, mode } = pomodoroState;
-    const settings = profile?.pomodoroSettings || { pomodoro: 25, shortBreak: 5, longBreak: 15 };
-    const totalDuration = settings[mode] * 60;
-    const progress = (timeLeft / totalDuration) * 100;
-    
-    const formatTime = (seconds: number) => {
-        const mins = Math.floor(seconds / 60);
-        const secs = seconds % 60;
-        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-    };
-
-    const modeDisplay = {
-      pomodoro: "Focusing",
-      shortBreak: "Short Break",
-      longBreak: "Long Break"
-    }
-
-    return (
-        <Card className="bg-secondary/50 border-border/50">
-          <CardContent className="p-3">
-             <div className="flex justify-between items-center mb-2">
-                <p className="text-sm font-semibold">{modeDisplay[mode]}</p>
-                <p className="text-sm font-mono">{formatTime(timeLeft)}</p>
-             </div>
-             <Progress value={progress} className="h-2" />
-          </CardContent>
-        </Card>
-    )
-}
+import { Button } from "@/components/ui/button";
 
 const navLinks = [
     { href: "/dashboard", icon: <LayoutDashboard />, label: "Dashboard" },
     { href: "/interview-prep", icon: <Bot />, label: "AI Interview" },
+    { href: "/coding-gym", icon: <CodeXml />, label: "Code & AI Feedback" },
+    { href: "/notes", icon: <Notebook />, label: "AI Notes" },
     { href: "/resume-studio", icon: <FileText />, label: "Resume Studio" },
-    { href: "/coding-gym", icon: <BarChart3 />, label: "Coding Gym" },
     { href: "/portfolio", icon: <UserCircle />, label: "Portfolio" },
-    { href: "/bookmarks", icon: <Bookmark />, label: "Bookmarks" },
-    { href: "/history", icon: <History />, label: "History" },
-    { href: "/pomodoro", icon: <Timer />, label: "Pomodoro" },
-    { href: "/pricing", icon: <Star />, label: "Pricing" },
 ];
+
+function CodeXml(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+      <path d="m18 16 4-4-4-4"/>
+      <path d="m6 8-4 4 4 4"/>
+      <path d="m14.5 4-5 16"/>
+    </svg>
+  );
+}
+
+function FourSquaresIcon(props: React.SVGProps<SVGSVGElement>) {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" {...props}>
+          <path d="M10.5 4.5h-6v6h6v-6Zm-1.5 4.5h-3v-3h3v3Zm1.5 1.5h-6v6h6v-6Zm-1.5 4.5h-3v-3h3v3Zm7.5-6h-6v6h6v-6Zm-1.5 4.5h-3v-3h3v3Zm1.5 1.5h-6v6h6v-6Zm-1.5 4.5h-3v-3h3v3Z" />
+        </svg>
+    )
+}
 
 export function AppSidebar({ user }: { user: AppUser | null }) {
   const { logout } = useAuth();
@@ -77,7 +53,7 @@ export function AppSidebar({ user }: { user: AppUser | null }) {
     <Sidebar>
       <SidebarHeader>
         <Link href="/" className="flex items-center gap-2">
-          <Cpu className="h-8 w-8 text-primary" />
+          <FourSquaresIcon className="h-8 w-8 text-primary" />
           <span className="font-headline text-2xl font-bold tracking-widest text-foreground uppercase">
             Talxify
           </span>
@@ -99,8 +75,10 @@ export function AppSidebar({ user }: { user: AppUser | null }) {
         </SidebarMenu>
       </SidebarContent>
 
-      <SidebarFooter>
-        <PomodoroTimer />
+      <SidebarFooter className="gap-4">
+         <Button asChild variant="default" className="w-full">
+            <Link href="/pricing"><Rocket className="mr-2" /> Upgrade Plan</Link>
+         </Button>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton onClick={logout}>

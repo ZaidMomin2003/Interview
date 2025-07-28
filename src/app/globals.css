@@ -6,45 +6,45 @@
   :root {
     --background: 0 0% 0%; /* #000000 */
     --foreground: 60 67% 92%; /* #f5f5dc */
-    --card: 208 33% 12%; /* A slightly lighter dark blue */
+    --card: 0 0% 8%;
     --card-foreground: 60 67% 92%;
-    --popover: 208 33% 10%;
+    --popover: 0 0% 6%;
     --popover-foreground: 60 67% 92%;
     --primary: 21 99% 54%; /* #fe5516 */
-    --primary-foreground: 60 67% 92%; /* Light text on orange */
-    --secondary: 208 33% 15%; /* Dark blue from card */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 12%;
     --secondary-foreground: 60 67% 92%;
-    --muted: 208 33% 15%;
-    --muted-foreground: 39 44% 83%; /* #e8d9bb for muted text */
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 60%;
     --accent: 21 99% 48%; /* A slightly darker orange */
     --accent-foreground: 60 67% 92%;
     --destructive: 0 63% 31%;
     --destructive-foreground: 0 0% 97%;
-    --border: 208 33% 18%; /* Border slightly lighter than secondary */
-    --input: 208 33% 18%;
+    --border: 0 0% 15%;
+    --input: 0 0% 15%;
     --ring: 21 99% 54%;
-    --radius: 0.75rem;
+    --radius: 0.5rem;
   }
   
   .dark {
     --background: 0 0% 0%; /* #000000 */
     --foreground: 60 67% 92%; /* #f5f5dc */
-    --card: 208 33% 12%; /* A slightly lighter dark blue */
+    --card: 0 0% 8%;
     --card-foreground: 60 67% 92%;
-    --popover: 208 33% 10%;
+    --popover: 0 0% 6%;
     --popover-foreground: 60 67% 92%;
     --primary: 21 99% 54%; /* #fe5516 */
-    --primary-foreground: 60 67% 92%; /* Light text on orange */
-    --secondary: 208 33% 15%; /* Dark blue from card */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 12%;
     --secondary-foreground: 60 67% 92%;
-    --muted: 208 33% 15%;
-    --muted-foreground: 39 44% 83%; /* #e8d9bb for muted text */
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 60%;
     --accent: 21 99% 48%; /* A slightly darker orange */
     --accent-foreground: 60 67% 92%;
     --destructive: 0 63% 31%;
     --destructive-foreground: 0 0% 97%;
-    --border: 208 33% 18%; /* Border slightly lighter than secondary */
-    --input: 208 33% 18%;
+    --border: 0 0% 15%;
+    --input: 0 0% 15%;
     --ring: 21 99% 54%;
   }
 
@@ -71,11 +71,11 @@
   }
 
   .dark {
-    --sidebar-background: hsl(var(--secondary));
+    --sidebar-background: hsl(0 0% 4%);
     --sidebar-foreground: var(--foreground);
     --sidebar-primary: var(--primary);
     --sidebar-primary-foreground: var(--primary-foreground);
-    --sidebar-accent: hsl(var(--background));
+    --sidebar-accent: hsl(var(--secondary));
     --sidebar-accent-foreground: var(--foreground);
     --sidebar-border: var(--border);
     --sidebar-ring: var(--ring);
