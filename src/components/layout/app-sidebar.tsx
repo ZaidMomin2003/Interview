@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bot, BarChart3, FileText, History, LayoutDashboard, LogOut, UserCircle, Rocket, Library, Notebook, AlarmClock, Trash2 } from "lucide-react";
+import { Bot, BarChart3, FileText, History, LayoutDashboard, LogOut, UserCircle, Rocket, Library, Notebook, AlarmClock, Trash2, CodeXml } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import {
   Sidebar,
@@ -42,15 +42,6 @@ const navLinks = [
     { href: "/portfolio", icon: <UserCircle />, label: "Portfolio" },
 ];
 
-function CodeXml(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
-      <path d="m18 16 4-4-4-4"/>
-      <path d="m6 8-4 4 4 4"/>
-      <path d="m14.5 4-5 16"/>
-    </svg>
-  );
-}
 
 function FourSquaresIcon(props: React.SVGProps<SVGSVGElement>) {
     return (
@@ -164,7 +155,7 @@ export function AppSidebar({ user }: { user: AppUser | null }) {
           <SidebarMenuItem>
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <SidebarMenuButton className="!bg-destructive/20 text-destructive-foreground/80 hover:!bg-destructive/30 hover:!text-destructive-foreground focus:!ring-destructive">
+                <SidebarMenuButton className="!bg-destructive !text-destructive-foreground hover:!bg-destructive/90 focus:!ring-destructive">
                   <LogOut />
                   Log Out
                 </SidebarMenuButton>
