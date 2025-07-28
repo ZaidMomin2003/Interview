@@ -5,6 +5,7 @@ import { getAuth } from 'firebase-admin/auth';
 import { initializeApp, getApps, App, cert } from 'firebase-admin/app';
 import { firebaseAdminConfig } from './firebase-server-config';
 import type { AppUser } from '@/hooks/use-user-data';
+import { getFirestore } from 'firebase-admin/firestore';
 
 let adminApp: App | undefined = getApps().find(a => a.name === 'admin');
 
@@ -24,9 +25,10 @@ if (!adminApp && firebaseAdminConfig.projectId && firebaseAdminConfig.clientEmai
 }
 
 const adminAuth = adminApp ? getAuth(adminApp) : null;
+const adminDb = adminApp ? getFirestore(adminApp) : null;
 
 export async function getCurrentUser(): Promise<AppUser | null> {
-  if (!adminAuth) {
+  if (!adminAuth || !adminDb) {
     console.warn("Firebase Admin is not initialized. Skipping user check.");
     return null;
   }
@@ -40,14 +42,13 @@ export async function getCurrentUser(): Promise<AppUser | null> {
   try {
     const decodedToken = await adminAuth.verifySessionCookie(sessionCookie, true);
     
-    // Since we are not using firestore, we return a basic user object.
-    // The full profile will be loaded from local storage on the client.
-    return {
-        uid: decodedToken.uid,
-        email: decodedToken.email || null,
-        displayName: decodedToken.name || null,
-        photoURL: decodedToken.picture || null,
-    } as AppUser;
+    // Fetch the full user profile from Firestore
+    const userDoc = await adminDb.collection('users').doc(decodedToken.uid).get();
+    if (!userDoc.exists) {
+        return null;
+    }
+
+    return userDoc.data() as AppUser;
 
   } catch (error) {
     if ((error as any).code === 'auth/id-token-expired' || (error as any).code === 'auth/session-cookie-expired') {
@@ -57,4 +58,24 @@ export async function getCurrentUser(): Promise<AppUser | null> {
     }
     return null;
   }
+}
+
+export async function getUserPortfolio(userId: string): Promise<AppUser | null> {
+    if (!adminDb) {
+        console.warn("Firebase Admin (Firestore) is not initialized. Cannot fetch portfolio.");
+        return null;
+    }
+    try {
+        const userDoc = await adminDb.collection('users').doc(userId).get();
+        if (!userDoc.exists) {
+            return null;
+        }
+        const user = userDoc.data() as AppUser;
+        // Only return if the portfolio is public
+        return user.portfolio.isPublic ? user : null;
+
+    } catch (error) {
+        console.error('Error fetching user portfolio:', error);
+        return null;
+    }
 }

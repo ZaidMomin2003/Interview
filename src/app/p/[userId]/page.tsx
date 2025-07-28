@@ -1,35 +1,14 @@
 // src/app/p/[userId]/page.tsx
-"use client";
-
-import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Github, Linkedin, Twitter, Globe, MapPin, Bot, CodeXml, FileText, Award, Trophy, ExternalLink, Brush } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import type { AppUser, HistoryItem } from '@/hooks/use-user-data';
-import { Skeleton } from '@/components/ui/skeleton';
 import { ReadinessChart, ActivityChart } from './charts';
 import { format, subDays } from 'date-fns';
-
-function PortfolioSkeleton() {
-  return (
-    <div className="container mx-auto max-w-4xl p-4 md:p-8 space-y-8">
-        <div className="flex flex-col sm:flex-row items-center gap-8">
-            <Skeleton className="h-32 w-32 rounded-full" />
-            <div className="space-y-3 text-center sm:text-left">
-                <Skeleton className="h-10 w-64" />
-                <Skeleton className="h-6 w-48" />
-                <Skeleton className="h-5 w-32" />
-            </div>
-        </div>
-        <Card><CardContent className="p-6"><Skeleton className="h-24 w-full" /></CardContent></Card>
-        <Card><CardContent className="p-6"><Skeleton className="h-48 w-full" /></CardContent></Card>
-        <Card><CardContent className="p-6"><Skeleton className="h-32 w-full" /></CardContent></Card>
-    </div>
-  );
-}
+import { getUserPortfolio } from '@/lib/session';
+import type { HistoryItem } from '@/ai/schemas';
 
 function PlaceholderCard({ icon, title, description }: { icon: React.ReactNode, title: string, description: string }) {
     return (
@@ -70,49 +49,15 @@ const getWeeklyActivity = (history: HistoryItem[]) => {
     return Array.from(activityMap.entries()).map(([day, counts]) => ({ day, ...counts }));
 };
 
-export default function PublicPortfolioPage({ params }: { params: { userId: string } }) {
-  const [profile, setProfile] = useState<AppUser | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+export default async function PublicPortfolioPage({ params }: { params: { userId: string } }) {
+  const profile = await getUserPortfolio(params.userId);
 
-  useEffect(() => {
-    if (params.userId) {
-      try {
-        const userProfileKey = `talxify_profile_${params.userId}`;
-        const item = window.localStorage.getItem(userProfileKey);
-        if (item) {
-          const parsedProfile = JSON.parse(item) as AppUser;
-          if(parsedProfile.portfolio?.isPublic) {
-            setProfile(parsedProfile);
-          } else {
-            setError("This portfolio is private.");
-          }
-        } else {
-          setError("Portfolio not found.");
-        }
-      } catch (e) {
-        console.error("Failed to load portfolio", e);
-        setError("Could not load portfolio.");
-      } finally {
-        setLoading(false);
-      }
-    }
-  }, [params.userId]);
-  
-  if (loading) {
-     return (
-        <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
-            <PortfolioSkeleton />
-        </div>
-    );
-  }
-
-  if (error || !profile) {
+  if (!profile) {
      return (
       <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center text-center p-4">
         <h1 className="text-4xl font-bold font-headline text-primary">Portfolio Not Found</h1>
         <p className="mt-4 text-lg text-muted-foreground">
-          {error || "This portfolio is either private or does not exist."}
+          This portfolio is either private or does not exist.
         </p>
          <Button asChild className="mt-8">
             <Link href="/">Back to Home</Link>
