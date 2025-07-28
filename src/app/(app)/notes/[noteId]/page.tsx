@@ -81,22 +81,22 @@ export default function NotePage({ params }: { params: { noteId: string } }) {
     return (
         <div className="space-y-8">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <Button asChild variant="ghost" className="mb-2 self-start">
+                <Button asChild variant="ghost" className="mb-2 self-start md:mb-0">
                     <Link href="/notes"><ArrowLeft className="mr-2"/> Back to Notes</Link>
                 </Button>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 self-start md:self-center">
                     <Button variant="outline" onClick={handleBookmark}><Bookmark className="mr-2"/> Bookmark Note</Button>
                 </div>
             </div>
+            
+            <header className="space-y-4">
+                <h1 className="text-4xl font-bold font-headline text-primary">{title}</h1>
+                <p className="text-lg text-muted-foreground">{description}</p>
+            </header>
 
             <div className="grid lg:grid-cols-3 gap-8 items-start">
                 {/* Main Content */}
-                <div className="lg:col-span-2 space-y-6">
-                    <header>
-                        <h1 className="text-4xl font-bold font-headline text-primary">{title}</h1>
-                        <p className="mt-4 text-lg text-muted-foreground">{description}</p>
-                    </header>
-
+                <div className="lg:col-span-2 space-y-6 order-2 lg:order-1">
                     {contentSections.map((section, index) => (
                         <Card key={index} className="bg-secondary/50">
                             <CardHeader>
@@ -114,7 +114,7 @@ export default function NotePage({ params }: { params: { noteId: string } }) {
                 </div>
 
                 {/* Sidebar */}
-                <aside className="lg:col-span-1 space-y-6 lg:sticky lg:top-24">
+                <aside className="lg:col-span-1 space-y-6 lg:sticky lg:top-24 order-1 lg:order-2">
                     <Card>
                         <CardHeader>
                             <CardTitle>Key Takeaways</CardTitle>
