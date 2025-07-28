@@ -19,7 +19,7 @@ import type { AppUser } from "@/hooks/use-user-data";
 import { Button } from "@/components/ui/button";
 import { useUserData } from "@/hooks/use-user-data";
 import { useState, useEffect } from "react";
-import { differenceInDays, differenceInHours, differenceInMinutes, differenceInSeconds, differenceInMilliseconds } from 'date-fns';
+import { differenceInDays, differenceInHours, differenceInMinutes, differenceInSeconds } from 'date-fns';
 
 const navLinks = [
     { href: "/dashboard", icon: <LayoutDashboard />, label: "Dashboard" },
@@ -48,66 +48,40 @@ function FourSquaresIcon(props: React.SVGProps<SVGSVGElement>) {
     )
 }
 
-function Countdown({ to, from }: { to: Date; from: Date }) {
+const TimeUnit = ({ value, label }: { value: number; label: string }) => (
+    <div className="flex flex-col items-center">
+        <span className="text-2xl font-bold font-mono tracking-widest">{String(value).padStart(2, '0')}</span>
+        <span className="text-xs opacity-70 uppercase">{label}</span>
+    </div>
+);
+
+function Countdown({ to }: { to: Date }) {
   const [now, setNow] = useState(new Date());
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setNow(new Date());
-    }, 1000);
+    const timer = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
-
-  const totalDuration = differenceInMilliseconds(to, from);
-  const remainingDuration = differenceInMilliseconds(to, now);
-  const progress = totalDuration > 0 ? Math.max(0, (remainingDuration / totalDuration) * 100) : 0;
-  
-  const circumference = 2 * Math.PI * 45;
-  const strokeDashoffset = circumference - (progress / 100) * circumference;
 
   const days = differenceInDays(to, now);
   const hours = differenceInHours(to, now) % 24;
   const minutes = differenceInMinutes(to, now) % 60;
+  const seconds = differenceInSeconds(to, now) % 60;
 
   if (now > to) {
     return (
-      <div className="text-center text-destructive-foreground">
+      <div className="text-center text-primary-foreground font-semibold">
         Time's up! Good luck!
       </div>
     );
   }
 
   return (
-    <div className="relative w-full h-full flex items-center justify-center">
-        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100">
-            <circle
-                className="text-primary/10"
-                strokeWidth="5"
-                stroke="currentColor"
-                fill="transparent"
-                r="45"
-                cx="50"
-                cy="50"
-            />
-            <circle
-                className="text-primary-foreground transition-all duration-1000 ease-linear"
-                strokeWidth="5"
-                strokeDasharray={circumference}
-                strokeDashoffset={strokeDashoffset}
-                strokeLinecap="round"
-                stroke="currentColor"
-                fill="transparent"
-                r="45"
-                cx="50"
-                cy="50"
-                transform="rotate(-90 50 50)"
-            />
-        </svg>
-        <div className="flex justify-around text-center w-full z-10 text-primary-foreground">
-            <div><span className="font-bold text-xl">{days}</span><p className="text-xs opacity-70">days</p></div>
-            <div><span className="font-bold text-xl">{hours}</span><p className="text-xs opacity-70">hrs</p></div>
-            <div><span className="font-bold text-xl">{minutes}</span><p className="text-xs opacity-70">mins</p></div>
-        </div>
+    <div className="flex justify-around items-center h-full w-full text-primary-foreground">
+        <TimeUnit value={days} label="Days" />
+        <TimeUnit value={hours} label="Hours" />
+        <TimeUnit value={minutes} label="Mins" />
+        <TimeUnit value={seconds} label="Secs" />
     </div>
   );
 }
@@ -123,8 +97,6 @@ export function AppSidebar({ user }: { user: AppUser | null }) {
   const nextReminder = profile?.reminders?.length ? profile.reminders
     .filter(r => new Date(r.date) > new Date())
     .sort((a,b) => a.date - b.date)[0] : null;
-
-  const reminderStartDate = nextReminder ? new Date() : new Date(); // In a real app, you might store when reminder was set
 
   return (
     <Sidebar>
@@ -154,13 +126,13 @@ export function AppSidebar({ user }: { user: AppUser | null }) {
 
       <SidebarFooter className="gap-4">
         {nextReminder && (
-            <div className="p-3 rounded-lg bg-gradient-to-br from-primary to-orange-400 text-primary-foreground shadow-lg shadow-primary/30 space-y-2 group-data-[collapsible=icon]:hidden relative overflow-hidden">
+            <div className="p-3 rounded-lg bg-primary text-primary-foreground space-y-2 group-data-[collapsible=icon]:hidden">
                 <div className="flex items-center justify-between">
                     <p className="text-sm font-semibold truncate">{nextReminder.title}</p>
-                    <Rocket className="h-4 w-4 opacity-80" />
+                    <Rocket className="h-4 w-4 opacity-80 flex-shrink-0" />
                 </div>
-                <div className="h-28 w-full">
-                  <Countdown to={new Date(nextReminder.date)} from={reminderStartDate} />
+                <div className="h-16 w-full">
+                  <Countdown to={new Date(nextReminder.date)} />
                 </div>
             </div>
         )}
