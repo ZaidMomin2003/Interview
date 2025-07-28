@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Cpu, LayoutDashboard, LogOut, Timer } from "lucide-react";
+import { Bot, BarChart3, FileText, History, Cpu, LayoutDashboard, LogOut, Timer, Target } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import {
   Sidebar,
@@ -56,10 +56,19 @@ function PomodoroTimer() {
     )
 }
 
+const navLinks = [
+    { href: "/dashboard", icon: <LayoutDashboard />, label: "Dashboard" },
+    { href: "/interview-prep", icon: <Bot />, label: "AI Interview" },
+    { href: "/resume-studio", icon: <FileText />, label: "Resume Studio" },
+    { href: "/coding-gym", icon: <BarChart3 />, label: "Coding Gym" },
+    { href: "/history", icon: <History />, label: "History" },
+    { href: "/pomodoro", icon: <Timer />, label: "Pomodoro" },
+];
+
 export function AppSidebar({ user }: { user: AppUser | null }) {
   const { logout } = useAuth();
   const pathname = usePathname();
-  const isActive = (path: string) => pathname.startsWith(path);
+  const isActive = (path: string) => pathname === path || (path !== '/dashboard' && pathname.startsWith(path));
 
   return (
     <Sidebar>
@@ -74,22 +83,16 @@ export function AppSidebar({ user }: { user: AppUser | null }) {
 
       <SidebarContent>
         <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild isActive={isActive("/dashboard")}>
-              <Link href="/dashboard">
-                <LayoutDashboard />
-                Dashboard
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-           <SidebarMenuItem>
-            <SidebarMenuButton asChild isActive={isActive("/pomodoro")}>
-              <Link href="/pomodoro">
-                <Timer />
-                Pomodoro
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
+            {navLinks.map(link => (
+                <SidebarMenuItem key={link.href}>
+                    <SidebarMenuButton asChild isActive={isActive(link.href)}>
+                    <Link href={link.href}>
+                        {link.icon}
+                        {link.label}
+                    </Link>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
+            ))}
         </SidebarMenu>
       </SidebarContent>
 
@@ -107,3 +110,5 @@ export function AppSidebar({ user }: { user: AppUser | null }) {
     </Sidebar>
   );
 }
+
+    

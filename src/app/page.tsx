@@ -507,8 +507,8 @@ export default function LandingPage() {
           <div className="container mx-auto px-4 text-center">
              <div className="mb-6">
                 <Badge variant="outline" className="cursor-pointer text-sm font-semibold py-1 px-3 rounded-full border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 transition-all">
-                    <span className="font-bold mr-2">v0.3</span>
-                    <span className="text-primary/90">Now with Light Mode and new features!</span>
+                    <span className="font-bold mr-2">v1.0</span>
+                    <span className="text-primary/90">Full launch! All features are now live.</span>
                     <ArrowRight className="ml-2 h-4 w-4 text-primary/90"/>
                 </Badge>
             </div>
@@ -921,3 +921,5 @@ export default function LandingPage() {
     </div>
   );
 }
+
+    

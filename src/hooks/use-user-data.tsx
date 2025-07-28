@@ -3,7 +3,11 @@
 
 import { useState, useEffect, useContext, createContext, ReactNode, useCallback } from 'react';
 import { useAuth, type CoreUser } from './use-auth';
-import { getUserData, updateUserData } from '@/services/firestore';
+import { getUserData, updateUserData, type HistoryItem, type Note } from '@/services/firestore';
+import { generateResumeReview } from '@/ai/flows/generate-resume-review-flow';
+import { generateCodingQuestion } from '@/ai/flows/generate-coding-question-flow';
+import { generateInterviewQuestion } from '@/ai/flows/generate-interview-question-flow';
+import { generateNotes } from '@/ai/flows/generate-notes-flow';
 
 export interface PomodoroSettings {
   pomodoro: number;
@@ -23,7 +27,8 @@ export interface AppUser {
   displayName: string | null;
   photoURL: string | null;
   pomodoroSettings?: PomodoroSettings;
-  // Add other user-specific fields here
+  history?: HistoryItem[];
+  notes?: Note[];
 }
 
 type UserDataContextType = {
@@ -35,6 +40,11 @@ type UserDataContextType = {
   switchPomodoroMode: (mode: PomodoroState['mode']) => void;
   resetPomodoroTimer: () => void;
   togglePomodoroActive: () => void;
+  // AI Actions
+  generateResumeReview: typeof generateResumeReview;
+  generateCodingQuestion: typeof generateCodingQuestion;
+  generateInterviewQuestion: typeof generateInterviewQuestion;
+  generateNotes: typeof generateNotes;
 };
 
 const UserDataContext = createContext<UserDataContextType>({
@@ -46,6 +56,10 @@ const UserDataContext = createContext<UserDataContextType>({
   switchPomodoroMode: () => {},
   resetPomodoroTimer: () => {},
   togglePomodoroActive: () => {},
+  generateResumeReview: async () => ({ review: '', score: 0 }),
+  generateCodingQuestion: async () => ({ question: '', starter_code: '', title: '' }),
+  generateInterviewQuestion: async () => ({ question: '' }),
+  generateNotes: async () => ({ notes: '' }),
 });
 
 const DEFAULT_SETTINGS: PomodoroSettings = {
@@ -59,14 +73,12 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
   const [profile, setProfile] = useState<AppUser | null>(null);
   const [loading, setLoading] = useState(true);
   
-  // Pomodoro state managed centrally
   const [pomodoroState, setPomodoroState] = useState<PomodoroState>({
     mode: 'pomodoro',
     timeLeft: (profile?.pomodoroSettings?.pomodoro ?? 25) * 60,
     isActive: false,
   });
 
-  // Effect to fetch user data once we have a user
   useEffect(() => {
     if (authLoading) {
       setLoading(true);
@@ -83,7 +95,6 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
         setLoading(true);
         const userData = await getUserData(coreUser);
         setProfile(userData);
-        // Initialize Pomodoro timer with user settings
         const settings = userData.pomodoroSettings || DEFAULT_SETTINGS;
         setPomodoroState(prevState => ({
             ...prevState,
@@ -99,7 +110,6 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
     fetchUserData();
   }, [coreUser, authLoading]);
   
-  // Pomodoro timer effect
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
     if (pomodoroState.isActive && pomodoroState.timeLeft > 0) {
@@ -107,9 +117,7 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
         setPomodoroState(prevState => ({ ...prevState, timeLeft: prevState.timeLeft - 1 }));
       }, 1000);
     } else if (pomodoroState.isActive && pomodoroState.timeLeft === 0) {
-      // Handle timer completion (e.g., switch mode, notify user)
       setPomodoroState(prevState => ({ ...prevState, isActive: false }));
-       // Here you could add a notification or auto-switch to the next mode
     }
     return () => {
       if (interval) clearInterval(interval);
@@ -119,15 +127,12 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
 
   const updatePomodoroSettings = useCallback(async (settings: PomodoroSettings) => {
     if (!coreUser) return;
-    // Optimistic UI update
     setProfile(prev => prev ? { ...prev, pomodoroSettings: settings } : null);
     
-    // Update timer if the current mode's duration changed and it's not active
     if (!pomodoroState.isActive) {
         setPomodoroState(prev => ({...prev, timeLeft: settings[prev.mode] * 60}));
     }
 
-    // Persist to Firestore in the background
     await updateUserData(coreUser.uid, { pomodoroSettings: settings });
   }, [coreUser, pomodoroState.isActive]);
 
@@ -168,6 +173,10 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
         switchPomodoroMode,
         resetPomodoroTimer,
         togglePomodoroActive,
+        generateResumeReview,
+        generateCodingQuestion,
+        generateInterviewQuestion,
+        generateNotes,
     }}>
       {children}
     </UserDataContext.Provider>
@@ -181,3 +190,5 @@ export const useUserData = () => {
   }
   return context;
 };
+
+    
