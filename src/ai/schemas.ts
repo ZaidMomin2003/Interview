@@ -8,7 +8,7 @@ import { z } from 'zod';
 // Schemas for estimate-salary-flow
 export const EstimateSalaryInputSchema = z.object({
   role: z.string().describe('The job title or role.'),
-  experience: z.number().describe('Years of professional experience.'),
+  experience: z.coerce.number().describe('Years of professional experience.'),
   skills: z.string().describe('A comma-separated list of key skills.'),
   location: z.string().describe('The city and state, or country.'),
 });
@@ -127,3 +127,40 @@ export const BookmarkSchema = z.object({
   timestamp: z.number(),
 });
 export type Bookmark = z.infer<typeof BookmarkSchema>;
+
+// Schema for History
+export const HistoryItemSchema = z.object({
+  id: z.string(),
+  type: z.enum(['resume', 'coding', 'interview', 'notes']),
+  title: z.string(),
+  timestamp: z.number(),
+  content: z.any(),
+});
+export type HistoryItem = z.infer<typeof HistoryItemSchema>;
+
+// Schema for Notes
+export const NoteSchema = z.object({
+    id: z.string(),
+    title: z.string(),
+    content: z.string(),
+    timestamp: z.number(),
+});
+export type Note = z.infer<typeof NoteSchema>;
+
+// Schema for the entire AppUser profile
+export const AppUserSchema = z.object({
+  uid: z.string(),
+  email: z.string().email().nullable(),
+  displayName: z.string().nullable(),
+  photoURL: z.string().url().nullable(),
+  pomodoroSettings: z.object({
+    pomodoro: z.number(),
+    shortBreak: z.number(),
+    longBreak: z.number(),
+  }),
+  portfolio: PortfolioSchema,
+  history: z.array(HistoryItemSchema),
+  notes: z.array(NoteSchema),
+  bookmarks: z.array(BookmarkSchema),
+});
+export type AppUser = z.infer<typeof AppUserSchema>;

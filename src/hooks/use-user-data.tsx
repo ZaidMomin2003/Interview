@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useContext, createContext, ReactNode, useCallback } from 'react';
 import { useAuth, type CoreUser } from './use-auth';
-import type { Portfolio, Bookmark } from '@/ai/schemas';
+import type { Portfolio, Bookmark, HistoryItem, Note } from '@/ai/schemas';
 import { generateResumeReview } from '@/ai/flows/generate-resume-review-flow';
 import { generateCodingQuestion } from '@/ai/flows/generate-coding-question-flow';
 import { generateInterviewQuestion } from '@/ai/flows/generate-interview-question-flow';
@@ -23,20 +23,7 @@ export interface PomodoroState {
   isActive: boolean;
 }
 
-export interface HistoryItem {
-  id: string;
-  type: 'resume' | 'coding' | 'interview' | 'notes';
-  title: string;
-  timestamp: number;
-  content: any;
-}
-
-export interface Note {
-    id: string;
-    title: string;
-    content: string;
-    timestamp: number;
-}
+export type { HistoryItem, Note, AppUser } from '@/ai/schemas';
 
 export interface AppUser {
   uid: string;
@@ -83,13 +70,60 @@ const DEFAULT_POMODORO_SETTINGS: PomodoroSettings = {
 };
 
 const DEFAULT_PORTFOLIO: Portfolio = {
-    isPublic: false,
-    displayName: '',
-    bio: '',
-    location: '',
-    skills: [],
-    projects: [],
-    socials: { github: '', linkedin: '', twitter: '', website: '' }
+    isPublic: true,
+    displayName: 'Zaid Momin',
+    bio: 'Senior AI Engineer specializing in Next.js and Large Language Models.',
+    location: 'Bijapur, India',
+    skills: [
+        { name: 'React' },
+        { name: 'Next.js' },
+        { name: 'TypeScript' },
+        { name: 'Node.js' },
+        { name: 'Genkit AI' },
+        { name: 'Firebase' },
+        { name: 'Tailwind CSS' },
+        { name: 'Python' },
+    ],
+    projects: [
+        {
+            title: 'AI-Powered Career Co-Pilot',
+            description: 'A comprehensive platform (this app!) designed to help developers with resume optimization, mock interviews, and coding practice using generative AI.',
+            url: 'https://github.com/ZaidMomin2003/talxify',
+        },
+        {
+            title: 'E-commerce Analytics Dashboard',
+            description: 'A real-time analytics dashboard for an e-commerce platform, built with React, to track sales, user behavior, and inventory.',
+            url: '',
+        }
+    ],
+    certifications: [
+      {
+        name: 'Google Certified Professional Cloud Architect',
+        issuer: 'Google Cloud',
+        url: 'https://www.credential.net/'
+      },
+      {
+        name: 'Certified Kubernetes Application Developer (CKAD)',
+        issuer: 'The Linux Foundation',
+        url: 'https://www.credential.net/'
+      }
+    ],
+    achievements: [
+        {
+            description: 'Won 1st place in the 2024 National Hackathon for "Best Use of AI".',
+            date: 'May 2024'
+        },
+        {
+            description: 'Published a technical article on "Advanced State Management in React" that received 50k+ views.',
+            date: 'February 2024'
+        }
+    ],
+    socials: { 
+        github: 'https://github.com/ZaidMomin2003', 
+        linkedin: 'https://www.linkedin.com/in/arshad-momin-a3139b21b/', 
+        twitter: 'https://x.com/zaidwontdo', 
+        website: 'https://zaidmomin.vercel.app' 
+    }
 };
 
 
@@ -167,15 +201,27 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
     const initialProfile: AppUser = {
         uid: coreUser.uid,
         email: coreUser.email,
-        displayName: coreUser.displayName || storedProfile.portfolio?.displayName || '',
+        displayName: coreUser.displayName || storedProfile.portfolio?.displayName || 'Zaid Momin',
         photoURL: coreUser.photoURL,
         pomodoroSettings: storedProfile.pomodoroSettings || DEFAULT_POMODORO_SETTINGS,
-        portfolio: storedProfile.portfolio || { ...DEFAULT_PORTFOLIO, displayName: coreUser.displayName || '' },
+        portfolio: storedProfile.portfolio || DEFAULT_PORTFOLIO,
         history: storedProfile.history || [],
         notes: storedProfile.notes || [],
         bookmarks: storedProfile.bookmarks || [],
     };
     
+    // If it's a new user, let's give them some default data to play with.
+    if (!storedProfile.history) {
+        initialProfile.history = [
+            { id: '1', type: 'coding', title: 'Coding: Two Sum', timestamp: Date.now() - 86400000 * 2, content: { title: 'Two Sum', question: '...' } },
+            { id: '2', type: 'interview', title: 'Interview Question for Frontend Engineer', timestamp: Date.now() - 86400000, content: { question: '...' } },
+        ];
+    }
+    if (!storedProfile.portfolio) {
+        initialProfile.portfolio.displayName = coreUser.displayName || 'Zaid Momin';
+    }
+
+
     setProfile(initialProfile);
     setInLocalStorage(userProfileKey, initialProfile);
     
@@ -197,6 +243,7 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
         setPomodoroState(prevState => ({ ...prevState, timeLeft: prevState.timeLeft - 1 }));
       }, 1000);
     } else if (pomodoroState.isActive && pomodoroState.timeLeft === 0) {
+      // Logic for when timer finishes (e.g., notification, switch mode) can be added here
       setPomodoroState(prevState => ({ ...prevState, isActive: false }));
     }
     return () => {
