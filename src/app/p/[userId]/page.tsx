@@ -2,14 +2,16 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Github, Linkedin, Twitter, Globe, MapPin } from 'lucide-react';
+import { Github, Linkedin, Twitter, Globe, MapPin, Bot, CodeXml, FileText, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import type { AppUser } from '@/hooks/use-user-data';
+import type { AppUser, HistoryItem } from '@/hooks/use-user-data';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ReadinessChart, ActivityChart } from './charts';
+import { format, subDays } from 'date-fns';
 
 function PortfolioSkeleton() {
   return (
@@ -28,6 +30,33 @@ function PortfolioSkeleton() {
     </div>
   );
 }
+
+const getWeeklyActivity = (history: HistoryItem[]) => {
+    const activityMap = new Map<string, { Questions: number, Interviews: number, Notes: number }>();
+    const today = new Date();
+    
+    for (let i = 6; i >= 0; i--) {
+        const date = subDays(today, i);
+        const day = format(date, 'E');
+        activityMap.set(day, { Questions: 0, Interviews: 0, Notes: 0 });
+    }
+
+    history.forEach(item => {
+        const itemDate = new Date(item.timestamp);
+        const dayDiff = (today.getTime() - itemDate.getTime()) / (1000 * 3600 * 24);
+        if (dayDiff < 7 && dayDiff >= 0) {
+            const day = format(itemDate, 'E');
+            const dayActivity = activityMap.get(day);
+            if (dayActivity) {
+                if (item.type === 'coding') dayActivity.Questions++;
+                if (item.type === 'interview') dayActivity.Interviews++;
+                if (item.type === 'notes') dayActivity.Notes++;
+            }
+        }
+    });
+    
+    return Array.from(activityMap.entries()).map(([day, counts]) => ({ day, ...counts }));
+};
 
 export default function PublicPortfolioPage({ params }: { params: { userId: string } }) {
   const [profile, setProfile] = useState<AppUser | null>(null);
@@ -80,7 +109,7 @@ export default function PublicPortfolioPage({ params }: { params: { userId: stri
     );
   }
 
-  const { portfolio, photoURL, email } = profile;
+  const { portfolio, photoURL, history } = profile;
   const { displayName, bio, location, socials, skills, projects } = portfolio;
   
   const socialLinks = [
@@ -90,6 +119,19 @@ export default function PublicPortfolioPage({ params }: { params: { userId: stri
       { href: socials?.website, icon: <Globe className="h-5 w-5" />, label: 'Website' },
   ].filter(link => link.href);
 
+  const interviewCount = history.filter(item => item.type === 'interview').length;
+  const codingCount = history.filter(item => item.type === 'coding').length;
+  const notesCount = history.filter(item => item.type === 'notes').length;
+
+  const usageData = [
+    { title: "AI Interviews", icon: <Bot className="text-primary" />, current: interviewCount },
+    { title: "Coding Problems", icon: <CodeXml className="text-primary" />, current: codingCount },
+    { title: "Notes Generated", icon: <FileText className="text-primary" />, current: notesCount },
+  ];
+
+  const activityData = getWeeklyActivity(history);
+  const readiness = Math.min(100, Math.floor((codingCount * 1.5) + (interviewCount * 2.5)));
+  
   return (
     <div className="min-h-screen bg-background text-foreground py-12">
         <div className="container mx-auto max-w-4xl p-4 md:p-8">
@@ -119,6 +161,45 @@ export default function PublicPortfolioPage({ params }: { params: { userId: stri
                              </Button>
                           ))}
                         </div>
+                    </div>
+                </section>
+                
+                 {/* Dashboard Stats Section */}
+                <section className="space-y-6">
+                    <h2 className="text-2xl font-bold font-headline text-primary">Activity Overview</h2>
+                     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                        {usageData.map(item => (
+                            <Card key={item.title}>
+                                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                    <CardTitle className="text-sm font-medium text-muted-foreground">{item.title}</CardTitle>
+                                    {item.icon}
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="text-4xl font-bold">{item.current}</div>
+                                    <p className="text-xs text-muted-foreground">Total items completed</p>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
+                     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-5">
+                        <Card className="lg:col-span-3">
+                            <CardHeader>
+                                <CardTitle>Weekly Activity</CardTitle>
+                                <CardDescription>Activity over the last 7 days.</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                               <ActivityChart data={activityData} />
+                            </CardContent>
+                        </Card>
+                        <Card className="lg:col-span-2">
+                            <CardHeader className="text-center">
+                                <CardTitle>Interview Readiness</CardTitle>
+                                <CardDescription>Based on recent activity.</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <ReadinessChart percentage={readiness} />
+                            </CardContent>
+                        </Card>
                     </div>
                 </section>
 
