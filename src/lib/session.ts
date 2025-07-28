@@ -6,24 +6,31 @@ import { initializeApp, getApps, App, cert } from 'firebase-admin/app';
 import { firebaseAdminConfig } from './firebase-server-config';
 import type { AppUser } from '@/hooks/use-user-data';
 
-let adminApp: App;
+let adminApp: App | undefined = getApps().find(a => a.name === 'admin');
 
 // This logic is needed to prevent re-initializing the app on every hot-reload
-if (!getApps().length) {
-    adminApp = initializeApp({
-      credential: cert({
-        projectId: firebaseAdminConfig.projectId,
-        clientEmail: firebaseAdminConfig.clientEmail,
-        privateKey: firebaseAdminConfig.privateKey,
-      }),
-    });
-} else {
-  adminApp = getApps()[0];
+if (!adminApp && firebaseAdminConfig.projectId && firebaseAdminConfig.clientEmail && firebaseAdminConfig.privateKey) {
+    try {
+        adminApp = initializeApp({
+          credential: cert({
+            projectId: firebaseAdminConfig.projectId,
+            clientEmail: firebaseAdminConfig.clientEmail,
+            privateKey: firebaseAdminConfig.privateKey,
+          }),
+        }, 'admin');
+    } catch(e) {
+        console.error("Failed to initialize firebase-admin", e);
+    }
 }
 
-const adminAuth = getAuth(adminApp);
+const adminAuth = adminApp ? getAuth(adminApp) : null;
 
 export async function getCurrentUser(): Promise<AppUser | null> {
+  if (!adminAuth) {
+    console.warn("Firebase Admin is not initialized. Skipping user check.");
+    return null;
+  }
+  
   const sessionCookie = cookies().get('session')?.value;
 
   if (!sessionCookie) {

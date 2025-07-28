@@ -1,27 +1,34 @@
 // src/app/api/auth/route.ts
 import { cookies } from 'next/headers';
 import { getAuth } from 'firebase-admin/auth';
-import { initializeApp, getApps, App } from 'firebase-admin/app';
+import { initializeApp, getApps, App, cert } from 'firebase-admin/app';
 import { firebaseAdminConfig } from '@/lib/firebase-server-config';
 import { NextRequest, NextResponse } from 'next/server';
 
-let adminApp: App;
-if (!getApps().length) {
-  adminApp = initializeApp({
-    credential: {
-      projectId: firebaseAdminConfig.projectId,
-      clientEmail: firebaseAdminConfig.clientEmail,
-      privateKey: firebaseAdminConfig.privateKey,
-    },
-  });
-} else {
-  adminApp = getApps()[0];
+let adminApp: App | undefined = getApps().find(a => a.name === 'admin-api');
+
+if (!adminApp && firebaseAdminConfig.projectId && firebaseAdminConfig.clientEmail && firebaseAdminConfig.privateKey) {
+  try {
+    adminApp = initializeApp({
+      credential: cert({
+        projectId: firebaseAdminConfig.projectId,
+        clientEmail: firebaseAdminConfig.clientEmail,
+        privateKey: firebaseAdminConfig.privateKey,
+      }),
+    }, 'admin-api');
+  } catch(e) {
+    console.error("Failed to initialize firebase-admin for API", e);
+  }
 }
 
-const adminAuth = getAuth(adminApp);
+const adminAuth = adminApp ? getAuth(adminApp) : null;
 
 // This function handles creating a session cookie when a user logs in.
 export async function POST(request: NextRequest) {
+  if (!adminAuth) {
+    return NextResponse.json({ error: 'Firebase Admin not configured on the server.' }, { status: 500 });
+  }
+
   const { idToken } = await request.json();
 
   if (!idToken) {
@@ -55,7 +62,7 @@ export async function DELETE() {
   const sessionCookieName = 'session';
   const sessionCookie = cookies().get(sessionCookieName)?.value;
 
-  if (sessionCookie) {
+  if (sessionCookie && adminAuth) {
     try {
         const decodedClaims = await adminAuth.verifySessionCookie(sessionCookie);
         await adminAuth.revokeRefreshTokens(decodedClaims.sub);
