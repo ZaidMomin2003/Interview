@@ -5,7 +5,7 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ArrowRight, Code, Cpu, Bot, Zap, ShieldCheck, User, Mail, Send, Video, FileText, Target, BrainCircuit, LayoutDashboard, CheckCircle, BarChartHorizontalBig, Mic, VideoOff as VideoOffIcon, BotIcon, CodeXml, Video as VideoIcon, History as HistoryIcon, Phone, Github, Linkedin, Instagram, TrendingUp, GalleryVertical, Plus, GraduationCap, Briefcase, Rocket, Star, Quote, Tags, Check, Notebook } from 'lucide-react';
+import { ArrowRight, Code, Cpu, Bot, Zap, ShieldCheck, User, Mail, Send, Video, FileText, Target, BrainCircuit, LayoutDashboard, CheckCircle, BarChartHorizontalBig, Mic, VideoOff as VideoOffIcon, BotIcon, CodeXml, Video as VideoIcon, History as HistoryIcon, Phone, Github, Linkedin, Instagram, TrendingUp, GalleryVertical, Plus, GraduationCap, Briefcase, Rocket, Star, Quote, Tags, Check, Notebook, AlarmClock } from 'lucide-react';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -235,6 +235,29 @@ export default function LandingPage() {
                    </div>
               </CardContent>
           </Card>
+      ),
+    },
+    {
+      icon: <AlarmClock className="h-10 w-10 text-primary" />,
+      title: 'Interview Reminders',
+      description: "Never miss an important interview. Set reminders for your upcoming interviews and our countdown timer will keep you on track. Stay organized and prepared for every opportunity.",
+      prototype: (
+        <Card className="w-full max-w-lg mx-auto bg-background/50 border-border shadow-primary/10 shadow-2xl">
+            <CardHeader>
+                <CardTitle>Set an Interview Reminder</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <div className="space-y-2">
+                    <Label htmlFor="company-name" className="text-primary">Company</Label>
+                    <Input id="company-name" placeholder="e.g., Google SWE Interview" />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="interview-date" className="text-primary">Date</Label>
+                    <Input id="interview-date" type="date" />
+                </div>
+                 <Button className="w-full">Set Reminder</Button>
+            </CardContent>
+        </Card>
       ),
     },
      {
