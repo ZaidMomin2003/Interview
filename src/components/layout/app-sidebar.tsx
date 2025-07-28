@@ -27,6 +27,7 @@ const navLinks = [
     { href: "/interview-prep", icon: <Bot />, label: "AI Interview" },
     { href: "/coding-gym", icon: <CodeXml />, label: "Coding Gym" },
     { href: "/notes", icon: <Notebook />, label: "AI Notes" },
+    { href: "/reminders", icon: <AlarmClock />, label: "Reminders" },
     { href: "/portfolio", icon: <UserCircle />, label: "Portfolio" },
 ];
 
@@ -126,7 +127,7 @@ export function AppSidebar({ user }: { user: AppUser | null }) {
       </SidebarContent>
 
       <SidebarFooter className="gap-4">
-        {nextReminder ? (
+        {nextReminder && (
             <div className="p-3 rounded-lg bg-primary text-primary-foreground space-y-2 group-data-[collapsible=icon]:hidden relative">
                 <Button 
                     variant="ghost" 
@@ -144,14 +145,6 @@ export function AppSidebar({ user }: { user: AppUser | null }) {
                   <Countdown to={new Date(nextReminder.date)} />
                 </div>
             </div>
-        ) : (
-            <Button 
-                variant="outline"
-                className="w-full border-primary/50 text-primary hover:bg-primary/10 hover:text-primary group-data-[collapsible=icon]:hidden"
-                onClick={() => router.push('/reminders')}
-            >
-                <AlarmClock className="mr-2"/> Set Interview Reminder
-            </Button>
         )}
          <Button asChild variant="default" className="w-full">
             <Link href="/pricing"><Rocket className="mr-2" /> Upgrade Plan</Link>
