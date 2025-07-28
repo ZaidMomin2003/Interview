@@ -16,6 +16,7 @@ const prompt = ai.definePrompt({
     name: 'resumeReviewPrompt',
     input: { schema: ResumeReviewInputSchema },
     output: { schema: ResumeReviewOutputSchema },
+    model: 'googleai/gemini-1.5-flash-latest',
     prompt: `You are an expert career coach and recruiter. Analyze the following resume against the provided job description. 
     
     1.  Provide a percentage score (0-100) for how well the resume matches the job description.

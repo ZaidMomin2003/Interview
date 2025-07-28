@@ -16,6 +16,7 @@ const prompt = ai.definePrompt({
     name: 'notesPrompt',
     input: { schema: NotesInputSchema },
     output: { schema: NotesOutputSchema },
+    model: 'googleai/gemini-1.5-flash-latest',
     prompt: `You are an expert note-taker. Read the following text about "{{topic}}" and create a set of clear, concise, and well-structured notes in Markdown format. Use headings, bullet points, and bold text to organize the information effectively.
 
 Raw Text:

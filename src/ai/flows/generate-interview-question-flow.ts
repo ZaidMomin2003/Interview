@@ -16,6 +16,7 @@ const prompt = ai.definePrompt({
     name: 'interviewQuestionPrompt',
     input: { schema: InterviewQuestionInputSchema },
     output: { schema: InterviewQuestionOutputSchema },
+    model: 'googleai/gemini-1.5-flash-latest',
     prompt: `Generate a {{type}} interview question for a {{level}} {{role}}. The question should be realistic and challenging for that level.`,
 });
 
