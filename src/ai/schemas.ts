@@ -123,7 +123,7 @@ export const BookmarkSchema = z.object({
   id: z.string(),
   title: z.string(),
   url: z.string(),
-  type: z.enum(['interview', 'coding', 'note', 'other']),
+  type: z.enum(['interview', 'coding-review', 'resume-review', 'note', 'other']),
   timestamp: z.number(),
 });
 export type Bookmark = z.infer<typeof BookmarkSchema>;

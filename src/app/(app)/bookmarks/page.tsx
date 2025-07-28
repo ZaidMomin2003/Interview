@@ -4,14 +4,15 @@
 import { useUserData } from '@/hooks/use-user-data';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Bot, BarChart3, StickyNote, Bookmark as BookmarkIcon, Trash2, ExternalLink } from 'lucide-react';
+import { Bot, BarChart3, StickyNote, Bookmark as BookmarkIcon, Trash2, ExternalLink, CodeXml, FileText } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
 const typeMap = {
     interview: { icon: <Bot className="h-5 w-5" />, color: "text-blue-300", label: "AI Interview" },
-    coding: { icon: <BarChart3 className="h-5 w-5" />, color: "text-purple-300", label: "Coding Challenge" },
+    'coding-review': { icon: <CodeXml className="h-5 w-5" />, color: "text-green-300", label: "Coding Review" },
+    'resume-review': { icon: <FileText className="h-5 w-5" />, color: "text-orange-300", label: "Resume Review" },
     note: { icon: <StickyNote className="h-5 w-5" />, color: "text-yellow-300", label: "Note" },
     other: { icon: <BookmarkIcon className="h-5 w-5" />, color: "text-gray-300", label: "Other" },
 };
@@ -62,7 +63,7 @@ export default function BookmarksPage() {
             ) : (
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {bookmarks.map((bookmark) => {
-                        const details = typeMap[bookmark.type];
+                        const details = typeMap[bookmark.type as keyof typeof typeMap] || typeMap.other;
                         return (
                             <Card key={bookmark.id} className="flex flex-col">
                                 <CardHeader>
