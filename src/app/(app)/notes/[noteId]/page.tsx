@@ -23,7 +23,7 @@ function CodeBlock({ code }: { code: string }) {
   
   return (
     <div 
-      className="prose prose-sm md:prose-base prose-invert max-w-none bg-black/50 p-4 rounded-lg overflow-x-auto prose-pre:bg-transparent prose-pre:p-0 prose-pre:whitespace-pre-wrap prose-pre:break-words"
+      className="prose prose-sm md:prose-base prose-invert max-w-none bg-black/50 p-4 rounded-lg overflow-x-auto prose-pre:bg-transparent prose-pre:p-0 prose-pre:whitespace-pre"
       dangerouslySetInnerHTML={{ __html: html }}
     />
   );
