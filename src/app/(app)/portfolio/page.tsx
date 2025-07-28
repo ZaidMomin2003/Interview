@@ -40,6 +40,16 @@ export default function PortfolioPage() {
     control: form.control,
     name: "projects",
   });
+  
+  const { fields: certFields, append: appendCert, remove: removeCert } = useFieldArray({
+    control: form.control,
+    name: "certifications",
+  });
+  
+  const { fields: achievementFields, append: appendAchievement, remove: removeAchievement } = useFieldArray({
+    control: form.control,
+    name: "achievements",
+  });
 
   const onSubmit = async (data: PortfolioFormValues) => {
     try {
@@ -200,6 +210,51 @@ export default function PortfolioPage() {
                 </div>
               ))}
                <Button type="button" variant="outline" onClick={() => appendProject({ title: '', description: '', url: '' })}><PlusCircle className="mr-2"/> Add Project</Button>
+            </CardContent>
+          </Card>
+          
+           <Card>
+            <CardHeader>
+              <CardTitle>Certifications</CardTitle>
+              <CardDescription>List any professional certifications you have earned.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+               {certFields.map((field, index) => (
+                <div key={field.id} className="p-4 border rounded-lg space-y-4 relative">
+                    <Button type="button" variant="ghost" size="icon" className="absolute top-2 right-2 text-muted-foreground hover:text-destructive" onClick={() => removeCert(index)}><Trash2 className="h-4 w-4"/></Button>
+                    <FormField control={form.control} name={`certifications.${index}.name`} render={({ field }) => (
+                      <FormItem><FormLabel>Certification Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                    )} />
+                    <FormField control={form.control} name={`certifications.${index}.issuer`} render={({ field }) => (
+                      <FormItem><FormLabel>Issuing Organization</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                    )} />
+                     <FormField control={form.control} name={`certifications.${index}.url`} render={({ field }) => (
+                      <FormItem><FormLabel>Credential URL</FormLabel><FormControl><Input {...field} placeholder="https://credential.net/..." /></FormControl><FormMessage /></FormItem>
+                    )} />
+                </div>
+              ))}
+               <Button type="button" variant="outline" onClick={() => appendCert({ name: '', issuer: '', url: '' })}><PlusCircle className="mr-2"/> Add Certification</Button>
+            </CardContent>
+          </Card>
+          
+           <Card>
+            <CardHeader>
+              <CardTitle>Achievements</CardTitle>
+              <CardDescription>Highlight key accomplishments, awards, or recognitions.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+               {achievementFields.map((field, index) => (
+                <div key={field.id} className="p-4 border rounded-lg space-y-4 relative">
+                    <Button type="button" variant="ghost" size="icon" className="absolute top-2 right-2 text-muted-foreground hover:text-destructive" onClick={() => removeAchievement(index)}><Trash2 className="h-4 w-4"/></Button>
+                    <FormField control={form.control} name={`achievements.${index}.description`} render={({ field }) => (
+                      <FormItem><FormLabel>Achievement</FormLabel><FormControl><Input {...field} placeholder="e.g., Won 1st place in the 2023 National Hackathon" /></FormControl><FormMessage /></FormItem>
+                    )} />
+                    <FormField control={form.control} name={`achievements.${index}.date`} render={({ field }) => (
+                      <FormItem><FormLabel>Date</FormLabel><FormControl><Input {...field} placeholder="e.g., May 2023" /></FormControl><FormMessage /></FormItem>
+                    )} />
+                </div>
+              ))}
+               <Button type="button" variant="outline" onClick={() => appendAchievement({ description: '', date: '' })}><PlusCircle className="mr-2"/> Add Achievement</Button>
             </CardContent>
           </Card>
 

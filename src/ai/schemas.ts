@@ -93,6 +93,18 @@ const ProjectSchema = z.object({
   url: z.string().url().optional().or(z.literal('')),
 });
 
+const CertificationSchema = z.object({
+  name: z.string().min(1),
+  issuer: z.string().min(1),
+  url: z.string().url().optional().or(z.literal('')),
+});
+
+const AchievementSchema = z.object({
+  description: z.string().min(1),
+  date: z.string().optional().default(''),
+});
+
+
 export const PortfolioSchema = z.object({
   isPublic: z.boolean().default(false),
   displayName: z.string().min(1, 'Display name is required.'),
@@ -101,6 +113,8 @@ export const PortfolioSchema = z.object({
   socials: SocialsSchema.optional(),
   skills: z.array(SkillSchema).optional().default([]),
   projects: z.array(ProjectSchema).optional().default([]),
+  certifications: z.array(CertificationSchema).optional().default([]),
+  achievements: z.array(AchievementSchema).optional().default([]),
 });
 export type Portfolio = z.infer<typeof PortfolioSchema>;
 

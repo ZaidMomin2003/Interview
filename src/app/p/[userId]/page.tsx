@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Github, Linkedin, Twitter, Globe, MapPin, Bot, CodeXml, FileText, CheckCircle } from 'lucide-react';
+import { Github, Linkedin, Twitter, Globe, MapPin, Bot, CodeXml, FileText, Award, Trophy, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import type { AppUser, HistoryItem } from '@/hooks/use-user-data';
@@ -110,7 +110,7 @@ export default function PublicPortfolioPage({ params }: { params: { userId: stri
   }
 
   const { portfolio, photoURL, history } = profile;
-  const { displayName, bio, location, socials, skills, projects } = portfolio;
+  const { displayName, bio, location, socials, skills, projects, certifications, achievements } = portfolio;
   
   const socialLinks = [
       { href: socials?.github, icon: <Github className="h-5 w-5" />, label: 'GitHub' },
@@ -228,7 +228,7 @@ export default function PublicPortfolioPage({ params }: { params: { userId: stri
                                             {project.url && (
                                                 <Button asChild variant="link">
                                                     <Link href={project.url} target="_blank" rel="noopener noreferrer">
-                                                        View Project <Globe className="ml-2 h-4 w-4" />
+                                                        View Project <ExternalLink className="ml-2 h-4 w-4" />
                                                     </Link>
                                                 </Button>
                                             )}
@@ -242,6 +242,56 @@ export default function PublicPortfolioPage({ params }: { params: { userId: stri
                         </div>
                     </section>
                 )}
+                
+                {/* Certifications Section */}
+                {certifications && certifications.length > 0 && (
+                    <section>
+                        <h2 className="text-2xl font-bold font-headline mb-4 text-primary">Certifications</h2>
+                        <div className="space-y-6">
+                            {certifications.map((cert) => (
+                                <Card key={cert.name} className="bg-secondary/50">
+                                    <CardHeader>
+                                        <CardTitle className="flex items-center justify-between">
+                                          <div className="flex items-center gap-3">
+                                            <Award className="h-6 w-6 text-primary/80" />
+                                            <div>
+                                                <span>{cert.name}</span>
+                                                <p className="text-sm font-normal text-muted-foreground">Issued by {cert.issuer}</p>
+                                            </div>
+                                          </div>
+                                          {cert.url && (
+                                              <Button asChild variant="link">
+                                                  <Link href={cert.url} target="_blank" rel="noopener noreferrer">
+                                                      View Credential <ExternalLink className="ml-2 h-4 w-4" />
+                                                  </Link>
+                                              </Button>
+                                          )}
+                                        </CardTitle>
+                                    </CardHeader>
+                                </Card>
+                            ))}
+                        </div>
+                    </section>
+                )}
+                
+                {/* Achievements Section */}
+                {achievements && achievements.length > 0 && (
+                    <section>
+                        <h2 className="text-2xl font-bold font-headline mb-4 text-primary">Achievements</h2>
+                         <div className="space-y-4">
+                            {achievements.map((ach) => (
+                                <div key={ach.description} className="flex items-start gap-4 p-4 rounded-lg bg-secondary/50">
+                                    <Trophy className="h-6 w-6 text-amber-400 mt-1" />
+                                    <div>
+                                        <p className="font-semibold text-foreground">{ach.description}</p>
+                                        {ach.date && <p className="text-sm text-muted-foreground">{ach.date}</p>}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+                )}
+
             </main>
              <footer className="text-center mt-20 text-sm text-muted-foreground">
                 <p>Powered by Talxify</p>
