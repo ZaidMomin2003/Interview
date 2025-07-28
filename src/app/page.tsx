@@ -1,10 +1,11 @@
 
+
 "use client";
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ArrowRight, Code, Cpu, Bot, Zap, ShieldCheck, User, Mail, Send, Video, FileText, Target, BrainCircuit, LayoutDashboard, CheckCircle, BarChartHorizontalBig, Mic, VideoOff as VideoOffIcon, BotIcon, CodeXml, Video as VideoIcon, History as HistoryIcon, Phone, Github, Linkedin, Instagram, TrendingUp, GalleryVertical, Plus, GraduationCap, Briefcase, Rocket, Star, Quote, Tags, Check } from 'lucide-react';
+import { ArrowRight, Code, Cpu, Bot, Zap, ShieldCheck, User, Mail, Send, Video, FileText, Target, BrainCircuit, LayoutDashboard, CheckCircle, BarChartHorizontalBig, Mic, VideoOff as VideoOffIcon, BotIcon, CodeXml, Video as VideoIcon, History as HistoryIcon, Phone, Github, Linkedin, Instagram, TrendingUp, GalleryVertical, Plus, GraduationCap, Briefcase, Rocket, Star, Quote, Tags, Check, Notebook } from 'lucide-react';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -18,6 +19,7 @@ import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Switch } from '@/components/ui/switch';
+import RealDashboard from '@/components/layout/real-dashboard';
 
 
 function AnimatedCounter({ to, label }: { to: number, label: string }) {
@@ -540,12 +542,10 @@ export default function LandingPage() {
                         <div className="col-span-3 hidden md:flex flex-col gap-2">
                            {[
                                 { icon: <LayoutDashboard />, label: "Dashboard" },
-                                { icon: <Target />, label: "Arena" },
-                                { icon: <VideoIcon />, label: "AI Interview" },
-                                { icon: <FileText />, label: "Resume Studio" },
+                                { icon: <Bot />, label: "AI Interview" },
                                 { icon: <CodeXml />, label: "Coding Gym" },
-                                { icon: <HistoryIcon />, label: "History"},
-                                { icon: <div className="h-5 w-5" />, label: "" }, // Placeholder for spacing
+                                { icon: <Notebook />, label: "AI Notes" },
+                                { icon: <User />, label: "Portfolio"},
                             ].map((item, index) => (
                                 <div key={index} className={cn("flex items-center gap-3 p-2 rounded-lg text-sm", index === 0 ? "bg-primary/20 text-primary font-semibold" : "text-muted-foreground")}>
                                     {item.icon}
@@ -554,14 +554,8 @@ export default function LandingPage() {
                             ))}
                         </div>
                         {/* Main Content Mock */}
-                        <div className="col-span-12 md:col-span-9 flex items-center justify-center">
-                           <div className="text-center">
-                             <h2 className="text-2xl font-bold font-headline text-foreground">A Fresh Start</h2>
-                             <p className="text-muted-foreground mt-2">Your app has been reset. You're ready to build something new!</p>
-                             <Button asChild className="mt-6">
-                                <Link href="/signup">Get Started</Link>
-                             </Button>
-                           </div>
+                        <div className="col-span-12 md:col-span-9">
+                           <RealDashboard />
                         </div>
                     </div>
                 </Card>
@@ -922,4 +916,5 @@ export default function LandingPage() {
   );
 }
 
+    
     
