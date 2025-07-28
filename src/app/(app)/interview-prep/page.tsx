@@ -10,12 +10,23 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader2, ArrowRight } from 'lucide-react';
+import { Loader2, ArrowRight, BrainCircuit, BarChart, MessageSquareQuote, CheckCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { InterviewQuestionInputSchema } from '@/ai/schemas';
 import type { z } from 'zod';
 
 type InterviewPrepFormValues = z.infer<typeof InterviewQuestionInputSchema>;
+
+const FeatureListItem = ({ icon, title, description }: { icon: React.ReactNode, title: string, description: string }) => (
+    <div className="flex items-start gap-4">
+        <div className="p-2 bg-primary/20 text-primary rounded-lg mt-1">{icon}</div>
+        <div>
+            <h4 className="font-semibold text-foreground">{title}</h4>
+            <p className="text-sm text-muted-foreground">{description}</p>
+        </div>
+    </div>
+);
+
 
 export default function InterviewPrepPage() {
   const { toast } = useToast();
@@ -52,15 +63,36 @@ export default function InterviewPrepPage() {
   };
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">AI Interview Prep</h1>
-        <p className="mt-2 text-muted-foreground">
-          Configure your mock interview session to get started.
-        </p>
+    <div className="grid lg:grid-cols-2 gap-12 items-center min-h-[calc(100vh-12rem)]">
+      {/* Left Side: Description */}
+      <div className="space-y-8">
+        <div>
+            <h1 className="text-4xl font-bold font-headline tracking-tight text-primary">AI Interview Prep</h1>
+            <p className="mt-4 text-lg text-muted-foreground">
+             Step into a realistic mock interview simulation. Our AI will challenge you with relevant questions and provide instant, actionable feedback to help you land your dream job.
+            </p>
+        </div>
+        <div className="space-y-6">
+            <FeatureListItem 
+                icon={<BrainCircuit className="h-6 w-6"/>} 
+                title="Realistic Questions" 
+                description="Face a mix of technical and behavioral questions tailored to your target role and seniority."
+            />
+             <FeatureListItem 
+                icon={<MessageSquareQuote className="h-6 w-6"/>} 
+                title="Instant Feedback" 
+                description="Receive a detailed analysis of your answers, including clarity, pacing, and use of filler words."
+            />
+             <FeatureListItem 
+                icon={<BarChart className="h-6 w-6"/>} 
+                title="Performance Analytics" 
+                description="Track your progress over time with a comprehensive performance dashboard."
+            />
+        </div>
       </div>
-
-      <Card className="max-w-2xl mx-auto">
+      
+      {/* Right Side: Form */}
+      <Card className="max-w-xl mx-auto w-full bg-secondary/30">
         <CardHeader>
           <CardTitle>Configure Your Mock Interview</CardTitle>
           <CardDescription>
@@ -116,7 +148,6 @@ export default function InterviewPrepPage() {
           </Form>
         </CardContent>
       </Card>
-
     </div>
   );
 }
