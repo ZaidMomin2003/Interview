@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { useUserData } from "@/hooks/use-user-data";
 import { useState, useEffect } from "react";
 import { differenceInDays, differenceInHours, differenceInMinutes, differenceInSeconds } from 'date-fns';
+import { useRouter } from "next/navigation";
 
 const navLinks = [
     { href: "/dashboard", icon: <LayoutDashboard />, label: "Dashboard" },
@@ -27,7 +28,6 @@ const navLinks = [
     { href: "/coding-gym", icon: <CodeXml />, label: "Coding Gym" },
     { href: "/notes", icon: <Notebook />, label: "AI Notes" },
     { href: "/portfolio", icon: <UserCircle />, label: "Portfolio" },
-    { href: "/reminders", icon: <AlarmClock />, label: "Reminders" },
 ];
 
 function CodeXml(props: React.SVGProps<SVGSVGElement>) {
@@ -89,7 +89,8 @@ function Countdown({ to }: { to: Date }) {
 
 export function AppSidebar({ user }: { user: AppUser | null }) {
   const { logout } = useAuth();
-  const { profile } = useUserData();
+  const { profile, removeReminder } = useUserData();
+  const router = useRouter();
   const pathname = usePathname();
   const isActive = (path: string) => pathname === path || (path !== '/dashboard' && pathname.startsWith(path));
 
@@ -125,9 +126,17 @@ export function AppSidebar({ user }: { user: AppUser | null }) {
       </SidebarContent>
 
       <SidebarFooter className="gap-4">
-        {nextReminder && (
-            <div className="p-3 rounded-lg bg-primary text-primary-foreground space-y-2 group-data-[collapsible=icon]:hidden">
-                <div className="flex items-center justify-between">
+        {nextReminder ? (
+            <div className="p-3 rounded-lg bg-primary text-primary-foreground space-y-2 group-data-[collapsible=icon]:hidden relative">
+                <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="absolute top-1 right-1 h-6 w-6 text-primary-foreground/70 hover:bg-primary-foreground/20 hover:text-primary-foreground"
+                    onClick={() => removeReminder(nextReminder.id)}
+                >
+                    <Trash2 className="h-4 w-4" />
+                </Button>
+                <div className="flex items-center justify-between pr-6">
                     <p className="text-sm font-semibold truncate">{nextReminder.title}</p>
                     <Rocket className="h-4 w-4 opacity-80 flex-shrink-0" />
                 </div>
@@ -135,6 +144,14 @@ export function AppSidebar({ user }: { user: AppUser | null }) {
                   <Countdown to={new Date(nextReminder.date)} />
                 </div>
             </div>
+        ) : (
+            <Button 
+                variant="outline"
+                className="w-full border-primary/50 text-primary hover:bg-primary/10 hover:text-primary group-data-[collapsible=icon]:hidden"
+                onClick={() => router.push('/reminders')}
+            >
+                <AlarmClock className="mr-2"/> Set Interview Reminder
+            </Button>
         )}
          <Button asChild variant="default" className="w-full">
             <Link href="/pricing"><Rocket className="mr-2" /> Upgrade Plan</Link>
