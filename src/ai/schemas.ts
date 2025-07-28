@@ -74,3 +74,32 @@ export const ResumeReviewOutputSchema = z.object({
   score: z.number().int().min(0).max(100).describe('A score from 0-100 representing how well the resume matches the job description.'),
 });
 export type ResumeReviewOutput = z.infer<typeof ResumeReviewOutputSchema>;
+
+// Zod Schemas for Portfolio
+const SocialsSchema = z.object({
+  github: z.string().url().optional().or(z.literal('')),
+  linkedin: z.string().url().optional().or(z.literal('')),
+  twitter: z.string().url().optional().or(z.literal('')),
+  website: z.string().url().optional().or(z.literal('')),
+}).default({});
+
+const SkillSchema = z.object({
+  name: z.string().min(1),
+});
+
+const ProjectSchema = z.object({
+  title: z.string().min(1),
+  description: z.string().min(1),
+  url: z.string().url().optional().or(z.literal('')),
+});
+
+export const PortfolioSchema = z.object({
+  isPublic: z.boolean().default(false),
+  displayName: z.string().min(1, 'Display name is required.'),
+  bio: z.string().optional().default(''),
+  location: z.string().optional().default(''),
+  socials: SocialsSchema.optional(),
+  skills: z.array(SkillSchema).optional().default([]),
+  projects: z.array(ProjectSchema).optional().default([]),
+});
+export type Portfolio = z.infer<typeof PortfolioSchema>;

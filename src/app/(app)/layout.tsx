@@ -15,10 +15,12 @@ export default async function AppLayout({
   return (
     <AuthGuard>
       <SidebarProvider>
-        <AppSidebar user={user} />
-        <div className="flex flex-col flex-1">
-          <AppHeader user={user} />
-          <main className="flex-1 p-4 sm:p-6 lg:p-8">{children}</main>
+        <div className="flex h-screen w-full">
+          <AppSidebar user={user} />
+          <div className="flex flex-col flex-1 overflow-y-auto">
+            <AppHeader user={user} />
+            <main className="flex-1 p-4 sm:p-6 lg:p-8">{children}</main>
+          </div>
         </div>
       </SidebarProvider>
     </AuthGuard>

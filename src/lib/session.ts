@@ -4,13 +4,14 @@ import { cookies } from 'next/headers';
 import { getAuth } from 'firebase-admin/auth';
 import { initializeApp, getApps, App, cert } from 'firebase-admin/app';
 import { firebaseAdminConfig } from './firebase-server-config';
-import { doc, getDoc, getFirestore } from 'firebase-admin/firestore';
+import { doc, getDoc, getFirestore, getDocs } from 'firebase-admin/firestore';
 import type { AppUser } from '@/hooks/use-user-data';
+import { type Portfolio } from '@/services/firestore';
 
-let adminApp: App | undefined;
+let adminApp: App;
 
+// This logic is needed to prevent re-initializing the app on every hot-reload
 if (!getApps().length) {
-  if (firebaseAdminConfig.projectId && firebaseAdminConfig.clientEmail && firebaseAdminConfig.privateKey) {
     adminApp = initializeApp({
       credential: cert({
         projectId: firebaseAdminConfig.projectId,
@@ -18,24 +19,14 @@ if (!getApps().length) {
         privateKey: firebaseAdminConfig.privateKey,
       }),
     });
-  } else {
-    // A fallback for local development or environments where server-side auth is not configured.
-    // This will prevent crashes, but server-side user lookups will fail.
-    adminApp = initializeApp();
-  }
 } else {
   adminApp = getApps()[0];
 }
 
-const adminAuth = adminApp ? getAuth(adminApp) : undefined;
-const adminDb = adminApp ? getFirestore(adminApp) : undefined;
+const adminAuth = getAuth(adminApp);
+const adminDb = getFirestore(adminApp);
 
 export async function getCurrentUser(): Promise<AppUser | null> {
-  if (!adminAuth || !adminDb) {
-    // This condition might be met if initialization failed or was skipped.
-    return null;
-  }
-  
   const sessionCookie = cookies().get('session')?.value;
 
   if (!sessionCookie) {
@@ -44,28 +35,38 @@ export async function getCurrentUser(): Promise<AppUser | null> {
 
   try {
     const decodedToken = await adminAuth.verifySessionCookie(sessionCookie, true);
-    const userDocRef = adminDb.collection('users').doc(decodedToken.uid);
-    const userDoc = await getDoc(userDocRef);
-
-    if (!userDoc.exists) {
-        // This can happen if the user document hasn't been created yet.
-        // We can return the basic auth info.
-        return {
-          uid: decodedToken.uid,
-          email: decodedToken.email || null,
-          displayName: decodedToken.name || null,
-          photoURL: decodedToken.picture || null,
-        } as AppUser;
-    }
-
-    const dbData = userDoc.data()!;
     
+    const userDocRef = doc(adminDb, 'users', decodedToken.uid);
+    const portfolioDocRef = doc(adminDb, 'portfolios', decodedToken.uid);
+
+    const [userDoc, portfolioDoc] = await Promise.all([
+      getDoc(userDocRef),
+      getDoc(portfolioDocRef)
+    ]);
+    
+    const dbData = userDoc.exists() ? userDoc.data() : {};
+    const portfolioData = portfolioDoc.exists() ? portfolioDoc.data() : {};
+
+    // Fetch subcollections
+    const historyColRef = adminDb.collection('users').doc(decodedToken.uid).collection('history');
+    const historyQuery = historyColRef.orderBy('timestamp', 'desc');
+    const historySnapshot = await getDocs(historyQuery);
+    const history = historySnapshot.docs.map(d => ({id: d.id, ...d.data()}));
+
+    const notesColRef = adminDb.collection('users').doc(decodedToken.uid).collection('notes');
+    const notesQuery = notesColRef.orderBy('timestamp', 'desc');
+    const notesSnapshot = await getDocs(notesQuery);
+    const notes = notesSnapshot.docs.map(d => ({id: d.id, ...d.data()}));
+
     return {
         uid: decodedToken.uid,
         email: decodedToken.email || null,
-        displayName: decodedToken.name || null,
+        displayName: decodedToken.name || (portfolioData as Portfolio)?.displayName || null,
         photoURL: decodedToken.picture || null,
-        ...dbData
+        ...dbData,
+        portfolio: portfolioData as Portfolio,
+        history,
+        notes,
     } as AppUser
 
   } catch (error) {

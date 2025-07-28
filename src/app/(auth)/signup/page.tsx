@@ -60,10 +60,6 @@ export default function SignUpPage() {
     setIsLoading(true);
     try {
       await loginWithGoogle();
-      toast({
-        title: "Account Created",
-        description: "Welcome! Let's get you set up.",
-      });
       router.push('/onboarding');
     } catch (error: any) {
       toast({
@@ -71,8 +67,7 @@ export default function SignUpPage() {
         title: 'Sign Up Failed',
         description: error.message || 'An unexpected error occurred. Please try again.',
       });
-    } finally {
-      setIsLoading(false);
+       setIsLoading(false);
     }
   }
 
@@ -80,10 +75,6 @@ export default function SignUpPage() {
     setIsLoading(true);
     try {
       await loginWithGithub();
-      toast({
-        title: "Account Created",
-        description: "Welcome! Let's get you set up.",
-      });
       router.push('/onboarding');
     } catch (error: any) {
       toast({
@@ -91,8 +82,7 @@ export default function SignUpPage() {
         title: 'Sign Up Failed',
         description: error.message || 'An unexpected error occurred. Please try again.',
       });
-    } finally {
-      setIsLoading(false);
+       setIsLoading(false);
     }
   }
   
@@ -100,10 +90,6 @@ export default function SignUpPage() {
     setIsLoading(true);
     try {
       await loginWithLinkedin();
-      toast({
-        title: "Account Created",
-        description: "Welcome! Let's get you set up.",
-      });
       router.push('/onboarding');
     } catch (error: any) {
       toast({
@@ -111,8 +97,7 @@ export default function SignUpPage() {
         title: 'Sign Up Failed',
         description: error.message || 'An unexpected error occurred. Please try again.',
       });
-    } finally {
-      setIsLoading(false);
+       setIsLoading(false);
     }
   }
   
@@ -120,10 +105,6 @@ export default function SignUpPage() {
     setIsLoading(true);
     try {
       await signupWithEmail(values.email, values.password);
-       toast({
-        title: "Account Created",
-        description: "Welcome! Let's get you set up.",
-      });
       router.push('/onboarding');
     } catch (error: any) {
         toast({
@@ -131,7 +112,6 @@ export default function SignUpPage() {
             title: 'Sign Up Failed',
             description: error.message || 'Could not create account. The email may already be in use.',
         });
-    } finally {
         setIsLoading(false);
     }
   }

@@ -3,7 +3,14 @@
 
 import { useState, useEffect, useContext, createContext, ReactNode, useCallback } from 'react';
 import { useAuth, type CoreUser } from './use-auth';
-import { getUserData, updateUserData, type HistoryItem, type Note } from '@/services/firestore';
+import { 
+    getUserData, 
+    updateUserData,
+    updatePortfolioData, 
+    type HistoryItem, 
+    type Note,
+    type Portfolio
+} from '@/services/firestore';
 import { generateResumeReview } from '@/ai/flows/generate-resume-review-flow';
 import { generateCodingQuestion } from '@/ai/flows/generate-coding-question-flow';
 import { generateInterviewQuestion } from '@/ai/flows/generate-interview-question-flow';
@@ -28,6 +35,7 @@ export interface AppUser {
   displayName: string | null;
   photoURL: string | null;
   pomodoroSettings?: PomodoroSettings;
+  portfolio?: Portfolio;
   history?: HistoryItem[];
   notes?: Note[];
 }
@@ -36,6 +44,7 @@ type UserDataContextType = {
   profile: AppUser | null;
   loading: boolean;
   updatePomodoroSettings: (settings: PomodoroSettings) => Promise<void>;
+  updatePortfolio: (portfolio: Portfolio) => Promise<void>;
   pomodoroState: PomodoroState;
   setPomodoroState: (state: Partial<PomodoroState>) => void;
   switchPomodoroMode: (mode: PomodoroState['mode']) => void;
@@ -53,6 +62,7 @@ const UserDataContext = createContext<UserDataContextType>({
   profile: null,
   loading: true,
   updatePomodoroSettings: async () => {},
+  updatePortfolio: async () => {},
   pomodoroState: { mode: 'pomodoro', timeLeft: 25 * 60, isActive: false },
   setPomodoroState: () => {},
   switchPomodoroMode: () => {},
@@ -139,6 +149,13 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
 
     await updateUserData(coreUser.uid, { pomodoroSettings: settings });
   }, [coreUser, pomodoroState.isActive]);
+  
+  const updatePortfolio = useCallback(async (portfolioData: Portfolio) => {
+    if (!coreUser) return;
+    // Optimistic update
+    setProfile(prev => prev ? { ...prev, portfolio: portfolioData } : null);
+    await updatePortfolioData(coreUser.uid, portfolioData);
+  }, [coreUser]);
 
 
   const internalSetPomodoroState = useCallback((newState: Partial<PomodoroState>) => {
@@ -172,6 +189,7 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
         profile, 
         loading, 
         updatePomodoroSettings,
+        updatePortfolio,
         pomodoroState,
         setPomodoroState: internalSetPomodoroState,
         switchPomodoroMode,
