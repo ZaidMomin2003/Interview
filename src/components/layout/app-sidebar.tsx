@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bot, BarChart3, FileText, History, LayoutDashboard, LogOut, UserCircle, Rocket, Library, Notebook } from "lucide-react";
+import { Bot, BarChart3, FileText, History, LayoutDashboard, LogOut, UserCircle, Rocket, Library, Notebook, AlarmClock, Trash2 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import {
   Sidebar,
@@ -13,9 +13,13 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
+  SidebarSeparator,
 } from "@/components/ui/sidebar";
 import type { AppUser } from "@/hooks/use-user-data";
 import { Button } from "@/components/ui/button";
+import { useUserData } from "@/hooks/use-user-data";
+import { useState, useEffect } from "react";
+import { differenceInDays, differenceInHours, differenceInMinutes, differenceInSeconds } from 'date-fns';
 
 const navLinks = [
     { href: "/dashboard", icon: <LayoutDashboard />, label: "Dashboard" },
@@ -24,6 +28,7 @@ const navLinks = [
     { href: "/notes", icon: <Notebook />, label: "AI Notes" },
     { href: "/resume-studio", icon: <FileText />, label: "Resume Studio" },
     { href: "/portfolio", icon: <UserCircle />, label: "Portfolio" },
+    { href: "/reminders", icon: <AlarmClock />, label: "Reminders" },
 ];
 
 function CodeXml(props: React.SVGProps<SVGSVGElement>) {
@@ -44,10 +49,44 @@ function FourSquaresIcon(props: React.SVGProps<SVGSVGElement>) {
     )
 }
 
+function Countdown({ to }: { to: Date }) {
+    const [now, setNow] = useState(new Date());
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setNow(new Date());
+        }, 1000);
+        return () => clearInterval(timer);
+    }, []);
+
+    const days = differenceInDays(to, now);
+    const hours = differenceInHours(to, now) % 24;
+    const minutes = differenceInMinutes(to, now) % 60;
+    const seconds = differenceInSeconds(to, now) % 60;
+    
+    if (now > to) {
+        return <span className="text-destructive">Time's up!</span>;
+    }
+
+    return (
+        <div className="flex justify-around text-center w-full">
+            <div><span className="font-bold text-lg">{days}</span><p className="text-xs text-muted-foreground">days</p></div>
+            <div><span className="font-bold text-lg">{hours}</span><p className="text-xs text-muted-foreground">hrs</p></div>
+            <div><span className="font-bold text-lg">{minutes}</span><p className="text-xs text-muted-foreground">mins</p></div>
+            <div><span className="font-bold text-lg">{seconds}</span><p className="text-xs text-muted-foreground">secs</p></div>
+        </div>
+    );
+}
+
 export function AppSidebar({ user }: { user: AppUser | null }) {
   const { logout } = useAuth();
+  const { profile } = useUserData();
   const pathname = usePathname();
   const isActive = (path: string) => pathname === path || (path !== '/dashboard' && pathname.startsWith(path));
+
+  const nextReminder = profile?.reminders?.length ? profile.reminders.reduce((prev, curr) => {
+      return new Date(curr.date) > new Date() && new Date(curr.date) < new Date(prev.date) ? curr : prev;
+  }) : null;
 
   return (
     <Sidebar>
@@ -76,6 +115,12 @@ export function AppSidebar({ user }: { user: AppUser | null }) {
       </SidebarContent>
 
       <SidebarFooter className="gap-4">
+        {nextReminder && (
+            <div className="p-3 rounded-lg bg-secondary space-y-2 group-data-[collapsible=icon]:hidden">
+                <p className="text-sm font-semibold truncate">{nextReminder.title}</p>
+                <Countdown to={new Date(nextReminder.date)} />
+            </div>
+        )}
          <Button asChild variant="default" className="w-full">
             <Link href="/pricing"><Rocket className="mr-2" /> Upgrade Plan</Link>
          </Button>

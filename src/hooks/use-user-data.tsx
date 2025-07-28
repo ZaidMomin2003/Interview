@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useContext, createContext, ReactNode, useCallback } from 'react';
 import { useAuth, type CoreUser } from './use-auth';
-import type { Portfolio, Bookmark, HistoryItem, Note, AppUser } from '@/ai/schemas';
+import type { Portfolio, Bookmark, HistoryItem, Note, Reminder, AppUser } from '@/ai/schemas';
 import { generateResumeReview } from '@/ai/flows/generate-resume-review-flow';
 import { generateCodingQuestion } from '@/ai/flows/generate-coding-question-flow';
 import { generateInterviewQuestion } from '@/ai/flows/generate-interview-question-flow';
@@ -102,6 +102,8 @@ type UserDataContextType = {
   addHistoryItem: (item: Omit<HistoryItem, 'id' | 'timestamp'>) => Promise<void>;
   addBookmark: (bookmark: Omit<Bookmark, 'id' | 'timestamp'>) => Promise<void>;
   removeBookmark: (bookmarkId: string) => Promise<void>;
+  addReminder: (reminder: Omit<Reminder, 'id'>) => Promise<void>;
+  removeReminder: (reminderId: string) => Promise<void>;
   pomodoroState: PomodoroState;
   setPomodoroState: (state: Partial<PomodoroState>) => void;
   switchPomodoroMode: (mode: PomodoroState['mode']) => void;
@@ -123,6 +125,8 @@ const UserDataContext = createContext<UserDataContextType>({
   addHistoryItem: async () => {},
   addBookmark: async () => {},
   removeBookmark: async () => {},
+  addReminder: async () => {},
+  removeReminder: async () => {},
   pomodoroState: { mode: 'pomodoro', timeLeft: 25 * 60, isActive: false },
   setPomodoroState: () => {},
   switchPomodoroMode: () => {},
@@ -179,6 +183,7 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
                 history: [],
                 notes: [],
                 bookmarks: [],
+                reminders: [],
             };
             await createUserProfile(newProfile);
             userProfile = newProfile;
@@ -261,6 +266,22 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
     await updateProfileData({ bookmarks: updatedBookmarks });
   }, [profile, updateProfileData]);
 
+  const addReminder = useCallback(async (item: Omit<Reminder, 'id'>) => {
+    if (!profile) return;
+    const newReminder: Reminder = {
+      ...item,
+      id: crypto.randomUUID(),
+    };
+    const updatedReminders = [...(profile.reminders || []), newReminder].sort((a,b) => a.date - b.date);
+    await updateProfileData({ reminders: updatedReminders });
+  }, [profile, updateProfileData]);
+
+  const removeReminder = useCallback(async (reminderId: string) => {
+    if (!profile) return;
+    const updatedReminders = (profile.reminders || []).filter(r => r.id !== reminderId);
+    await updateProfileData({ reminders: updatedReminders });
+  }, [profile, updateProfileData]);
+
 
   // --- Pomodoro Control Functions ---
   const internalSetPomodoroState = useCallback((newState: Partial<PomodoroState>) => {
@@ -298,6 +319,8 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
         addHistoryItem,
         addBookmark,
         removeBookmark,
+        addReminder,
+        removeReminder,
         pomodoroState,
         setPomodoroState: internalSetPomodoroState,
         switchPomodoroMode,
