@@ -68,6 +68,9 @@ export default function HistoryPage() {
                         <Accordion type="single" collapsible className="w-full">
                            {history.map((item, index) => {
                                 const details = typeMap[item.type as keyof typeof typeMap] || typeMap.other;
+                                const date = item.timestamp ? new Date(item.timestamp) : null;
+                                const isValidDate = date && !isNaN(date.getTime());
+                                
                                 return (
                                     <AccordionItem value={`item-${index}`} key={item.id}>
                                         <AccordionTrigger className="p-4 hover:no-underline hover:bg-secondary/50">
@@ -75,9 +78,11 @@ export default function HistoryPage() {
                                                 <div className={`p-2 rounded-full ${details.color}`}>{details.icon}</div>
                                                 <div className="flex-grow text-left">
                                                     <p className="font-semibold text-foreground">{item.title}</p>
-                                                    <p className="text-sm text-muted-foreground">
-                                                        {formatDistanceToNow(new Date(item.timestamp), { addSuffix: true })}
-                                                    </p>
+                                                    {isValidDate && (
+                                                        <p className="text-sm text-muted-foreground">
+                                                            {formatDistanceToNow(date, { addSuffix: true })}
+                                                        </p>
+                                                    )}
                                                 </div>
                                                 <Badge variant="outline" className={details.color}>{details.label}</Badge>
                                             </div>
