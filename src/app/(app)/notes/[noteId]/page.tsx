@@ -32,11 +32,12 @@ function CodeBlock({ code }: { code: string }) {
 export default function NotePage({ params }: { params: { noteId: string } }) {
     const { profile, loading, addBookmark } = useUserData();
     const { toast } = useToast();
+    const { noteId } = params;
 
     const note = useMemo(() => {
         if (!profile?.notes) return null;
-        return profile.notes.find(n => n.id === params.noteId) || null;
-    }, [profile, params.noteId]);
+        return profile.notes.find(n => n.id === noteId) || null;
+    }, [profile, noteId]);
     
     const handleBookmark = () => {
         if (!note) return;
@@ -63,10 +64,10 @@ export default function NotePage({ params }: { params: { noteId: string } }) {
                             <Card key={i}><CardHeader><Skeleton className="h-8 w-1/2" /></CardHeader><CardContent><Skeleton className="h-40 w-full" /></CardContent></Card>
                         ))}
                     </div>
-                    <div className="space-y-6">
+                    <aside className="lg:col-span-1 space-y-6 lg:sticky lg:top-24">
                         <Card><CardHeader><Skeleton className="h-8 w-1/2" /></CardHeader><CardContent><Skeleton className="h-32 w-full" /></CardContent></Card>
                          <Card><CardHeader><Skeleton className="h-8 w-1/2" /></CardHeader><CardContent><Skeleton className="h-20 w-full" /></CardContent></Card>
-                    </div>
+                    </aside>
                 </div>
             </div>
         );
@@ -96,7 +97,7 @@ export default function NotePage({ params }: { params: { noteId: string } }) {
 
             <div className="grid lg:grid-cols-3 gap-8 items-start">
                 {/* Main Content */}
-                <div className="lg:col-span-2 space-y-6 order-2 lg:order-1">
+                <div className="lg:col-span-2 space-y-6 lg:order-2">
                     {contentSections.map((section, index) => (
                         <Card key={index} className="bg-secondary/50">
                             <CardHeader>
@@ -104,8 +105,8 @@ export default function NotePage({ params }: { params: { noteId: string } }) {
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div 
-                                    className="prose prose-invert prose-p:text-foreground prose-strong:text-foreground prose-ul:text-foreground prose-li:text-foreground"
-                                    dangerouslySetInnerHTML={{ __html: marked(section.explanation) }}
+                                    className="prose prose-invert prose-p:text-foreground prose-strong:text-foreground prose-ul:text-foreground prose-li:text-foreground max-w-none"
+                                    dangerouslySetInnerHTML={{ __html: marked.parse(section.explanation) }}
                                 />
                                 <CodeBlock code={section.codeExample} />
                             </CardContent>
@@ -114,7 +115,7 @@ export default function NotePage({ params }: { params: { noteId: string } }) {
                 </div>
 
                 {/* Sidebar */}
-                <aside className="lg:col-span-1 space-y-6 lg:sticky lg:top-24 order-1 lg:order-2">
+                <aside className="lg:col-span-1 space-y-6 lg:sticky lg:top-24 lg:order-1">
                     <Card>
                         <CardHeader>
                             <CardTitle>Key Takeaways</CardTitle>
