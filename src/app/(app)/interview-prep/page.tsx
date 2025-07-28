@@ -64,17 +64,18 @@ export default function InterviewPrepPage() {
         </p>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Configure Your Mock Interview</CardTitle>
-          <CardDescription>
-            Tell the AI what kind of interview to conduct.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleGenerateQuestion)} className="space-y-6">
-              <div className="grid md:grid-cols-3 gap-4">
+      <div className="grid md:grid-cols-2 gap-8 items-start">
+        {/* Left Side: Configuration */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Configure Your Mock Interview</CardTitle>
+            <CardDescription>
+              Tell the AI what kind of interview to conduct.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(handleGenerateQuestion)} className="space-y-4">
                 <FormField control={form.control} name="role" render={({ field }) => (
                   <FormItem>
                     <FormLabel>Target Role</FormLabel>
@@ -112,40 +113,52 @@ export default function InterviewPrepPage() {
                     <FormMessage />
                   </FormItem>
                 )} />
-              </div>
-              <Button type="submit" disabled={isLoading} className="w-full">
-                {isLoading ? <Loader2 className="animate-spin" /> : <><Wand2 className="mr-2"/> Generate Question</>}
-              </Button>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
+                <Button type="submit" disabled={isLoading} className="w-full">
+                  {isLoading ? <Loader2 className="animate-spin" /> : <><Wand2 className="mr-2"/> Generate Question</>}
+                </Button>
+              </form>
+            </Form>
+          </CardContent>
+        </Card>
 
-      {(isLoading || question) && (
-        <Card>
+        {/* Right Side: Question and Recorder */}
+        <Card className="bg-secondary/50 sticky top-20">
           <CardHeader>
-            <CardTitle>AI Generated Question</CardTitle>
+            <CardTitle>AI Interviewer</CardTitle>
+            <CardDescription>Your generated question will appear below.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-6">
-            {isLoading ? (
-              <div className="space-y-2">
+          <CardContent className="space-y-6 min-h-[300px] flex flex-col justify-between">
+            {isLoading && (
+              <div className="space-y-3">
                 <Skeleton className="h-6 w-3/4" />
                 <Skeleton className="h-4 w-1/2" />
+                <Skeleton className="h-4 w-5/6" />
               </div>
-            ) : (
+            )}
+            
+            {question && !isLoading && (
               <p className="text-lg font-semibold leading-relaxed text-foreground">{question}</p>
             )}
 
-            <div className="text-center">
-                <Button size="lg" className="rounded-full h-20 w-20">
+            {!question && !isLoading && (
+              <div className="text-center text-muted-foreground py-10">
+                <p>Waiting for question...</p>
+              </div>
+            )}
+
+            <div className="text-center bg-background/50 p-4 rounded-lg border border-border">
+                <Button size="lg" className="rounded-full h-20 w-20" disabled={!question || isLoading}>
                     <Mic className="h-8 w-8" />
                     <span className="sr-only">Start Recording</span>
                 </Button>
-                <p className="mt-2 text-sm text-muted-foreground">Click to start recording your answer</p>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  {question ? "Click to start recording your answer" : "Generate a question to begin"}
+                </p>
             </div>
           </CardContent>
         </Card>
-      )}
+
+      </div>
     </div>
   );
 }
