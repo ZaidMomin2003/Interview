@@ -917,27 +917,32 @@ export default function LandingPage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-border">
-        <div className="container mx-auto py-8 flex flex-col sm:flex-row items-center justify-between gap-4 px-4">
-          <p className="text-sm text-muted-foreground">
-            Made with 💓 By Zaid
-          </p>
-          <div className="flex gap-4">
-            <Link href="https://github.com/ZaidMomin2003" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
-              <Github className="h-6 w-6" />
-            </Link>
-             <Link href="https://www.linkedin.com/in/arshad-momin-a3139b21b/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
-              <Linkedin className="h-6 w-6" />
-            </Link>
-             <Link href="https://www.instagram.com/zaidwontdo/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
-              <Instagram className="h-6 w-6" />
-            </Link>
+      <footer className="border-t border-border bg-secondary/30">
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex flex-col-reverse items-center gap-8 md:flex-row md:justify-between">
+            <div className="text-center md:text-left text-sm text-muted-foreground">
+              <p>&copy; {new Date().getFullYear()} Talxify. All Rights Reserved.</p>
+              <p>Made with 💓 by Zaid</p>
+            </div>
+            <div className="flex items-center gap-6">
+              <Link href="/terms" className="text-sm text-muted-foreground hover:text-primary transition-colors">Terms of Service</Link>
+              <Link href="/privacy" className="text-sm text-muted-foreground hover:text-primary transition-colors">Privacy Policy</Link>
+              <Link href="/refund" className="text-sm text-muted-foreground hover:text-primary transition-colors">Refund Policy</Link>
+            </div>
+            <div className="flex gap-4">
+              <Link href="https://github.com/ZaidMomin2003" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+                <Github className="h-6 w-6" />
+              </Link>
+              <Link href="https://www.linkedin.com/in/arshad-momin-a3139b21b/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+                <Linkedin className="h-6 w-6" />
+              </Link>
+              <Link href="https://www.instagram.com/zaidwontdo/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+                <Instagram className="h-6 w-6" />
+              </Link>
+            </div>
           </div>
         </div>
       </footer>
     </div>
   );
 }
-
-    
-    
