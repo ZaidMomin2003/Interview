@@ -24,7 +24,7 @@ import { differenceInDays, differenceInHours, differenceInMinutes, differenceInS
 const navLinks = [
     { href: "/dashboard", icon: <LayoutDashboard />, label: "Dashboard" },
     { href: "/interview-prep", icon: <Bot />, label: "AI Interview" },
-    { href: "/coding-gym", icon: <CodeXml />, label: "Code & AI Feedback" },
+    { href: "/coding-gym", icon: <CodeXml />, label: "Coding Gym" },
     { href: "/notes", icon: <Notebook />, label: "AI Notes" },
     { href: "/resume-studio", icon: <FileText />, label: "Resume Studio" },
     { href: "/portfolio", icon: <UserCircle />, label: "Portfolio" },
