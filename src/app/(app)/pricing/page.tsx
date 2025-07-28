@@ -129,7 +129,7 @@ export default function PricingPage() {
                                 <li key={i} className="flex items-start gap-3">
                                     <Check className="h-5 w-5 text-green-500 mt-0.5 shrink-0" />
                                     <span className="text-foreground">{feature}</span>
-                                li>
+                                </li>
                                 ))}
                             </ul>
                         </CardContent>
