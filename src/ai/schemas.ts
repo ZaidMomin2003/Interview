@@ -51,13 +51,20 @@ export type InterviewQuestionOutput = z.infer<typeof InterviewQuestionOutputSche
 
 // Schemas for generate-notes-flow
 export const NotesInputSchema = z.object({
-    topic: z.string().describe('The main topic of the text.'),
-    rawText: z.string().describe('The block of text to be summarized and structured.'),
+    topic: z.string().describe('The main topic for the notes (e.g., React Hooks, CSS Grid).'),
+    difficulty: z.enum(['Beginner', 'Intermediate', 'Advanced']).describe('The difficulty level of the topic.'),
 });
 export type NotesInput = z.infer<typeof NotesInputSchema>;
 
 export const NotesOutputSchema = z.object({
-    notes: z.string().describe('Well-structured, summarized notes in Markdown format.'),
+    title: z.string().describe('A clear, concise title for the topic.'),
+    description: z.string().describe('A brief, one-paragraph overview of the topic.'),
+    keyTakeaways: z.array(z.string()).describe('A list of 3-5 bullet points summarizing the most important concepts.'),
+    contentSections: z.array(z.object({
+        title: z.string().describe('A subheading for a specific concept within the topic.'),
+        explanation: z.string().describe('A detailed explanation of the concept, written in Markdown format.'),
+        codeExample: z.string().describe('A relevant code snippet in JavaScript to illustrate the concept. Use Markdown for the code block.'),
+    })).describe('An array of content sections, each breaking down a part of the topic.'),
 });
 export type NotesOutput = z.infer<typeof NotesOutputSchema>;
 
@@ -128,24 +135,28 @@ export const BookmarkSchema = z.object({
 });
 export type Bookmark = z.infer<typeof BookmarkSchema>;
 
+
+// Schema for Notes
+export const NoteSchema = z.object({
+    id: z.string(),
+    title: z.string(),
+    content: NotesOutputSchema, // The content is now the structured object from the AI
+    timestamp: z.number(),
+});
+export type Note = z.infer<typeof NoteSchema>;
+
 // Schema for History
 export const HistoryItemSchema = z.object({
   id: z.string(),
   type: z.enum(['resume', 'coding', 'interview', 'notes']),
   title: z.string(),
   timestamp: z.number(),
-  content: z.any(),
+  // For notes, content can be the full structured object.
+  // For others, it's a simpler object. Using z.any() for flexibility.
+  content: z.any(), 
 });
 export type HistoryItem = z.infer<typeof HistoryItemSchema>;
 
-// Schema for Notes
-export const NoteSchema = z.object({
-    id: z.string(),
-    title: z.string(),
-    content: z.string(),
-    timestamp: z.number(),
-});
-export type Note = z.infer<typeof NoteSchema>;
 
 // Schema for Reminders
 export const ReminderSchema = z.object({

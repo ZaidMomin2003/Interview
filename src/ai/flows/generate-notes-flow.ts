@@ -17,10 +17,21 @@ const prompt = ai.definePrompt({
     input: { schema: NotesInputSchema },
     output: { schema: NotesOutputSchema },
     model: 'googleai/gemini-1.5-flash-latest',
-    prompt: `You are an expert note-taker. Read the following text about "{{topic}}" and create a set of clear, concise, and well-structured notes in Markdown format. Use headings, bullet points, and bold text to organize the information effectively.
+    prompt: `You are an expert educator and content creator specializing in software development. Your task is to generate a comprehensive, well-structured educational note on a given topic for a specific difficulty level.
 
-Raw Text:
-{{{rawText}}}
+Topic: {{topic}}
+Difficulty: {{difficulty}}
+
+Instructions:
+1.  **Title**: Create a clear and descriptive title for the topic.
+2.  **Description**: Write a concise, one-paragraph overview of the topic.
+3.  **Key Takeaways**: Generate a list of 3-5 essential bullet points that a learner must remember.
+4.  **Content Sections**: Break down the topic into several logical sections. For each section:
+    a.  Provide a clear \`title\`.
+    b.  Write a detailed \`explanation\` in Markdown format. Explain the concept thoroughly, assuming the target audience's difficulty level.
+    c.  Provide a clear, relevant \`codeExample\` in a JavaScript Markdown block to illustrate the concept. The code should be practical and easy to understand.
+
+Your final output must be a valid JSON object that strictly follows the provided output schema.
 `,
 });
 

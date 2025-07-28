@@ -8,48 +8,49 @@ import { useUserData } from '@/hooks/use-user-data';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Textarea } from '@/components/ui/textarea';
-import { Loader2, Wand2 } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Loader2, Wand2, ArrowRight } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { Skeleton } from '@/components/ui/skeleton';
-import { marked } from 'marked';
 import { NotesInputSchema } from '@/ai/schemas';
 import type { z } from 'zod';
+import { useRouter } from 'next/navigation';
 
 type NotesFormValues = z.infer<typeof NotesInputSchema>;
 
 export default function NotesPage() {
-  const { generateNotes, addHistoryItem } = useUserData();
+  const { addNote } = useUserData();
   const { toast } = useToast();
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [generatedNotes, setGeneratedNotes] = useState<string | null>(null);
 
   const form = useForm<NotesFormValues>({
     resolver: zodResolver(NotesInputSchema),
     defaultValues: {
-      topic: '',
-      rawText: '',
+      topic: 'React Hooks',
+      difficulty: 'Intermediate',
     },
   });
 
   const handleGenerateNotes = async (values: NotesFormValues) => {
     setIsLoading(true);
-    setGeneratedNotes(null);
     try {
-      const result = await generateNotes(values);
-      setGeneratedNotes(result.notes);
-      await addHistoryItem({
-        type: 'notes',
-        title: `Notes on: ${values.topic}`,
-        content: result,
-      });
+      const noteId = await addNote(values);
+      if (noteId) {
+        toast({
+          title: "Notes Generated!",
+          description: "You are being redirected to your new note.",
+        });
+        router.push(`/notes/${noteId}`);
+      } else {
+        throw new Error("Failed to create and save the note.");
+      }
     } catch (error: any) {
       toast({
         variant: 'destructive',
         title: 'Error Generating Notes',
         description: error.message || 'An unexpected error occurred.',
       });
-    } finally {
       setIsLoading(false);
     }
   };
@@ -57,81 +58,56 @@ export default function NotesPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">AI Note Taker</h1>
+        <h1 className="text-3xl font-bold tracking-tight">AI Note Generator</h1>
         <p className="mt-2 text-muted-foreground">
-          Paste in any text and get well-structured, summarized notes in Markdown.
+          Generate comprehensive, structured notes on any software development topic.
         </p>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>Input Your Text</CardTitle>
-            <CardDescription>Provide the raw text and a topic for your notes.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(handleGenerateNotes)} className="space-y-4">
-                <FormField control={form.control} name="topic" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Topic</FormLabel>
-                    <FormControl>
-                      <input {...field} className="w-full bg-secondary p-2 rounded-md" placeholder="e.g., React State Management" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-                <FormField control={form.control} name="rawText" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Raw Text</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="Paste your article, transcript, or any block of text here..."
-                        className="h-64 resize-none"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-                <Button type="submit" disabled={isLoading} className="w-full">
-                  {isLoading ? <Loader2 className="animate-spin" /> : <><Wand2 className="mr-2"/> Generate Notes</>}
-                </Button>
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
+      <Card className="max-w-2xl mx-auto">
+        <CardHeader>
+          <CardTitle>Create a New Note</CardTitle>
+          <CardDescription>
+            Enter a topic and select a difficulty to generate your study guide.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleGenerateNotes)} className="space-y-6">
+              <FormField control={form.control} name="topic" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Topic</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g., React State Management, CSS Grid" {...field} disabled={isLoading} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Generated Notes</CardTitle>
-            <CardDescription>Your summarized notes will appear here.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {isLoading && (
-              <div className="space-y-4">
-                <Skeleton className="h-6 w-1/2" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-5/6" />
-                <Skeleton className="h-6 w-1/3 mt-4" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-full" />
-              </div>
-            )}
-            {generatedNotes && !isLoading && (
-              <div
-                className="prose prose-invert prose-p:text-foreground prose-headings:text-primary prose-strong:text-foreground prose-ul:text-foreground prose-li:text-foreground"
-                dangerouslySetInnerHTML={{ __html: marked(generatedNotes) }}
-              />
-            )}
-            {!generatedNotes && !isLoading && (
-              <div className="text-center text-muted-foreground p-8">
-                Your notes will be displayed here once generated.
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+              <FormField control={form.control} name="difficulty" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Difficulty Level</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isLoading}>
+                    <FormControl>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="Beginner">Beginner</SelectItem>
+                      <SelectItem value="Intermediate">Intermediate</SelectItem>
+                      <SelectItem value="Advanced">Advanced</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              
+              <Button type="submit" disabled={isLoading} className="w-full" size="lg">
+                {isLoading ? <Loader2 className="animate-spin" /> : <>Generate Notes <Wand2 className="ml-2"/></>}
+              </Button>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
     </div>
   );
 }

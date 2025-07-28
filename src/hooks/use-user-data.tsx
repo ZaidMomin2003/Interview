@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useContext, createContext, ReactNode, useCallback } from 'react';
 import { useAuth, type CoreUser } from './use-auth';
-import type { Portfolio, Bookmark, HistoryItem, Note, Reminder, AppUser } from '@/ai/schemas';
+import type { Portfolio, Bookmark, HistoryItem, Note, Reminder, AppUser, NotesInput } from '@/ai/schemas';
 import { generateResumeReview } from '@/ai/flows/generate-resume-review-flow';
 import { generateCodingQuestion } from '@/ai/flows/generate-coding-question-flow';
 import { generateInterviewQuestion } from '@/ai/flows/generate-interview-question-flow';
@@ -102,8 +102,9 @@ type UserDataContextType = {
   addHistoryItem: (item: Omit<HistoryItem, 'id' | 'timestamp'>) => Promise<void>;
   addBookmark: (bookmark: Omit<Bookmark, 'id' | 'timestamp'>) => Promise<void>;
   removeBookmark: (bookmarkId: string) => Promise<void>;
-  addReminder: (reminder: Omit<Reminder, 'id'>) => Promise<void>;
+  addNote: (input: NotesInput) => Promise<string | null>;
   removeReminder: (reminderId: string) => Promise<void>;
+  addReminder: (reminder: Omit<Reminder, 'id'>) => Promise<void>;
   pomodoroState: PomodoroState;
   setPomodoroState: (state: Partial<PomodoroState>) => void;
   switchPomodoroMode: (mode: PomodoroState['mode']) => void;
@@ -125,8 +126,9 @@ const UserDataContext = createContext<UserDataContextType>({
   addHistoryItem: async () => {},
   addBookmark: async () => {},
   removeBookmark: async () => {},
-  addReminder: async () => {},
+  addNote: async () => null,
   removeReminder: async () => {},
+  addReminder: async () => {},
   pomodoroState: { mode: 'pomodoro', timeLeft: 25 * 60, isActive: false },
   setPomodoroState: () => {},
   switchPomodoroMode: () => {},
@@ -135,7 +137,7 @@ const UserDataContext = createContext<UserDataContextType>({
   generateResumeReview: async () => ({ review: '', score: 0 }),
   generateCodingQuestion: async () => ({ question: '', starter_code: '', title: '' }),
   generateInterviewQuestion: async () => ({ question: '' }),
-  generateNotes: async () => ({ notes: '' }),
+  generateNotes: async () => ({ title: '', description: '', keyTakeaways: [], contentSections: [] }),
   estimateSalary: async () => ({ median: 0, percentile25: 0, percentile75: 0, rationale: '' }),
 });
 
@@ -266,6 +268,41 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
     await updateProfileData({ bookmarks: updatedBookmarks });
   }, [profile, updateProfileData]);
 
+  const addNote = useCallback(async (input: NotesInput): Promise<string | null> => {
+    if (!profile) return null;
+    
+    // 1. Generate the note content from the AI
+    const content = await generateNotes(input);
+
+    // 2. Create the new note object
+    const newNote: Note = {
+      id: crypto.randomUUID(),
+      title: content.title,
+      content: content,
+      timestamp: Date.now(),
+    };
+    
+    // 3. Add to the user's notes array
+    const updatedNotes = [newNote, ...(profile.notes || [])];
+    
+    // 4. Add a corresponding history item
+    const newHistoryItem: HistoryItem = {
+        id: crypto.randomUUID(),
+        type: 'notes',
+        title: `Notes on: ${input.topic}`,
+        content: `Generated a new note: "${content.title}".`, // Simple summary for history view
+        timestamp: Date.now(),
+    };
+    const updatedHistory = [newHistoryItem, ...profile.history];
+
+    // 5. Update the profile in Firestore
+    await updateProfileData({ notes: updatedNotes, history: updatedHistory });
+
+    // 6. Return the ID of the new note for redirection
+    return newNote.id;
+  }, [profile, updateProfileData]);
+
+
   const addReminder = useCallback(async (item: Omit<Reminder, 'id'>) => {
     if (!profile) return;
     const newReminder: Reminder = {
@@ -319,6 +356,7 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
         addHistoryItem,
         addBookmark,
         removeBookmark,
+        addNote,
         addReminder,
         removeReminder,
         pomodoroState,
