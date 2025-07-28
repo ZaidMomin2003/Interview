@@ -156,8 +156,8 @@ export default function LandingPage() {
   const features = [
     {
       icon: <Video className="h-10 w-10 text-primary" />,
-      title: 'AI Mock Interviews',
-      description: 'Face a realistic AI interviewer that asks relevant questions, tracks your speech, and provides instant feedback to sharpen your communication skills.',
+      title: 'Live AI Mock Interviews',
+      description: 'Step into a realistic, Zoom-like interview environment. Face an AI that asks relevant technical and behavioral questions, then get detailed feedback on your answers and communication skills.',
       prototype: (
          <Card className="w-full max-w-lg mx-auto bg-background border-border shadow-primary/10 shadow-2xl">
               <CardContent className="p-4 space-y-3">
@@ -192,7 +192,7 @@ export default function LandingPage() {
     {
       icon: <FileText className="h-10 w-10 text-primary" />,
       title: 'Resume Studio',
-      description: 'Generate a brand-new resume from scratch or optimize your existing one against a specific job description. Our AI helps you bypass ATS filters and catch recruiter attention.',
+      description: 'Optimize your resume against any job description. Our AI analyzes your resume, suggests keyword improvements to beat ATS filters, and provides actionable feedback to catch recruiters attention.',
       prototype: (
          <Card className="w-full max-w-lg mx-auto bg-background border-border shadow-primary/10 shadow-2xl">
               <CardHeader>
@@ -216,7 +216,7 @@ export default function LandingPage() {
      {
       icon: <Code className="h-10 w-10 text-primary" />,
       title: 'Coding Gym',
-      description: 'Generate personalized coding questions based on your skill level and desired topics. Submit your solution and receive instant, line-by-line feedback from our AI mentor.',
+      description: 'Configure a personalized practice session by topic, difficulty, and number of questions. Solve problems in a dedicated coding environment and get a detailed, side-by-side comparison of your code vs. the optimal solution.',
        prototype: (
          <Card className="w-full max-w-lg mx-auto bg-background border-border shadow-primary/10 shadow-2xl">
               <CardContent className="p-4 space-y-3">
@@ -238,9 +238,9 @@ export default function LandingPage() {
       ),
     },
      {
-      icon: <Target className="h-10 w-10 text-primary" />,
-      title: 'Interview Arena',
-      description: 'Set a target interview date and get a personalized, day-by-day training plan. The Arena unlocks new challenges daily, guiding you from preparation to peak performance.',
+      icon: <Notebook className="h-10 w-10 text-primary" />,
+      title: 'AI Note Taker',
+      description: 'Paste any block of text—an article, a transcript, or meeting minutes—and our AI will instantly generate clear, well-structured notes in Markdown format, complete with headings and bullet points.',
        prototype: (
          <Card className="w-full max-w-lg mx-auto bg-background/50 border-border shadow-primary/10 shadow-2xl">
               <CardHeader>
@@ -271,7 +271,7 @@ export default function LandingPage() {
     {
       icon: <GalleryVertical className="h-10 w-10 text-primary" />,
       title: 'Public Portfolio',
-      description: 'Showcase your skills and projects with a personalized, public-facing portfolio. Automatically syncs with your dashboard stats and projects.',
+      description: 'Showcase your skills, projects, and achievements with a beautiful, public-facing portfolio page. Your activity stats are automatically calculated and displayed to show your dedication.',
        prototype: (
          <Card className="w-full max-w-lg mx-auto bg-background border-border shadow-primary/10 shadow-2xl">
               <CardContent className="p-4 space-y-3">
