@@ -13,16 +13,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Loader2, Wand2, Mic } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
-import { addHistoryItem } from '@/services/firestore';
-import { useAuth } from '@/hooks/use-auth';
 import { InterviewQuestionInputSchema } from '@/ai/schemas';
 import type { z } from 'zod';
 
 type InterviewPrepFormValues = z.infer<typeof InterviewQuestionInputSchema>;
 
 export default function InterviewPrepPage() {
-  const { user } = useAuth();
-  const { generateInterviewQuestion } = useUserData();
+  const { generateInterviewQuestion, addHistoryItem } = useUserData();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [question, setQuestion] = useState<string | null>(null);
@@ -42,13 +39,11 @@ export default function InterviewPrepPage() {
     try {
       const result = await generateInterviewQuestion(values);
       setQuestion(result.question);
-       if (user?.uid) {
-         await addHistoryItem(user.uid, {
-            type: 'interview',
-            title: `Interview Question for ${values.role}`,
-            content: result
-        });
-       }
+      await addHistoryItem({
+          type: 'interview',
+          title: `Interview Question for ${values.role}`,
+          content: result
+      });
     } catch (error: any) {
       toast({
         variant: 'destructive',

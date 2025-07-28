@@ -13,16 +13,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { Loader2, Wand2 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
-import { addHistoryItem } from '@/services/firestore';
-import { useAuth } from '@/hooks/use-auth';
 import { CodingQuestionInputSchema, type CodingQuestionOutput } from '@/ai/schemas';
 import type { z } from 'zod';
 
 type CodingQuestionFormValues = z.infer<typeof CodingQuestionInputSchema>;
 
 export default function CodingGymPage() {
-  const { user } = useAuth();
-  const { generateCodingQuestion } = useUserData();
+  const { generateCodingQuestion, addHistoryItem } = useUserData();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [question, setQuestion] = useState<CodingQuestionOutput | null>(null);
@@ -32,6 +29,7 @@ export default function CodingGymPage() {
     resolver: zodResolver(CodingQuestionInputSchema),
     defaultValues: {
       difficulty: 'Easy',
+      topic: 'Arrays',
     },
   });
 
@@ -42,13 +40,11 @@ export default function CodingGymPage() {
       const result = await generateCodingQuestion(values);
       setQuestion(result);
       setSolution(result.starter_code);
-       if (user?.uid) {
-         await addHistoryItem(user.uid, {
-            type: 'coding',
-            title: `Coding: ${result.title}`,
-            content: result
-        });
-       }
+      await addHistoryItem({
+          type: 'coding',
+          title: `Coding: ${result.title}`,
+          content: result
+      });
     } catch (error: any) {
       toast({
         variant: 'destructive',

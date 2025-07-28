@@ -13,16 +13,13 @@ import { Loader2, Wand2 } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
-import { addHistoryItem } from '@/services/firestore';
-import { useAuth } from '@/hooks/use-auth';
 import { ResumeReviewInputSchema, type ResumeReviewOutput } from '@/ai/schemas';
 import type { z } from 'zod';
 
 type ResumeReviewFormValues = z.infer<typeof ResumeReviewInputSchema>;
 
 export default function ResumeStudioPage() {
-  const { user } = useAuth();
-  const { generateResumeReview } = useUserData();
+  const { generateResumeReview, addHistoryItem } = useUserData();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [review, setReview] = useState<ResumeReviewOutput | null>(null);
@@ -37,13 +34,11 @@ export default function ResumeStudioPage() {
     try {
       const result = await generateResumeReview(values);
       setReview(result);
-       if (user?.uid) {
-         await addHistoryItem(user.uid, {
-            type: 'resume',
-            title: `Resume Review (Score: ${result.score}%)`,
-            content: result
-        });
-       }
+      await addHistoryItem({
+          type: 'resume',
+          title: `Resume Review (Score: ${result.score}%)`,
+          content: result
+      });
     } catch (error: any) {
       toast({
         variant: 'destructive',

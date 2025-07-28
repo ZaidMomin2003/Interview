@@ -3,20 +3,14 @@
 
 import { useState, useEffect, useContext, createContext, ReactNode, useCallback } from 'react';
 import { useAuth, type CoreUser } from './use-auth';
-import { 
-    getUserData, 
-    updateUserData,
-    updatePortfolioData, 
-    type HistoryItem, 
-    type Note,
-    type Portfolio
-} from '@/services/firestore';
+import type { Portfolio } from '@/ai/schemas';
 import { generateResumeReview } from '@/ai/flows/generate-resume-review-flow';
 import { generateCodingQuestion } from '@/ai/flows/generate-coding-question-flow';
 import { generateInterviewQuestion } from '@/ai/flows/generate-interview-question-flow';
 import { generateNotes } from '@/ai/flows/generate-notes-flow';
 import { estimateSalary } from '@/ai/flows/estimate-salary-flow';
 
+// --- Interfaces ---
 export interface PomodoroSettings {
   pomodoro: number;
   shortBreak: number;
@@ -29,22 +23,82 @@ export interface PomodoroState {
   isActive: boolean;
 }
 
+export interface HistoryItem {
+  id: string;
+  type: 'resume' | 'coding' | 'interview' | 'notes';
+  title: string;
+  timestamp: number;
+  content: any;
+}
+
+export interface Note {
+    id: string;
+    title: string;
+    content: string;
+    timestamp: number;
+}
+
 export interface AppUser {
   uid: string;
   email: string | null;
   displayName: string | null;
   photoURL: string | null;
-  pomodoroSettings?: PomodoroSettings;
-  portfolio?: Portfolio;
-  history?: HistoryItem[];
-  notes?: Note[];
+  pomodoroSettings: PomodoroSettings;
+  portfolio: Portfolio;
+  history: HistoryItem[];
+  notes: Note[];
 }
 
+
+// --- Local Storage Helpers ---
+const getFromLocalStorage = <T,>(key: string, defaultValue: T): T => {
+    if (typeof window === 'undefined') {
+        return defaultValue;
+    }
+    try {
+        const item = window.localStorage.getItem(key);
+        return item ? JSON.parse(item) : defaultValue;
+    } catch (error) {
+        console.warn(`Error reading localStorage key "${key}":`, error);
+        return defaultValue;
+    }
+};
+
+const setInLocalStorage = <T,>(key: string, value: T) => {
+    if (typeof window === 'undefined') return;
+    try {
+        window.localStorage.setItem(key, JSON.stringify(value));
+    } catch (error) {
+        console.warn(`Error setting localStorage key "${key}":`, error);
+    }
+};
+
+
+// --- Default Data ---
+const DEFAULT_POMODORO_SETTINGS: PomodoroSettings = {
+    pomodoro: 25,
+    shortBreak: 5,
+    longBreak: 15,
+};
+
+const DEFAULT_PORTFOLIO: Portfolio = {
+    isPublic: false,
+    displayName: '',
+    bio: '',
+    location: '',
+    skills: [],
+    projects: [],
+    socials: { github: '', linkedin: '', twitter: '', website: '' }
+};
+
+
+// --- Context Definition ---
 type UserDataContextType = {
   profile: AppUser | null;
   loading: boolean;
   updatePomodoroSettings: (settings: PomodoroSettings) => Promise<void>;
   updatePortfolio: (portfolio: Portfolio) => Promise<void>;
+  addHistoryItem: (item: Omit<HistoryItem, 'id' | 'timestamp'>) => Promise<void>;
   pomodoroState: PomodoroState;
   setPomodoroState: (state: Partial<PomodoroState>) => void;
   switchPomodoroMode: (mode: PomodoroState['mode']) => void;
@@ -63,6 +117,7 @@ const UserDataContext = createContext<UserDataContextType>({
   loading: true,
   updatePomodoroSettings: async () => {},
   updatePortfolio: async () => {},
+  addHistoryItem: async () => {},
   pomodoroState: { mode: 'pomodoro', timeLeft: 25 * 60, isActive: false },
   setPomodoroState: () => {},
   switchPomodoroMode: () => {},
@@ -75,12 +130,8 @@ const UserDataContext = createContext<UserDataContextType>({
   estimateSalary: async () => ({ median: 0, percentile25: 0, percentile75: 0, rationale: '' }),
 });
 
-const DEFAULT_SETTINGS: PomodoroSettings = {
-    pomodoro: 25,
-    shortBreak: 5,
-    longBreak: 15,
-};
 
+// --- Provider Component ---
 export const UserDataProvider = ({ children }: { children: ReactNode }) => {
   const { user: coreUser, loading: authLoading } = useAuth();
   const [profile, setProfile] = useState<AppUser | null>(null);
@@ -88,10 +139,11 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
   
   const [pomodoroState, setPomodoroState] = useState<PomodoroState>({
     mode: 'pomodoro',
-    timeLeft: (profile?.pomodoroSettings?.pomodoro ?? 25) * 60,
+    timeLeft: DEFAULT_POMODORO_SETTINGS.pomodoro * 60,
     isActive: false,
   });
 
+  // Load data from local storage on user change
   useEffect(() => {
     if (authLoading) {
       setLoading(true);
@@ -103,26 +155,35 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
 
-    const fetchUserData = async () => {
-      try {
-        setLoading(true);
-        const userData = await getUserData(coreUser);
-        setProfile(userData);
-        const settings = userData.pomodoroSettings || DEFAULT_SETTINGS;
-        setPomodoroState(prevState => ({
-            ...prevState,
-            timeLeft: settings[prevState.mode] * 60,
-        }));
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    setLoading(true);
+    const userProfileKey = `talxify_profile_${coreUser.uid}`;
+    const storedProfile = getFromLocalStorage<Partial<AppUser>>(userProfileKey, {});
 
-    fetchUserData();
+    const initialProfile: AppUser = {
+        uid: coreUser.uid,
+        email: coreUser.email,
+        displayName: coreUser.displayName || storedProfile.portfolio?.displayName || '',
+        photoURL: coreUser.photoURL,
+        pomodoroSettings: storedProfile.pomodoroSettings || DEFAULT_POMODORO_SETTINGS,
+        portfolio: storedProfile.portfolio || { ...DEFAULT_PORTFOLIO, displayName: coreUser.displayName || '' },
+        history: storedProfile.history || [],
+        notes: storedProfile.notes || [],
+    };
+    
+    setProfile(initialProfile);
+    setInLocalStorage(userProfileKey, initialProfile);
+    
+    // Initialize Pomodoro timer with loaded settings
+    const settings = initialProfile.pomodoroSettings;
+    setPomodoroState(prevState => ({
+        ...prevState,
+        timeLeft: settings[prevState.mode] * 60,
+    }));
+    
+    setLoading(false);
   }, [coreUser, authLoading]);
-  
+
+  // Pomodoro timer effect
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
     if (pomodoroState.isActive && pomodoroState.timeLeft > 0) {
@@ -130,7 +191,6 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
         setPomodoroState(prevState => ({ ...prevState, timeLeft: prevState.timeLeft - 1 }));
       }, 1000);
     } else if (pomodoroState.isActive && pomodoroState.timeLeft === 0) {
-      // In a real app, you'd switch modes (e.g., from pomodoro to break)
       setPomodoroState(prevState => ({ ...prevState, isActive: false }));
     }
     return () => {
@@ -138,32 +198,48 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
     };
   }, [pomodoroState.isActive, pomodoroState.timeLeft]);
 
+  // --- Data Update Functions ---
+  const updateProfileAndPersist = useCallback((newProfileData: Partial<AppUser>) => {
+    if (!coreUser) return;
+
+    setProfile(prevProfile => {
+        if (!prevProfile) return null;
+        const updatedProfile = { ...prevProfile, ...newProfileData };
+        const userProfileKey = `talxify_profile_${coreUser.uid}`;
+        setInLocalStorage(userProfileKey, updatedProfile);
+        return updatedProfile;
+    });
+  }, [coreUser]);
 
   const updatePomodoroSettings = useCallback(async (settings: PomodoroSettings) => {
-    if (!coreUser) return;
-    setProfile(prev => prev ? { ...prev, pomodoroSettings: settings } : null);
-    
+    updateProfileAndPersist({ pomodoroSettings: settings });
     if (!pomodoroState.isActive) {
         setPomodoroState(prev => ({...prev, timeLeft: settings[prev.mode] * 60}));
     }
-
-    await updateUserData(coreUser.uid, { pomodoroSettings: settings });
-  }, [coreUser, pomodoroState.isActive]);
+  }, [updateProfileAndPersist, pomodoroState.isActive]);
   
   const updatePortfolio = useCallback(async (portfolioData: Portfolio) => {
-    if (!coreUser) return;
-    // Optimistic update
-    setProfile(prev => prev ? { ...prev, portfolio: portfolioData } : null);
-    await updatePortfolioData(coreUser.uid, portfolioData);
-  }, [coreUser]);
+    updateProfileAndPersist({ portfolio: portfolioData });
+  }, [updateProfileAndPersist]);
 
+  const addHistoryItem = useCallback(async (item: Omit<HistoryItem, 'id' | 'timestamp'>) => {
+    if (!profile) return;
+    const newItem: HistoryItem = {
+        ...item,
+        id: crypto.randomUUID(),
+        timestamp: Date.now(),
+    };
+    const updatedHistory = [newItem, ...profile.history];
+    updateProfileAndPersist({ history: updatedHistory });
+  }, [profile, updateProfileAndPersist]);
 
+  // --- Pomodoro Control Functions ---
   const internalSetPomodoroState = useCallback((newState: Partial<PomodoroState>) => {
       setPomodoroState(prevState => ({...prevState, ...newState}));
   }, []);
 
   const switchPomodoroMode = useCallback((newMode: PomodoroState['mode']) => {
-      const settings = profile?.pomodoroSettings || DEFAULT_SETTINGS;
+      const settings = profile?.pomodoroSettings || DEFAULT_POMODORO_SETTINGS;
       internalSetPomodoroState({
           mode: newMode,
           isActive: false,
@@ -172,7 +248,7 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
   }, [profile, internalSetPomodoroState]);
 
   const resetPomodoroTimer = useCallback(() => {
-      const settings = profile?.pomodoroSettings || DEFAULT_SETTINGS;
+      const settings = profile?.pomodoroSettings || DEFAULT_POMODORO_SETTINGS;
       internalSetPomodoroState({
           isActive: false,
           timeLeft: settings[pomodoroState.mode] * 60,
@@ -190,6 +266,7 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
         loading, 
         updatePomodoroSettings,
         updatePortfolio,
+        addHistoryItem,
         pomodoroState,
         setPomodoroState: internalSetPomodoroState,
         switchPomodoroMode,

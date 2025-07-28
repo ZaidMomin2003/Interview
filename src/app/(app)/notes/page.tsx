@@ -11,8 +11,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Textarea } from '@/components/ui/textarea';
 import { Loader2, Wand2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { addHistoryItem } from '@/services/firestore';
-import { useAuth } from '@/hooks/use-auth';
 import { Skeleton } from '@/components/ui/skeleton';
 import { marked } from 'marked';
 import { NotesInputSchema } from '@/ai/schemas';
@@ -21,8 +19,7 @@ import type { z } from 'zod';
 type NotesFormValues = z.infer<typeof NotesInputSchema>;
 
 export default function NotesPage() {
-  const { user } = useAuth();
-  const { generateNotes } = useUserData();
+  const { generateNotes, addHistoryItem } = useUserData();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [generatedNotes, setGeneratedNotes] = useState<string | null>(null);
@@ -41,13 +38,11 @@ export default function NotesPage() {
     try {
       const result = await generateNotes(values);
       setGeneratedNotes(result.notes);
-      if (user?.uid) {
-        await addHistoryItem(user.uid, {
-          type: 'notes',
-          title: `Notes on: ${values.topic}`,
-          content: result,
-        });
-      }
+      await addHistoryItem({
+        type: 'notes',
+        title: `Notes on: ${values.topic}`,
+        content: result,
+      });
     } catch (error: any) {
       toast({
         variant: 'destructive',
