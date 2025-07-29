@@ -84,7 +84,7 @@ export default function PromotionalPopup() {
                                         className={cn(
                                             "w-full text-left p-3 rounded-lg border transition-all duration-300",
                                             activeFeature === index 
-                                                ? "bg-primary/20 border-primary/50" 
+                                                ? "bg-primary/20 border-accent" 
                                                 : "bg-white/5 border-white/10 hover:bg-white/10"
                                         )}
                                     >
