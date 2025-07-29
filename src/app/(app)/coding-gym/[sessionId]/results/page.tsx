@@ -1,7 +1,7 @@
 // src/app/(app)/coding-gym/[sessionId]/results/page.tsx
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Repeat, Bookmark, Loader2 } from 'lucide-react';
@@ -14,7 +14,8 @@ import type { CodingSession } from '@/ai/schemas';
 import { Skeleton } from '@/components/ui/skeleton';
 
 
-export default function CodingResultsPage({ params }: { params: { sessionId: string } }) {
+export default function CodingResultsPage({ params }: { params: Promise<{ sessionId: string }> }) {
+    const { sessionId } = use(params);
     const { toast } = useToast();
     const { addBookmark, generateCodingFeedback } = useUserData();
     const [session, setSession] = useState<CodingSession | null>(null);
@@ -23,7 +24,7 @@ export default function CodingResultsPage({ params }: { params: { sessionId: str
     useEffect(() => {
         const fetchAndAnalyze = async () => {
             setLoading(true);
-            let fetchedSession = await getCodingSession(params.sessionId);
+            let fetchedSession = await getCodingSession(sessionId);
 
             if (!fetchedSession) {
                 toast({ variant: 'destructive', title: "Error", description: "Session not found." });
@@ -62,13 +63,13 @@ export default function CodingResultsPage({ params }: { params: { sessionId: str
         };
 
         fetchAndAnalyze();
-    }, [params.sessionId, toast, generateCodingFeedback]);
+    }, [sessionId, toast, generateCodingFeedback]);
 
     const handleBookmark = () => {
         addBookmark({
             type: 'coding-review',
-            title: `Coding Review: Session #${params.sessionId.slice(0, 6)}...`,
-            url: `/coding-gym/${params.sessionId}/results`
+            title: `Coding Review: Session #${sessionId.slice(0, 6)}...`,
+            url: `/coding-gym/${sessionId}/results`
         });
         toast({
             title: "Review Bookmarked!",
@@ -104,7 +105,7 @@ export default function CodingResultsPage({ params }: { params: { sessionId: str
                     </Button>
                     <h1 className="text-3xl font-bold tracking-tight">Coding Session Results</h1>
                     <p className="mt-2 text-muted-foreground">
-                        Here's the breakdown of your performance for session #{params.sessionId.slice(0, 6)}...
+                        Here's the breakdown of your performance for session #{sessionId.slice(0, 6)}...
                     </p>
                 </div>
                 <div className="flex items-center gap-2">

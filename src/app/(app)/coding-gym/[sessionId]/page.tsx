@@ -1,7 +1,7 @@
 // src/app/(app)/coding-gym/[sessionId]/page.tsx
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -13,7 +13,8 @@ import type { CodingSession, CodingQuestionWithSolution } from '@/ai/schemas';
 import { getCodingSession, updateCodingSessionSolutions } from '@/services/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 
-export default function CodingSessionPage({ params }: { params: { sessionId: string } }) {
+export default function CodingSessionPage({ params }: { params: Promise<{ sessionId: string }> }) {
+    const { sessionId } = use(params);
     const router = useRouter();
     const { toast } = useToast();
     const [session, setSession] = useState<CodingSession | null>(null);
@@ -25,7 +26,7 @@ export default function CodingSessionPage({ params }: { params: { sessionId: str
     useEffect(() => {
         const fetchSession = async () => {
             setLoading(true);
-            const fetchedSession = await getCodingSession(params.sessionId);
+            const fetchedSession = await getCodingSession(sessionId);
             if (fetchedSession) {
                 setSession(fetchedSession);
                 // Initialize solutions state
@@ -41,7 +42,7 @@ export default function CodingSessionPage({ params }: { params: { sessionId: str
             setLoading(false);
         };
         fetchSession();
-    }, [params.sessionId, router, toast]);
+    }, [sessionId, router, toast]);
 
     const handleNextQuestion = () => {
         if (!session || currentQuestionIndex >= session.questions.length - 1) return;
@@ -66,7 +67,7 @@ export default function CodingSessionPage({ params }: { params: { sessionId: str
                 title: "Finishing Session...",
                 description: "Saving your solutions. You will be redirected shortly."
             });
-            router.push(`/coding-gym/${params.sessionId}/results`);
+            router.push(`/coding-gym/${sessionId}/results`);
         } catch (error) {
             toast({ variant: 'destructive', title: 'Error', description: 'Could not save your solutions.' });
             setIsFinishing(false);

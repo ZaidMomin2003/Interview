@@ -1,6 +1,7 @@
 // src/app/(app)/interview-prep/[sessionId]/results/page.tsx
 "use client";
 
+import { use } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Repeat, Share2, MessageSquareQuote, Bot, BarChart, Smile, Frown } from 'lucide-react';
@@ -37,7 +38,8 @@ const demoResults = {
     ]
 };
 
-export default function InterviewResultsPage({ params }: { params: { sessionId: string } }) {
+export default function InterviewResultsPage({ params }: { params: Promise<{ sessionId: string }> }) {
+    const { sessionId } = use(params);
 
     return (
         <div className="space-y-8">
@@ -49,7 +51,7 @@ export default function InterviewResultsPage({ params }: { params: { sessionId: 
                     </Button>
                     <h1 className="text-3xl font-bold tracking-tight">Interview Results</h1>
                     <p className="mt-2 text-muted-foreground">
-                        Here's the breakdown of your performance for session #{params.sessionId}.
+                        Here's the breakdown of your performance for session #{sessionId}.
                     </p>
                 </div>
                 <div className="flex items-center gap-2">

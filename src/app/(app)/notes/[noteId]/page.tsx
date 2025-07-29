@@ -1,7 +1,7 @@
 // src/app/(app)/notes/[noteId]/page.tsx
 "use client";
 
-import { useMemo } from 'react';
+import { useMemo, use } from 'react';
 import { useUserData } from '@/hooks/use-user-data';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -29,10 +29,10 @@ function CodeBlock({ code }: { code: string }) {
   );
 }
 
-export default function NotePage({ params }: { params: { noteId: string } }) {
+export default function NotePage({ params }: { params: Promise<{ noteId: string }> }) {
+    const { noteId } = use(params);
     const { profile, loading, addBookmark } = useUserData();
     const { toast } = useToast();
-    const { noteId } = params;
 
     const note = useMemo(() => {
         if (!profile?.notes) return null;

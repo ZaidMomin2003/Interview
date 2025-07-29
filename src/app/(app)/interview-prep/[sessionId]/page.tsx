@@ -1,7 +1,7 @@
 // src/app/(app)/interview-prep/[sessionId]/page.tsx
 "use client";
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -16,7 +16,8 @@ const demoQuestions = [
     { type: 'Technical', text: 'Walk me through your process for designing a scalable REST API endpoint.' },
 ];
 
-export default function InterviewSessionPage({ params }: { params: { sessionId: string } }) {
+export default function InterviewSessionPage({ params }: { params: Promise<{ sessionId: string }> }) {
+    const { sessionId } = use(params);
     const router = useRouter();
     const { toast } = useToast();
     const videoRef = useRef<HTMLVideoElement>(null);
@@ -58,7 +59,7 @@ export default function InterviewSessionPage({ params }: { params: { sessionId: 
         });
         // Simulate analysis delay
         setTimeout(() => {
-            router.push(`/interview-prep/${params.sessionId}/results`);
+            router.push(`/interview-prep/${sessionId}/results`);
         }, 2000);
     }
     
