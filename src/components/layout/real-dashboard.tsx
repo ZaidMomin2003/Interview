@@ -3,9 +3,11 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Bot, CodeXml, FileText, ArrowRight, User } from 'lucide-react';
+import { Bot, CodeXml, FileText, ArrowRight, User, BrainCircuit, Target, BookOpen } from 'lucide-react';
 import { ActivityChart, ReadinessChart } from '@/app/p/[userId]/charts';
 import { format, subDays } from 'date-fns';
+import Link from 'next/link';
+import { Badge } from '@/components/ui/badge';
 
 // Static prototype data
 const demoDisplayName = "Zaid";
@@ -37,6 +39,11 @@ const getDemoWeeklyActivity = () => {
 const demoActivityData = getDemoWeeklyActivity();
 const demoReadiness = Math.min(100, Math.floor((demoCodingCount * 1.5) + (demoInterviewCount * 2.5)));
 
+const demoTopics = [
+    { title: 'Data Structures', level: 'Intermediate', href: '/coding-gym' },
+    { title: 'System Design', level: 'Beginner', href: '/notes' },
+    { title: 'Behavioral Questions', level: 'Advanced', href: '/interview-prep' },
+]
 
 export default function RealDashboard() {
 
@@ -74,15 +81,36 @@ export default function RealDashboard() {
                 <ActivityChart data={demoActivityData} />
             </CardContent>
         </Card>
-        <Card className="lg:col-span-2 bg-secondary/50">
-            <CardHeader className="text-center">
-                <CardTitle>Interview Readiness</CardTitle>
-                <CardDescription>Based on your recent performance.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <ReadinessChart percentage={demoReadiness} />
-            </CardContent>
-        </Card>
+        <div className="lg:col-span-2 space-y-6">
+            <Card className="bg-secondary/50">
+                <CardHeader className="text-center">
+                    <CardTitle>Interview Readiness</CardTitle>
+                    <CardDescription>Based on your recent performance.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <ReadinessChart percentage={demoReadiness} />
+                </CardContent>
+            </Card>
+            <Card className="bg-secondary/50">
+                <CardHeader>
+                    <CardTitle>Topics to Cover</CardTitle>
+                    <CardDescription>Based on your bookmarked questions.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                    {demoTopics.map(topic => (
+                        <div key={topic.title} className="flex items-center justify-between p-3 rounded-lg bg-background/50 hover:bg-background/80 transition-colors">
+                            <div>
+                                <h4 className="font-semibold text-foreground">{topic.title}</h4>
+                                <Badge variant="outline" className="mt-1 text-xs">{topic.level}</Badge>
+                            </div>
+                            <Button asChild variant="ghost" size="sm">
+                                <Link href={topic.href}>Practice <ArrowRight className="ml-2 h-3 w-3"/></Link>
+                            </Button>
+                        </div>
+                    ))}
+                </CardContent>
+            </Card>
+        </div>
       </div>
     </div>
   );
