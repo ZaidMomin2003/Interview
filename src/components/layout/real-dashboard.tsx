@@ -71,7 +71,10 @@ export default function RealDashboard() {
             </div>
              <div className="grid gap-6 lg:grid-cols-3">
                 <Card className="lg:col-span-2"><CardHeader><Skeleton className="h-8 w-1/3" /></CardHeader><CardContent><Skeleton className="h-[300px] w-full" /></CardContent></Card>
-                <Card className="lg:col-span-1"><CardHeader><Skeleton className="h-8 w-1/3" /></CardHeader><CardContent className="flex flex-col gap-4"><Skeleton className="h-16 w-full" /><Skeleton className="h-16 w-full" /></CardContent></Card>
+                <div className="lg:col-span-1 space-y-6">
+                    <Card><CardHeader><Skeleton className="h-8 w-1/3" /></CardHeader><CardContent className="flex justify-center"><Skeleton className="h-48 w-48 rounded-full" /></CardContent></Card>
+                    <Card><CardHeader><Skeleton className="h-8 w-1/3" /></CardHeader><CardContent className="space-y-4"><Skeleton className="h-16 w-full" /><Skeleton className="h-16 w-full" /></CardContent></Card>
+                </div>
             </div>
         </div>
     );
