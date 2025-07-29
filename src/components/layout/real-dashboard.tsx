@@ -8,11 +8,10 @@ import { ActivityChart, ReadinessChart } from '@/app/p/[userId]/charts';
 import { format, subDays, formatDistanceToNow } from 'date-fns';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
-import { useUserData } from '@/hooks/use-user-data';
-import { Skeleton } from '../ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
-// Static prototype data
+// --- Static Demo Data ---
+
 const demoDisplayName = "Zaid";
 const demoInterviewCount = 8;
 const demoCodingCount = 27;
@@ -65,36 +64,11 @@ const demoHistory = [
 
 
 export default function RealDashboard() {
-  const { profile, loading } = useUserData();
-
-  if (loading || !profile) {
-    return (
-        <div className="space-y-8">
-            <div>
-                <Skeleton className="h-10 w-1/2" />
-                <Skeleton className="h-4 w-3/4 mt-2" />
-            </div>
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                <Card><CardHeader><Skeleton className="h-5 w-2/3" /></CardHeader><CardContent><Skeleton className="h-10 w-1/3" /></CardContent></Card>
-                <Card><CardHeader><Skeleton className="h-5 w-2/3" /></CardHeader><CardContent><Skeleton className="h-10 w-1/3" /></CardContent></Card>
-                <Card><CardHeader><Skeleton className="h-5 w-2/3" /></CardHeader><CardContent><Skeleton className="h-10 w-1/3" /></CardContent></Card>
-            </div>
-             <div className="grid gap-6 lg:grid-cols-3">
-                <Card className="lg:col-span-2"><CardHeader><Skeleton className="h-8 w-1/3" /></CardHeader><CardContent><Skeleton className="h-[300px] w-full" /></CardContent></Card>
-                <div className="lg:col-span-1 space-y-6">
-                    <Card><CardHeader><Skeleton className="h-8 w-1/3" /></CardHeader><CardContent className="flex justify-center"><Skeleton className="h-48 w-48 rounded-full" /></CardContent></Card>
-                    <Card><CardHeader><Skeleton className="h-8 w-1/3" /></CardHeader><CardContent className="space-y-4"><Skeleton className="h-16 w-full" /><Skeleton className="h-16 w-full" /></CardContent></Card>
-                </div>
-            </div>
-        </div>
-    );
-  }
-
 
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Welcome back, {profile.displayName}</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">Welcome back, {demoDisplayName}</h1>
         <p className="mt-1 text-muted-foreground">
           Here's your progress overview. Keep up the great work!
         </p>
