@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bot, BarChart3, FileText, History, LayoutDashboard, LogOut, UserCircle, Rocket, Library, Notebook, AlarmClock, Trash2, CodeXml } from "lucide-react";
+import { Bot, BarChart3, FileText, History, LayoutDashboard, LogOut, UserCircle, Rocket, Library, Notebook, AlarmClock, Trash2, CodeXml, ClipboardList } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import {
   Sidebar,
@@ -38,6 +38,7 @@ const navLinks = [
     { href: "/interview-prep", icon: <Bot />, label: "AI Interview" },
     { href: "/coding-gym", icon: <CodeXml />, label: "Coding Gym" },
     { href: "/notes", icon: <Notebook />, label: "AI Notes" },
+    { href: "/track", icon: <ClipboardList />, label: "Track" },
     { href: "/reminders", icon: <AlarmClock />, label: "Reminders" },
     { href: "/portfolio", icon: <UserCircle />, label: "Portfolio" },
 ];

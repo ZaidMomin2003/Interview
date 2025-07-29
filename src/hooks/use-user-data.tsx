@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useContext, createContext, ReactNode, useCallback } from 'react';
 import { useAuth, type CoreUser } from './use-auth';
-import type { Portfolio, Bookmark, HistoryItem, Note, Reminder, AppUser, NotesInput } from '@/ai/schemas';
+import type { Portfolio, Bookmark, HistoryItem, Note, Reminder, AppUser, NotesInput, Task, TaskStatus } from '@/ai/schemas';
 import { generateResumeReview } from '@/ai/flows/generate-resume-review-flow';
 import { generateCodingQuestion } from '@/ai/flows/generate-coding-question-flow';
 import { generateInterviewQuestion } from '@/ai/flows/generate-interview-question-flow';
@@ -25,7 +25,7 @@ export interface PomodoroState {
   isActive: boolean;
 }
 
-export type { HistoryItem, Note, AppUser } from '@/ai/schemas';
+export type { HistoryItem, Note, AppUser, Task } from '@/ai/schemas';
 
 
 // --- Default Data ---
@@ -103,8 +103,11 @@ type UserDataContextType = {
   addBookmark: (bookmark: Omit<Bookmark, 'id' | 'timestamp'>) => Promise<void>;
   removeBookmark: (bookmarkId: string) => Promise<void>;
   addNote: (input: NotesInput) => Promise<string | null>;
-  removeReminder: (reminderId: string) => Promise<void>;
   addReminder: (reminder: Omit<Reminder, 'id'>) => Promise<void>;
+  removeReminder: (reminderId: string) => Promise<void>;
+  addTask: (title: string) => Promise<void>;
+  updateTaskStatus: (taskId: string, status: TaskStatus) => Promise<void>;
+  removeTask: (taskId: string) => Promise<void>;
   pomodoroState: PomodoroState;
   setPomodoroState: (state: Partial<PomodoroState>) => void;
   switchPomodoroMode: (mode: PomodoroState['mode']) => void;
@@ -127,8 +130,11 @@ const UserDataContext = createContext<UserDataContextType>({
   addBookmark: async () => {},
   removeBookmark: async () => {},
   addNote: async () => null,
-  removeReminder: async () => {},
   addReminder: async () => {},
+  removeReminder: async () => {},
+  addTask: async () => {},
+  updateTaskStatus: async () => {},
+  removeTask: async () => {},
   pomodoroState: { mode: 'pomodoro', timeLeft: 25 * 60, isActive: false },
   setPomodoroState: () => {},
   switchPomodoroMode: () => {},
@@ -186,6 +192,7 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
                 notes: [],
                 bookmarks: [],
                 reminders: [],
+                tasks: [],
             };
             await createUserProfile(newProfile);
             userProfile = newProfile;
@@ -319,6 +326,31 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
     await updateProfileData({ reminders: updatedReminders });
   }, [profile, updateProfileData]);
 
+  const addTask = useCallback(async (title: string) => {
+    if (!profile) return;
+    const newTask: Task = {
+        id: crypto.randomUUID(),
+        title,
+        status: 'todo',
+    };
+    const updatedTasks = [...(profile.tasks || []), newTask];
+    await updateProfileData({ tasks: updatedTasks });
+  }, [profile, updateProfileData]);
+
+  const updateTaskStatus = useCallback(async (taskId: string, status: TaskStatus) => {
+    if (!profile) return;
+    const updatedTasks = (profile.tasks || []).map(task => 
+        task.id === taskId ? { ...task, status } : task
+    );
+    await updateProfileData({ tasks: updatedTasks });
+  }, [profile, updateProfileData]);
+
+  const removeTask = useCallback(async (taskId: string) => {
+    if (!profile) return;
+    const updatedTasks = (profile.tasks || []).filter(task => task.id !== taskId);
+    await updateProfileData({ tasks: updatedTasks });
+  }, [profile, updateProfileData]);
+
 
   // --- Pomodoro Control Functions ---
   const internalSetPomodoroState = useCallback((newState: Partial<PomodoroState>) => {
@@ -359,6 +391,9 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
         addNote,
         addReminder,
         removeReminder,
+        addTask,
+        updateTaskStatus,
+        removeTask,
         pomodoroState,
         setPomodoroState: internalSetPomodoroState,
         switchPomodoroMode,

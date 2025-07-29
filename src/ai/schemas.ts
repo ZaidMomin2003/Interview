@@ -167,6 +167,18 @@ export const ReminderSchema = z.object({
 export type Reminder = z.infer<typeof ReminderSchema>;
 
 
+// Schema for Tasks
+export const TaskStatusSchema = z.enum(['todo', 'in-progress', 'done']);
+export type TaskStatus = z.infer<typeof TaskStatusSchema>;
+
+export const TaskSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  status: TaskStatusSchema,
+});
+export type Task = z.infer<typeof TaskSchema>;
+
+
 // Schema for the entire AppUser profile
 export const AppUserSchema = z.object({
   uid: z.string(),
@@ -183,5 +195,6 @@ export const AppUserSchema = z.object({
   notes: z.array(NoteSchema),
   bookmarks: z.array(BookmarkSchema),
   reminders: z.array(ReminderSchema).optional().default([]),
+  tasks: z.array(TaskSchema).optional().default([]),
 });
 export type AppUser = z.infer<typeof AppUserSchema>;
