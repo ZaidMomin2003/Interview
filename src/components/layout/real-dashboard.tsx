@@ -37,10 +37,6 @@ const getDemoWeeklyActivity = () => {
 const demoActivityData = getDemoWeeklyActivity();
 const demoReadiness = Math.min(100, Math.floor((demoCodingCount * 1.5) + (demoInterviewCount * 2.5)));
 
-const topicsToImprove = [
-    { name: "Data Structures", level: "Intermediate" },
-    { name: "System Design", level: "Beginner" },
-];
 
 export default function RealDashboard() {
 
@@ -88,26 +84,6 @@ export default function RealDashboard() {
             </CardContent>
         </Card>
       </div>
-
-       <Card className="bg-secondary/50">
-            <CardHeader>
-                <CardTitle>Topics to Improve</CardTitle>
-                <CardDescription>Based on your bookmarked questions.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                {topicsToImprove.map(topic => (
-                    <div key={topic.name} className="flex items-center justify-between p-4 rounded-lg bg-secondary">
-                       <div>
-                           <h3 className="font-semibold text-foreground">{topic.name}</h3>
-                           <p className="text-sm text-muted-foreground">{topic.level}</p>
-                       </div>
-                       <Button variant="ghost" asChild>
-                           <a href="#">Practice <ArrowRight className="ml-2 h-4 w-4" /></a>
-                       </Button>
-                    </div>
-                ))}
-            </CardContent>
-        </Card>
     </div>
   );
 }
