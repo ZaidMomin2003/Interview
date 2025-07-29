@@ -11,7 +11,6 @@ import {
     type NotesOutput
 } from '@/ai/schemas';
 
-
 const prompt = ai.definePrompt({
     name: 'notesPrompt',
     input: { schema: NotesInputSchema },

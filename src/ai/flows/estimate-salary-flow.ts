@@ -9,7 +9,6 @@ import {
     type EstimateSalaryOutput 
 } from '@/ai/schemas';
 
-
 const prompt = ai.definePrompt({
     name: 'estimateSalaryPrompt',
     input: { schema: EstimateSalaryInputSchema },

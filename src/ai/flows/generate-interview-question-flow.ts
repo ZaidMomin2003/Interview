@@ -11,7 +11,6 @@ import {
     type InterviewQuestionOutput
 } from '@/ai/schemas';
 
-
 const prompt = ai.definePrompt({
     name: 'interviewQuestionPrompt',
     input: { schema: InterviewQuestionInputSchema },

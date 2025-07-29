@@ -11,7 +11,6 @@ import {
     type ResumeReviewOutput
 } from '@/ai/schemas';
 
-
 const prompt = ai.definePrompt({
     name: 'resumeReviewPrompt',
     input: { schema: ResumeReviewInputSchema },

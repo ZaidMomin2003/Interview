@@ -1,9 +1,8 @@
 // src/ai/genkit.ts
-import {genkit, Plugin, durable, DevLogger, GenkitError} from 'genkit';
-import {googleAI, GoogleAIPlugin} from '@genkit-ai/googleai';
+import {genkit, GenkitError, type Plugin} from 'genkit';
+import {googleAI, type GoogleAIPlugin} from '@genkit-ai/googleai';
 import * as dotenv from 'dotenv';
 
-// Load environment variables from .env file
 dotenv.config();
 
 // A type guard to check if an object is a GoogleAIPlugin.
@@ -23,7 +22,8 @@ function configureGoogleAI() {
   return googleAI({apiKey});
 }
 
+// Export the initialized instance for immediate use in flows.
 export const ai = genkit({
-  plugins: [configureGoogleAI()],
-  enableTracingAndMetrics: true,
+    plugins: [configureGoogleAI()],
+    enableTracingAndMetrics: true,
 });

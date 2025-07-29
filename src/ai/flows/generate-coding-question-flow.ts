@@ -11,7 +11,6 @@ import {
     type CodingQuestionOutput
 } from '@/ai/schemas';
 
-
 const prompt = ai.definePrompt({
     name: 'codingQuestionPrompt',
     input: { schema: CodingQuestionInputSchema },
