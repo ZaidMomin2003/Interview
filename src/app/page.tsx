@@ -555,40 +555,16 @@ export default function LandingPage() {
             </div>
 
             {/* Dashboard Prototype */}
-            <div className="max-w-6xl mx-auto">
-                <Card className="w-full bg-background/50 border-2 border-border shadow-primary/20 shadow-2xl overflow-hidden">
-                    <div className="p-1.5 bg-secondary/80 border-b border-border flex items-center gap-1.5">
-                        <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                        <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                        <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                    </div>
-                    {/* Wrapper for scaling on mobile */}
-                    <div className="h-[380px] sm:h-[550px] md:h-auto overflow-hidden flex justify-center">
-                      <div className="origin-top scale-[0.35] sm:scale-[0.5] md:scale-100">
-                        <div className="grid grid-cols-12 gap-6 p-6 bg-background/30 backdrop-blur-sm w-[1024px]">
-                            {/* Sidebar Mock */}
-                            <div className="col-span-3 flex flex-col gap-2">
-                               {[
-                                    { icon: <LayoutDashboard />, label: "Dashboard" },
-                                    { icon: <Bot />, label: "AI Interview" },
-                                    { icon: <CodeXml />, label: "Coding Gym" },
-                                    { icon: <Notebook />, label: "AI Notes" },
-                                    { icon: <User />, label: "Portfolio"},
-                                ].map((item, index) => (
-                                    <div key={index} className={cn("flex items-center gap-3 p-2 rounded-lg text-sm", index === 0 ? "bg-primary/20 text-primary font-semibold" : "text-muted-foreground")}>
-                                        {item.icon}
-                                        <span className="font-medium">{item.label}</span>
-                                    </div>
-                                ))}
-                            </div>
-                            {/* Main Content Mock */}
-                            <div className="col-span-9">
-                               <RealDashboard />
-                            </div>
-                        </div>
-                      </div>
-                    </div>
-                </Card>
+            <div className="max-w-6xl mx-auto group">
+                <div className="relative rounded-lg shadow-2xl shadow-primary/20">
+                    <Image 
+                        src="/dashboard.png" 
+                        alt="Talxify Dashboard Preview" 
+                        width={1200}
+                        height={675}
+                        className="w-full h-auto rounded-lg border-2 border-border"
+                    />
+                </div>
             </div>
           </div>
         </section>
