@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogClose } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogClose, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Cpu, X, Bot, CodeXml, Notebook } from 'lucide-react';
 import Link from 'next/link';
@@ -50,6 +50,7 @@ export default function PromotionalPopup() {
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogContent className="p-0 border-0 bg-transparent w-full max-w-sm shadow-2xl">
+                 <DialogTitle className="sr-only">Welcome to Talxify</DialogTitle>
                 <div className="relative w-full rounded-3xl bg-black overflow-hidden aspect-[9/14] border-2 border-primary">
                     <Image
                       src="/popup.png"
