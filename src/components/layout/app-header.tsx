@@ -70,7 +70,7 @@ export function AppHeader({ user }: { user: AppUser | null }) {
              <DropdownMenuItem onClick={() => router.push('/portfolio')}><User className="mr-2 h-4 w-4"/>Profile</DropdownMenuItem>
              <DropdownMenuItem onClick={() => router.push('/dashboard')}><LayoutDashboard className="mr-2 h-4 w-4"/>Dashboard</DropdownMenuItem>
              <DropdownMenuItem onClick={() => router.push('/pricing')}><CreditCard className="mr-2 h-4 w-4"/>Billing</DropdownMenuItem>
-             <DropdownMenuItem onClick={() => {}}><LifeBuoy className="mr-2 h-4 w-4"/>Support</DropdownMenuItem>
+             <DropdownMenuItem onClick={() => router.push('/support')}><LifeBuoy className="mr-2 h-4 w-4"/>Support</DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleLogout}><LogOut className="mr-2 h-4 w-4"/>Log out</DropdownMenuItem>
