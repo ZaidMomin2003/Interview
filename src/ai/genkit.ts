@@ -1,6 +1,10 @@
 // src/ai/genkit.ts
 import {genkit, Plugin, durable, DevLogger, GenkitError} from 'genkit';
 import {googleAI, GoogleAIPlugin} from '@genkit-ai/googleai';
+import * as dotenv from 'dotenv';
+
+// Load environment variables from .env file
+dotenv.config();
 
 // A type guard to check if an object is a GoogleAIPlugin.
 function isGoogleAIPlugin(plugin: Plugin<any>): plugin is GoogleAIPlugin {
