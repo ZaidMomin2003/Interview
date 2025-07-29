@@ -29,9 +29,8 @@ export default function PromotionalPopup() {
             <DialogContent className="p-0 border-0 bg-transparent w-full max-w-sm shadow-2xl">
                 <div className="relative w-full rounded-3xl bg-black overflow-hidden aspect-[9/14]">
                     <Image
-                      src="https://placehold.co/400x600.png"
+                      src="/popup.png"
                       alt="Abstract background image of a futuristic landscape"
-                      data-ai-hint="futuristic abstract"
                       layout="fill"
                       objectFit="cover"
                       className="opacity-40"
@@ -40,7 +39,7 @@ export default function PromotionalPopup() {
                     <div className="relative p-6 flex flex-col h-full text-white">
                         
                         <div className="flex justify-between items-start">
-                             <div className="w-14 h-14 rounded-lg bg-white/10 backdrop-blur-sm flex flex-col items-center justify-center text-white p-2 border border-white/20">
+                             <div className="w-14 h-14 rounded-lg bg-primary/20 backdrop-blur-sm flex flex-col items-center justify-center text-primary p-2 border border-primary/20">
                                 <Cpu className="w-8 h-8" />
                             </div>
                             <DialogClose asChild>
