@@ -1,5 +1,5 @@
 // src/services/firestore.ts
-'use server';
+'use client';
 
 import { db } from '@/lib/firebase';
 import { doc, getDoc, setDoc, updateDoc, collection, addDoc } from 'firebase/firestore';
