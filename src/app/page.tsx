@@ -562,26 +562,31 @@ export default function LandingPage() {
                         <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
                         <div className="w-3 h-3 rounded-full bg-green-500"></div>
                     </div>
-                    <div className="grid grid-cols-12 gap-6 p-6 bg-background/30 backdrop-blur-sm">
-                        {/* Sidebar Mock */}
-                        <div className="col-span-3 hidden md:flex flex-col gap-2">
-                           {[
-                                { icon: <LayoutDashboard />, label: "Dashboard" },
-                                { icon: <Bot />, label: "AI Interview" },
-                                { icon: <CodeXml />, label: "Coding Gym" },
-                                { icon: <Notebook />, label: "AI Notes" },
-                                { icon: <User />, label: "Portfolio"},
-                            ].map((item, index) => (
-                                <div key={index} className={cn("flex items-center gap-3 p-2 rounded-lg text-sm", index === 0 ? "bg-primary/20 text-primary font-semibold" : "text-muted-foreground")}>
-                                    {item.icon}
-                                    <span className="font-medium">{item.label}</span>
-                                </div>
-                            ))}
+                    {/* Wrapper for scaling on mobile */}
+                    <div className="h-[450px] md:h-auto overflow-hidden">
+                      <div className="origin-top-left scale-[0.55] sm:scale-75 md:scale-100">
+                        <div className="grid grid-cols-12 gap-6 p-6 bg-background/30 backdrop-blur-sm w-[1024px]">
+                            {/* Sidebar Mock */}
+                            <div className="col-span-3 flex flex-col gap-2">
+                               {[
+                                    { icon: <LayoutDashboard />, label: "Dashboard" },
+                                    { icon: <Bot />, label: "AI Interview" },
+                                    { icon: <CodeXml />, label: "Coding Gym" },
+                                    { icon: <Notebook />, label: "AI Notes" },
+                                    { icon: <User />, label: "Portfolio"},
+                                ].map((item, index) => (
+                                    <div key={index} className={cn("flex items-center gap-3 p-2 rounded-lg text-sm", index === 0 ? "bg-primary/20 text-primary font-semibold" : "text-muted-foreground")}>
+                                        {item.icon}
+                                        <span className="font-medium">{item.label}</span>
+                                    </div>
+                                ))}
+                            </div>
+                            {/* Main Content Mock */}
+                            <div className="col-span-9">
+                               <RealDashboard />
+                            </div>
                         </div>
-                        {/* Main Content Mock */}
-                        <div className="col-span-12 md:col-span-9">
-                           <RealDashboard />
-                        </div>
+                      </div>
                     </div>
                 </Card>
             </div>
