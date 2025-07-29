@@ -88,7 +88,7 @@ export type NotesInput = z.infer<typeof NotesInputSchema>;
 export const NotesOutputSchema = z.object({
     title: z.string().describe('A clear, concise title for the topic.'),
     description: z.string().describe('A brief, one-paragraph overview of the topic.'),
-    keyTakeaways: z.array(z.string()).describe('A list of 3-5 bullet points summarizing the most important concepts.'),
+    keyTakeaways: z.array(z.string()).describe('A list of 3-5 essential bullet points that a learner must remember.'),
     contentSections: z.array(z.object({
         title: z.string().describe('A subheading for a specific concept within the topic.'),
         explanation: z.string().describe('A detailed explanation of the concept, written in Markdown format.'),
