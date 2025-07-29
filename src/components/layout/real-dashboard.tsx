@@ -10,6 +10,7 @@ import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { useUserData } from '@/hooks/use-user-data';
 import { Skeleton } from '../ui/skeleton';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 // Static prototype data
 const demoDisplayName = "Zaid";
@@ -47,10 +48,19 @@ const quickStartActions = [
     { title: "Generate New Notes", href: "/notes", icon: <BrainCircuit className="h-5 w-5" /> }
 ];
 
+const typeMap: Record<string, { label: string, color: string }> = {
+    interview: { label: "Interview", color: "bg-blue-500/20 text-blue-300" },
+    coding: { label: "Coding", color: "bg-purple-500/20 text-purple-300" },
+    notes: { label: "Notes", color: "bg-yellow-500/20 text-yellow-300" },
+    resume: { label: "Resume", color: "bg-green-500/20 text-green-300" },
+};
+
 const demoHistory = [
-    { type: 'coding', title: 'Completed review for "Two Sum"', time: subDays(new Date(), 1) },
-    { type: 'interview', title: 'Finished mock interview for "Frontend Role"', time: subDays(new Date(), 2) },
-    { type: 'notes', title: 'Generated notes on "React Hooks"', time: subDays(new Date(), 3) },
+    { type: 'coding', title: 'Completed review for "Two Sum"', time: subDays(new Date(), 1), performance: "75%", href: "/coding-gym/demo-session/results" },
+    { type: 'interview', title: 'Finished mock interview for "Frontend Role"', time: subDays(new Date(), 2), performance: "82%", href: "/interview-prep/demo-session/results" },
+    { type: 'notes', title: 'Generated notes on "React Hooks"', time: subDays(new Date(), 3), performance: "N/A", href: "/notes" },
+    { type: 'resume', title: 'Reviewed resume for "Acme Corp SWE"', time: subDays(new Date(), 5), performance: "91%", href: "/resume-studio" },
+    { type: 'coding', title: 'Completed review for "Valid Parentheses"', time: subDays(new Date(), 6), performance: "50%", href: "/coding-gym/demo-session/results" },
 ];
 
 
@@ -149,28 +159,49 @@ export default function RealDashboard() {
                     ))}
                 </CardContent>
             </Card>
-             <Card className="bg-secondary/50">
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><History className="h-5 w-5" /> Recent Activity</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <ul className="space-y-4">
-                       {demoHistory.map((item, index) => (
-                           <li key={index} className="flex items-start gap-3">
-                              <div className="mt-1 p-1.5 bg-primary/20 rounded-full">
-                                <div className="w-2 h-2 rounded-full bg-primary" />
-                              </div>
-                              <div>
-                                <p className="text-sm font-medium text-foreground">{item.title}</p>
-                                <p className="text-xs text-muted-foreground">{formatDistanceToNow(item.time, { addSuffix: true })}</p>
-                              </div>
-                           </li>
-                       ))}
-                    </ul>
-                </CardContent>
-            </Card>
         </div>
       </div>
+
+       {/* Full-width Recent Activity Table */}
+      <Card className="bg-secondary/50">
+          <CardHeader>
+              <CardTitle className="flex items-center gap-2"><History className="h-5 w-5" /> Recent Activity</CardTitle>
+              <CardDescription>A log of your most recent sessions and generated content.</CardDescription>
+          </CardHeader>
+          <CardContent>
+              <Table>
+                  <TableHeader>
+                      <TableRow>
+                          <TableHead>Activity</TableHead>
+                          <TableHead>Category</TableHead>
+                          <TableHead>Performance</TableHead>
+                          <TableHead>Date</TableHead>
+                          <TableHead className="text-right">Action</TableHead>
+                      </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                      {demoHistory.map((item, index) => {
+                          const details = typeMap[item.type];
+                          return (
+                            <TableRow key={index}>
+                                <TableCell className="font-medium">{item.title}</TableCell>
+                                <TableCell>
+                                    <Badge variant="outline" className={details.color}>{details.label}</Badge>
+                                </TableCell>
+                                <TableCell>{item.performance}</TableCell>
+                                <TableCell>{formatDistanceToNow(item.time, { addSuffix: true })}</TableCell>
+                                <TableCell className="text-right">
+                                    <Button asChild variant="ghost" size="sm">
+                                        <Link href={item.href}>View</Link>
+                                    </Button>
+                                </TableCell>
+                            </TableRow>
+                          )
+                      })}
+                  </TableBody>
+              </Table>
+          </CardContent>
+      </Card>
     </div>
   );
 }
