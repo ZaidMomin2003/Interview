@@ -2,28 +2,11 @@
 import 'server-only';
 import { cookies } from 'next/headers';
 import { getAuth } from 'firebase-admin/auth';
-import { initializeApp, getApps, App, cert } from 'firebase-admin/app';
-import { firebaseAdminConfig } from './firebase-server-config';
+import { getAdminApp } from './firebase-server-config';
 import type { AppUser } from '@/hooks/use-user-data';
 import { getFirestore } from 'firebase-admin/firestore';
 
-let adminApp: App | undefined = getApps().find(a => a.name === 'admin');
-
-// This logic is needed to prevent re-initializing the app on every hot-reload
-if (!adminApp && firebaseAdminConfig.projectId && firebaseAdminConfig.clientEmail && firebaseAdminConfig.privateKey) {
-    try {
-        adminApp = initializeApp({
-          credential: cert({
-            projectId: firebaseAdminConfig.projectId,
-            clientEmail: firebaseAdminConfig.clientEmail,
-            privateKey: firebaseAdminConfig.privateKey,
-          }),
-        }, 'admin');
-    } catch(e) {
-        console.error("Failed to initialize firebase-admin", e);
-    }
-}
-
+const adminApp = getAdminApp();
 const adminAuth = adminApp ? getAuth(adminApp) : null;
 const adminDb = adminApp ? getFirestore(adminApp) : null;
 

@@ -1,26 +1,10 @@
 // src/app/api/auth/route.ts
 import { cookies } from 'next/headers';
 import { getAuth } from 'firebase-admin/auth';
-import { initializeApp, getApps, App, cert } from 'firebase-admin/app';
-import { firebaseAdminConfig } from '@/lib/firebase-server-config';
+import { getAdminApp } from '@/lib/firebase-server-config';
 import { NextRequest, NextResponse } from 'next/server';
 
-let adminApp: App | undefined = getApps().find(a => a.name === 'admin-api');
-
-if (!adminApp && firebaseAdminConfig.projectId && firebaseAdminConfig.clientEmail && firebaseAdminConfig.privateKey) {
-  try {
-    adminApp = initializeApp({
-      credential: cert({
-        projectId: firebaseAdminConfig.projectId,
-        clientEmail: firebaseAdminConfig.clientEmail,
-        privateKey: firebaseAdminConfig.privateKey,
-      }),
-    }, 'admin-api');
-  } catch(e) {
-    console.error("Failed to initialize firebase-admin for API", e);
-  }
-}
-
+const adminApp = getAdminApp();
 const adminAuth = adminApp ? getAuth(adminApp) : null;
 
 // This function handles creating a session cookie when a user logs in.
