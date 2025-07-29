@@ -46,11 +46,6 @@ export async function updateUserProfile(uid: string, data: Partial<AppUser>): Pr
 
 // --- Coding Session Functions ---
 
-export async function createNewCodingSession(sessionData: Omit<CodingSession, 'id'>): Promise<string> {
-    const docRef = await addDoc(codingSessionsCollectionRef, sessionData);
-    return docRef.id;
-}
-
 export async function getCodingSession(sessionId: string): Promise<CodingSession | null> {
     try {
         const sessionDocRef = doc(codingSessionsCollectionRef, sessionId);

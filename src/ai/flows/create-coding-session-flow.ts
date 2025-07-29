@@ -5,13 +5,15 @@
 
 import { ai } from '@/ai/genkit';
 import { generateCodingQuestion } from './generate-coding-question-flow';
-import { createNewCodingSession } from '@/services/firestore';
 import { 
     CreateCodingSessionInputSchema, 
     CreateCodingSessionOutputSchema,
     type CreateCodingSessionInput,
-    type CreateCodingSessionOutput
+    type CreateCodingSessionOutput,
+    type CodingSession
 } from '@/ai/schemas';
+import { collection, addDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 const createCodingSessionFlow = ai.defineFlow(
   {
@@ -29,18 +31,19 @@ const createCodingSessionFlow = ai.defineFlow(
     const generatedQuestions = await Promise.all(questionPromises);
 
     // Create session object for Firestore
-    const sessionData = {
+    const sessionData: Omit<CodingSession, 'id'> = {
         userId,
         topic,
-        difficulty,
+        difficulty: difficulty,
         questions: generatedQuestions.map(q => ({ ...q, id: crypto.randomUUID(), userSolution: '' })),
         createdAt: Date.now(),
         status: 'in-progress' as const,
     };
 
-    const sessionId = await createNewCodingSession(sessionData);
+    // Directly add the document to Firestore from the server flow
+    const docRef = await addDoc(collection(db, 'coding_sessions'), sessionData);
 
-    return { sessionId };
+    return { sessionId: docRef.id };
   }
 );
 
