@@ -20,6 +20,7 @@ import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Switch } from '@/components/ui/switch';
 import RealDashboard from '@/components/layout/real-dashboard';
+import PromotionalPopup from '@/components/layout/promotional-popup';
 
 
 function AnimatedCounter({ to, label }: { to: number, label: string }) {
@@ -486,6 +487,7 @@ export default function LandingPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground font-body">
+      <PromotionalPopup />
       {/* Background Grid & Interactive Spotlight */}
       <div
         className="pointer-events-none fixed inset-0 z-0 transition-opacity duration-300"
