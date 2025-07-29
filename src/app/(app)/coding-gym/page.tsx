@@ -41,7 +41,7 @@ export default function CodingGymPage() {
   const form = useForm<CodingSessionFormValues>({
     resolver: zodResolver(codingSessionSchema),
     defaultValues: {
-      topic: 'Arrays',
+      topic: '',
       difficulty: 'Easy',
       numberOfQuestions: 3,
     },
@@ -60,7 +60,7 @@ export default function CodingGymPage() {
     try {
       toast({
         title: "Building Your Session...",
-        description: `Generating ${values.numberOfQuestions} ${values.difficulty} ${values.topic} questions. This may take a moment.`,
+        description: `Generating ${values.numberOfQuestions} ${values.difficulty} "${values.topic}" questions. This may take a moment.`,
       });
       const result = await createCodingSession({ ...values, userId: profile.uid });
       if (result.sessionId) {
@@ -120,20 +120,10 @@ export default function CodingGymPage() {
             <form onSubmit={form.handleSubmit(handleStartSession)} className="space-y-6">
               <FormField control={form.control} name="topic" render={({ field }) => (
                   <FormItem>
-                      <FormLabel>Topic</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isLoading}>
-                          <FormControl>
-                              <SelectTrigger><SelectValue placeholder="e.g., Arrays, Linked Lists, Trees" /></SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                              <SelectItem value="Arrays">Arrays</SelectItem>
-                              <SelectItem value="Strings">Strings</SelectItem>
-                              <SelectItem value="Linked Lists">Linked Lists</SelectItem>
-                              <SelectItem value="Trees">Trees</SelectItem>
-                              <SelectItem value="Graphs">Graphs</SelectItem>
-                              <SelectItem value="Dynamic Programming">Dynamic Programming</SelectItem>
-                          </SelectContent>
-                      </Select>
+                      <FormLabel>Topic(s)</FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g., Arrays, Strings, Dynamic Programming" {...field} disabled={isLoading} />
+                      </FormControl>
                       <FormMessage />
                   </FormItem>
               )} />
