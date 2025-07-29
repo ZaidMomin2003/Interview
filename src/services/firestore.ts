@@ -1,8 +1,8 @@
 // src/services/firestore.ts
-"use client";
+'use server';
 
 import { db } from '@/lib/firebase';
-import { doc, getDoc, setDoc, updateDoc, collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc, collection, addDoc } from 'firebase/firestore';
 import type { AppUser, CodingSession, CodingQuestionWithSolution } from '@/hooks/use-user-data';
 
 const usersCollectionRef = collection(db, 'users');
