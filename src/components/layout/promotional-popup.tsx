@@ -32,7 +32,6 @@ export default function PromotionalPopup() {
     ];
 
     useEffect(() => {
-        // This timer will now run on every page load
         const timer = setTimeout(() => {
             setIsOpen(true);
         }, 2500);
@@ -51,7 +50,7 @@ export default function PromotionalPopup() {
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogContent className="p-0 border-0 bg-transparent w-full max-w-sm shadow-2xl">
-                <div className="relative w-full rounded-3xl bg-black overflow-hidden aspect-[9/14]">
+                <div className="relative w-full rounded-3xl bg-black overflow-hidden aspect-[9/14] border-2 border-primary">
                     <Image
                       src="/popup.png"
                       alt="Abstract background image of a futuristic landscape"
