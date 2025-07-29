@@ -5,7 +5,7 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ArrowRight, Code, Cpu, Bot, Zap, ShieldCheck, User, Mail, Send, Video, FileText, Target, BrainCircuit, LayoutDashboard, CheckCircle, BarChartHorizontalBig, Mic, VideoOff as VideoOffIcon, BotIcon, CodeXml, Video as VideoIcon, History as HistoryIcon, Phone, Github, Linkedin, Instagram, TrendingUp, GalleryVertical, Plus, GraduationCap, Briefcase, Rocket, Star, Quote, Tags, Check, Notebook, AlarmClock } from 'lucide-react';
+import { ArrowRight, Code, Cpu, Bot, Zap, ShieldCheck, User, Mail, Send, Video, FileText, Target, BrainCircuit, LayoutDashboard, CheckCircle, BarChartHorizontalBig, Mic, VideoOff as VideoOffIcon, BotIcon, CodeXml, Video as VideoIcon, History as HistoryIcon, Phone, Github, Linkedin, Instagram, TrendingUp, GalleryVertical, Plus, GraduationCap, Briefcase, Rocket, Star, Quote, Tags, Check, Notebook, AlarmClock, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -838,14 +838,28 @@ export default function LandingPage() {
                         Frequently accessed data nodes. If your query is not here, please connect to a support channel.
                     </p>
                 </div>
-                <div className="mt-12">
+                <div className="mt-12 grid md:grid-cols-2 gap-x-8 gap-y-4">
                     <Accordion type="single" collapsible className="w-full">
-                        {faqs.map((faq, i) => (
-                            <AccordionItem key={i} value={`item-${i}`} className="bg-secondary/30 border-border/50 rounded-lg mb-4 p-2 transition-all hover:bg-secondary/50">
-                                <AccordionTrigger className="text-lg text-left font-semibold text-foreground hover:text-primary transition-colors duration-300 p-4">
-                                    {faq.question}
+                        {faqs.slice(0, Math.ceil(faqs.length / 2)).map((faq, i) => (
+                             <AccordionItem key={i} value={`item-${i}`} className="border-b-0">
+                                <AccordionTrigger className="text-lg text-left font-semibold text-foreground hover:no-underline p-4 border border-transparent rounded-lg hover:border-primary/50 hover:bg-secondary/50 transition-all duration-300 [&[data-state=open]]:border-primary/50 [&[data-state=open]]:bg-secondary/50">
+                                    <span className="flex-1 pr-4">{faq.question}</span>
+                                    <ChevronRight className="h-5 w-5 shrink-0 transition-transform duration-200 group-data-[state=open]:rotate-90" />
                                 </AccordionTrigger>
-                                <AccordionContent className="text-muted-foreground text-base p-4 pt-0">
+                                <AccordionContent className="text-muted-foreground text-base p-4 pt-2">
+                                    {faq.answer}
+                                </AccordionContent>
+                            </AccordionItem>
+                        ))}
+                    </Accordion>
+                     <Accordion type="single" collapsible className="w-full">
+                        {faqs.slice(Math.ceil(faqs.length / 2)).map((faq, i) => (
+                            <AccordionItem key={i} value={`item-${i + Math.ceil(faqs.length / 2)}`} className="border-b-0">
+                                <AccordionTrigger className="text-lg text-left font-semibold text-foreground hover:no-underline p-4 border border-transparent rounded-lg hover:border-primary/50 hover:bg-secondary/50 transition-all duration-300 [&[data-state=open]]:border-primary/50 [&[data-state=open]]:bg-secondary/50">
+                                     <span className="flex-1 pr-4">{faq.question}</span>
+                                     <ChevronRight className="h-5 w-5 shrink-0 transition-transform duration-200 group-data-[state=open]:rotate-90" />
+                                </AccordionTrigger>
+                                <AccordionContent className="text-muted-foreground text-base p-4 pt-2">
                                     {faq.answer}
                                 </AccordionContent>
                             </AccordionItem>
