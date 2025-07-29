@@ -563,8 +563,8 @@ export default function LandingPage() {
                         <div className="w-3 h-3 rounded-full bg-green-500"></div>
                     </div>
                     {/* Wrapper for scaling on mobile */}
-                    <div className="h-[450px] md:h-auto overflow-hidden">
-                      <div className="origin-top-left scale-[0.55] sm:scale-75 md:scale-100">
+                    <div className="h-[380px] sm:h-[550px] md:h-auto overflow-hidden flex justify-center">
+                      <div className="origin-top scale-[0.35] sm:scale-[0.5] md:scale-100">
                         <div className="grid grid-cols-12 gap-6 p-6 bg-background/30 backdrop-blur-sm w-[1024px]">
                             {/* Sidebar Mock */}
                             <div className="col-span-3 flex flex-col gap-2">
