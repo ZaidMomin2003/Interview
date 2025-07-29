@@ -14,14 +14,11 @@ export default function PromotionalPopup() {
     const [isOpen, setIsOpen] = useState(false);
 
     useEffect(() => {
-        const hasSeenPopup = sessionStorage.getItem(POPUP_SEEN_KEY);
-        if (!hasSeenPopup) {
-            const timer = setTimeout(() => {
-                setIsOpen(true);
-                sessionStorage.setItem(POPUP_SEEN_KEY, 'true');
-            }, 2500);
-            return () => clearTimeout(timer);
-        }
+        // This timer will now run on every page load
+        const timer = setTimeout(() => {
+            setIsOpen(true);
+        }, 2500);
+        return () => clearTimeout(timer);
     }, []);
 
     return (
