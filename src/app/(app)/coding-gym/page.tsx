@@ -13,12 +13,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Loader2, ArrowRight, BrainCircuit, CodeXml, GitCompareArrows } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useUserData } from '@/hooks/use-user-data';
+import { CreateCodingSessionInputSchema } from '@/ai/schemas';
 
-const codingSessionSchema = z.object({
-  topic: z.string().min(1, 'Topic is required.'),
-  difficulty: z.enum(['Easy', 'Medium', 'Hard']),
-  numberOfQuestions: z.coerce.number().min(1, 'At least one question is required.').max(10, 'Maximum of 10 questions.'),
-});
+const codingSessionSchema = CreateCodingSessionInputSchema.omit({ userId: true });
 
 type CodingSessionFormValues = z.infer<typeof codingSessionSchema>;
 
@@ -38,6 +36,7 @@ export default function CodingGymPage() {
   const { toast } = useToast();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const { createCodingSession, profile } = useUserData();
 
   const form = useForm<CodingSessionFormValues>({
     resolver: zodResolver(codingSessionSchema),
@@ -49,15 +48,26 @@ export default function CodingGymPage() {
   });
 
   const handleStartSession = async (values: CodingSessionFormValues) => {
+    if (!profile) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'You must be logged in to start a session.',
+      });
+      return;
+    }
     setIsLoading(true);
     try {
-      // In a real app, you would create a session and get an ID
-      // For this demo, we'll just navigate to a hardcoded session ID
       toast({
-        title: "Starting Coding Session...",
-        description: `Generating ${values.numberOfQuestions} ${values.difficulty} ${values.topic} questions.`,
+        title: "Building Your Session...",
+        description: `Generating ${values.numberOfQuestions} ${values.difficulty} ${values.topic} questions. This may take a moment.`,
       });
-      router.push('/coding-gym/demo-session');
+      const result = await createCodingSession({ ...values, userId: profile.uid });
+      if (result.sessionId) {
+        router.push(`/coding-gym/${result.sessionId}`);
+      } else {
+        throw new Error('Failed to create a session ID.');
+      }
     } catch (error: any) {
       toast({
         variant: 'destructive',

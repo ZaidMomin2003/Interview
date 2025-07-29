@@ -3,13 +3,16 @@
 
 import { useState, useEffect, useContext, createContext, ReactNode, useCallback } from 'react';
 import { useAuth, type CoreUser } from './use-auth';
-import type { Portfolio, Bookmark, HistoryItem, Note, Reminder, AppUser, NotesInput, Task, TaskStatus } from '@/ai/schemas';
+import type { Portfolio, Bookmark, HistoryItem, Note, Reminder, AppUser, NotesInput, Task, TaskStatus, CreateCodingSessionInput, CreateCodingSessionOutput } from '@/ai/schemas';
 import { generateResumeReview } from '@/ai/flows/generate-resume-review-flow';
 import { generateCodingQuestion } from '@/ai/flows/generate-coding-question-flow';
 import { generateInterviewQuestion } from '@/ai/flows/generate-interview-question-flow';
 import { generateNotes } from '@/ai/flows/generate-notes-flow';
 import { estimateSalary } from '@/ai/flows/estimate-salary-flow';
+import { createCodingSession as createCodingSessionFlow } from '@/ai/flows/create-coding-session-flow';
+import { generateCodingFeedback as generateCodingFeedbackFlow } from '@/ai/flows/generate-coding-feedback-flow';
 import { getUserProfile, createUserProfile, updateUserProfile } from '@/services/firestore';
+import type { CodingFeedbackInput } from '@/ai/schemas';
 
 
 // --- Interfaces ---
@@ -119,6 +122,8 @@ type UserDataContextType = {
   generateInterviewQuestion: typeof generateInterviewQuestion;
   generateNotes: typeof generateNotes;
   estimateSalary: typeof estimateSalary;
+  createCodingSession: (input: CreateCodingSessionInput) => Promise<CreateCodingSessionOutput>;
+  generateCodingFeedback: (input: CodingFeedbackInput) => Promise<import('/Users/runner/work/studio-2024-07-25-1/studio-2024-07-25-1/src/ai/schemas').CodingFeedbackOutput>;
 };
 
 const UserDataContext = createContext<UserDataContextType>({
@@ -145,6 +150,8 @@ const UserDataContext = createContext<UserDataContextType>({
   generateInterviewQuestion: async () => ({ question: '' }),
   generateNotes: async () => ({ title: '', description: '', keyTakeaways: [], contentSections: [] }),
   estimateSalary: async () => ({ median: 0, percentile25: 0, percentile75: 0, rationale: '' }),
+  createCodingSession: async () => ({ sessionId: '' }),
+  generateCodingFeedback: async () => ({ analysis: '', suggestedSolution: '' }),
 });
 
 
@@ -404,6 +411,8 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
         generateInterviewQuestion,
         generateNotes,
         estimateSalary,
+        createCodingSession: createCodingSessionFlow,
+        generateCodingFeedback: generateCodingFeedbackFlow,
     }}>
       {children}
     </UserDataContext.Provider>

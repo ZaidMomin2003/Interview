@@ -36,6 +36,35 @@ export const CodingQuestionOutputSchema = z.object({
 });
 export type CodingQuestionOutput = z.infer<typeof CodingQuestionOutputSchema>;
 
+// Schemas for create-coding-session-flow
+export const CreateCodingSessionInputSchema = z.object({
+  topic: z.string().min(1, 'Topic is required.'),
+  difficulty: z.enum(['Easy', 'Medium', 'Hard']),
+  numberOfQuestions: z.coerce.number().min(1).max(10),
+  userId: z.string(),
+});
+export type CreateCodingSessionInput = z.infer<typeof CreateCodingSessionInputSchema>;
+
+export const CreateCodingSessionOutputSchema = z.object({
+  sessionId: z.string(),
+});
+export type CreateCodingSessionOutput = z.infer<typeof CreateCodingSessionOutputSchema>;
+
+// Schemas for generate-coding-feedback-flow
+export const CodingFeedbackInputSchema = z.object({
+    questionTitle: z.string(),
+    questionDescription: z.string(),
+    userSolution: z.string(),
+});
+export type CodingFeedbackInput = z.infer<typeof CodingFeedbackInputSchema>;
+
+export const CodingFeedbackOutputSchema = z.object({
+    analysis: z.string().describe("A detailed analysis of the user's solution, comparing it to an optimal approach. Discuss time/space complexity, readability, and best practices."),
+    suggestedSolution: z.string().describe("The optimal or a more efficient solution in a JavaScript code block."),
+});
+export type CodingFeedbackOutput = z.infer<typeof CodingFeedbackOutputSchema>;
+
+
 // Schemas for generate-interview-question-flow
 export const InterviewQuestionInputSchema = z.object({
   role: z.string().describe('The job role the user is interviewing for (e.g., Senior Frontend Engineer).'),
@@ -177,6 +206,26 @@ export const TaskSchema = z.object({
   status: TaskStatusSchema,
 });
 export type Task = z.infer<typeof TaskSchema>;
+
+
+// Schema for Coding Session
+const CodingQuestionWithSolutionSchema = CodingQuestionOutputSchema.extend({
+    id: z.string(),
+    userSolution: z.string().optional(),
+    feedback: CodingFeedbackOutputSchema.optional(),
+});
+export type CodingQuestionWithSolution = z.infer<typeof CodingQuestionWithSolutionSchema>;
+
+export const CodingSessionSchema = z.object({
+    id: z.string(),
+    userId: z.string(),
+    topic: z.string(),
+    difficulty: z.string(),
+    questions: z.array(CodingQuestionWithSolutionSchema),
+    createdAt: z.number(),
+    status: z.enum(['in-progress', 'completed']),
+});
+export type CodingSession = z.infer<typeof CodingSessionSchema>;
 
 
 // Schema for the entire AppUser profile
