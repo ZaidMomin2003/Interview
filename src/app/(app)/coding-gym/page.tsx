@@ -15,6 +15,7 @@ import { Loader2, ArrowRight, BrainCircuit, CodeXml, GitCompareArrows } from 'lu
 import { useToast } from '@/hooks/use-toast';
 import { useUserData } from '@/hooks/use-user-data';
 import { CreateCodingSessionInputSchema } from '@/ai/schemas';
+import { createCodingSession } from '@/ai/flows/create-coding-session-flow';
 
 const codingSessionSchema = CreateCodingSessionInputSchema.omit({ userId: true });
 
@@ -36,7 +37,7 @@ export default function CodingGymPage() {
   const { toast } = useToast();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const { createCodingSession, profile } = useUserData();
+  const { profile } = useUserData();
 
   const form = useForm<CodingSessionFormValues>({
     resolver: zodResolver(codingSessionSchema),
