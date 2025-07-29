@@ -12,8 +12,12 @@ import {
     type CreateCodingSessionOutput,
     type CodingSession
 } from '@/ai/schemas';
-import { collection, addDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { getFirestore } from 'firebase-admin/firestore';
+import { getAdminApp } from '@/lib/firebase-server-config';
+
+// Ensure we use the Admin SDK for server-side database writes
+const adminApp = getAdminApp();
+const db = adminApp ? getFirestore(adminApp) : null;
 
 const createCodingSessionFlow = ai.defineFlow(
   {
@@ -22,6 +26,10 @@ const createCodingSessionFlow = ai.defineFlow(
     outputSchema: CreateCodingSessionOutputSchema,
   },
   async (input) => {
+    if (!db) {
+      throw new Error("Firestore Admin SDK is not initialized.");
+    }
+    
     const { topic, difficulty, numberOfQuestions, userId } = input;
 
     // Generate N questions in parallel
@@ -40,8 +48,8 @@ const createCodingSessionFlow = ai.defineFlow(
         status: 'in-progress' as const,
     };
 
-    // Directly add the document to Firestore from the server flow
-    const docRef = await addDoc(collection(db, 'coding_sessions'), sessionData);
+    // Directly add the document to Firestore from the server flow using the Admin SDK
+    const docRef = await db.collection('coding_sessions').add(sessionData);
 
     return { sessionId: docRef.id };
   }
