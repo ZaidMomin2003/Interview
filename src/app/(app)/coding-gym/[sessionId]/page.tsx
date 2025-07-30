@@ -18,31 +18,27 @@ export default function CodingSessionPage({ params }: { params: { sessionId: str
     const router = useRouter();
     const { toast } = useToast();
     
-    // `use` hook to resolve the promise from the server action
+    // `use` hook resolves the promise from the server action during render.
     const initialSession = use(getCodingSession(sessionId));
 
-    const [session] = useState<CodingSession | null>(initialSession);
-    const [loading, setLoading] = useState(false);
+    const [session, setSession] = useState<CodingSession | null>(initialSession);
+    const [loading, setLoading] = useState(true); // Start with loading true until state is synced
     const [solutions, setSolutions] = useState<Record<string, string>>({});
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [isFinishing, setIsFinishing] = useState(false);
 
     useEffect(() => {
-        // This effect should only run if the session exists to initialize state.
-        if (session) {
+        // This effect runs after initial render to handle the session data or redirect.
+        if (initialSession) {
+            setSession(initialSession);
             const initialSolutions: Record<string, string> = {};
-            session.questions.forEach(q => {
+            initialSession.questions.forEach(q => {
                 initialSolutions[q.id] = q.userSolution || '';
             });
             setSolutions(initialSolutions);
             setLoading(false);
-        }
-    }, [session]);
-    
-    useEffect(() => {
-        // This effect handles the redirection if the session doesn't exist.
-        // It runs after the initial render, preventing the state update error.
-        if (!initialSession) {
+        } else {
+            // The session was not found. Redirect after render is complete.
             toast({ variant: 'destructive', title: 'Error', description: 'Coding session not found.' });
             router.push('/coding-gym');
         }

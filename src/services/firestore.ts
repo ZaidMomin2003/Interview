@@ -6,6 +6,7 @@ import { getAdminApp } from '@/lib/firebase-server-config';
 import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import { doc, getDoc, setDoc, updateDoc, collection, addDoc } from 'firebase/firestore';
 import type { AppUser, CodingSession, CodingQuestionWithSolution } from '@/ai/schemas';
+import { redirect } from 'next/navigation';
 
 // --- Client-side functions ---
 const usersCollectionRef = collection(clientDb, 'users');
@@ -58,12 +59,16 @@ export async function getCodingSession(sessionId: string): Promise<CodingSession
         const sessionDoc = await sessionDocRef.get();
         if (sessionDoc.exists) {
             const data = sessionDoc.data() as Omit<CodingSession, 'id'>;
+            // Ensure questions array exists
+            if (!data.questions) {
+                data.questions = [];
+            }
             return { id: sessionDoc.id, ...data };
         }
         return null;
     } catch (error) {
         console.error("Error fetching coding session with Admin SDK:", error);
-        return null;
+        return null; // Return null on error, let the client handle it.
     }
 }
 
