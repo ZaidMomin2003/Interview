@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bot, BarChart3, FileText, History, LayoutDashboard, LogOut, UserCircle, Rocket, Library, Notebook, AlarmClock, Trash2, CodeXml, ClipboardList } from "lucide-react";
+import { Bot, BarChart3, FileText, History, LayoutDashboard, LogOut, UserCircle, Rocket, Library, Notebook, AlarmClock, Trash2, CodeXml, ClipboardList, User, CreditCard, LifeBuoy } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import {
   Sidebar,
@@ -22,16 +22,16 @@ import { useState, useEffect } from "react";
 import { differenceInDays, differenceInHours, differenceInMinutes, differenceInSeconds } from 'date-fns';
 import { useRouter } from "next/navigation";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+  DropdownMenuGroup,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ThemeToggle } from "./theme-toggle";
 
 const navLinks = [
     { href: "/dashboard", icon: <LayoutDashboard />, label: "Dashboard" },
@@ -98,6 +98,11 @@ export function AppSidebar({ user }: { user: AppUser | null }) {
   const pathname = usePathname();
   const isActive = (path: string) => pathname === path || (path !== '/dashboard' && pathname.startsWith(path));
 
+  const handleLogout = async () => {
+    await logout();
+    router.push("/login");
+  };
+
   // Find the next upcoming reminder
   const nextReminder = profile?.reminders?.length ? profile.reminders
     .filter(r => new Date(r.date) > new Date())
@@ -153,28 +158,42 @@ export function AppSidebar({ user }: { user: AppUser | null }) {
             <Link href="/pricing"><Rocket className="mr-2" /> Upgrade Plan</Link>
          </Button>
         <SidebarMenu>
-          <SidebarMenuItem>
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <SidebarMenuButton className="!bg-destructive !text-destructive-foreground hover:!bg-destructive/90 focus:!ring-destructive">
-                  <LogOut />
-                  Log Out
-                </SidebarMenuButton>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Are you sure you want to log out?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    You will be returned to the login page and your current session will be terminated.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={logout} className="bg-destructive hover:bg-destructive/90">Log Out</AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </SidebarMenuItem>
+          <SidebarSeparator className="my-1" />
+           <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <button className="flex items-center w-full p-2 rounded-md text-left hover:bg-sidebar-accent transition-colors duration-200">
+                     <Avatar className="h-8 w-8 mr-3">
+                      <AvatarImage
+                        src={profile?.photoURL || ""}
+                        alt={profile?.displayName || "User"}
+                      />
+                      <AvatarFallback>
+                        {profile?.displayName?.charAt(0).toUpperCase() || "U"}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-grow overflow-hidden">
+                        <p className="text-sm font-semibold truncate text-foreground">{profile?.displayName}</p>
+                        <p className="text-xs truncate text-muted-foreground">{profile?.email}</p>
+                    </div>
+                </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56 mb-2" side="top" align="start" forceMount>
+                <DropdownMenuGroup>
+                    <DropdownMenuItem onClick={() => router.push('/portfolio')}><User className="mr-2 h-4 w-4"/>Profile</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => router.push('/pricing')}><CreditCard className="mr-2 h-4 w-4"/>Billing</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => router.push('/support')}><LifeBuoy className="mr-2 h-4 w-4"/>Support</DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout}><LogOut className="mr-2 h-4 w-4"/>Log out</DropdownMenuItem>
+                <DropdownMenuSeparator />
+                 <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                    <div className="flex items-center justify-between w-full">
+                        <span>Theme</span>
+                        <ThemeToggle />
+                    </div>
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
         </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
