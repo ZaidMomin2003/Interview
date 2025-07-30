@@ -3,8 +3,8 @@ import 'server-only';
 import { cookies } from 'next/headers';
 import { getAuth } from 'firebase-admin/auth';
 import { getAdminApp } from './firebase-server-config';
-import type { AppUser } from '@/hooks/use-user-data';
-import { getFirestore } from 'firebase-admin/firestore';
+import type { AppUser, HistoryItem } from '@/hooks/use-user-data';
+import { getFirestore, Timestamp } from 'firebase-admin/firestore';
 
 const adminApp = getAdminApp();
 const adminAuth = adminApp ? getAuth(adminApp) : null;
@@ -54,8 +54,22 @@ export async function getUserPortfolio(userId: string): Promise<AppUser | null> 
             return null;
         }
         const user = userDoc.data() as AppUser;
-        // Only return if the portfolio is public
-        return user.portfolio.isPublic ? user : null;
+        if (!user.portfolio.isPublic) {
+            return null;
+        }
+
+        // --- FIX: Serialize Firestore Timestamps ---
+        // Convert any Firestore Timestamps to plain numbers before returning.
+        if (user.history) {
+            user.history = user.history.map(item => {
+                if (item.timestamp && typeof item.timestamp === 'object' && item.timestamp instanceof Timestamp) {
+                    return { ...item, timestamp: item.timestamp.toMillis() };
+                }
+                return item;
+            });
+        }
+        
+        return user;
 
     } catch (error) {
         console.error('Error fetching user portfolio:', error);
