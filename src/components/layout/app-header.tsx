@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "next/navigation";
-import { History, Bookmark, Cpu } from 'lucide-react';
+import { History, Bookmark } from 'lucide-react';
 import Link from "next/link";
 
 function FourSquaresIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -38,7 +38,10 @@ export function AppHeader() {
     <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background/80 backdrop-blur-lg px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
        <div className="md:hidden">
          <Link href="/" className="flex items-center gap-2">
-          <FourSquaresIcon className="h-8 w-8 text-primary" />
+          <FourSquaresIcon className="h-6 w-6 text-primary" />
+           <span className="font-headline text-xl font-bold tracking-widest text-foreground uppercase">
+            Talxify
+          </span>
          </Link>
        </div>
       <div className="flex-1" />
