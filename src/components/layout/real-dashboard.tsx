@@ -172,8 +172,6 @@ export default function RealDashboard() {
                   <TableBody>
                       {recentHistory.map((item, index) => {
                           const details = typeMap[item.type as keyof typeof typeMap] || typeMap.other;
-                          const date = item.timestamp ? new Date(item.timestamp) : null;
-                          const isValidDate = date && !isNaN(date.getTime());
                           return (
                             <TableRow key={item.id || index}>
                                 <TableCell className="font-medium">{item.title}</TableCell>
@@ -181,7 +179,7 @@ export default function RealDashboard() {
                                     <Badge variant="outline" className={details.color}>{details.label}</Badge>
                                 </TableCell>
                                 <TableCell>
-                                    {isValidDate ? formatDistanceToNow(date, { addSuffix: true }) : 'N/A'}
+                                    {typeof item.timestamp === 'number' ? formatDistanceToNow(new Date(item.timestamp), { addSuffix: true }) : 'N/A'}
                                 </TableCell>
                                 <TableCell className="text-right">
                                     <Button asChild variant="ghost" size="sm">
