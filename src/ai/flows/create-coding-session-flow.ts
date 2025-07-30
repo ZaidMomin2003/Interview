@@ -9,7 +9,8 @@ import {
     CreateCodingSessionOutputSchema,
     type CreateCodingSessionInput,
     type CreateCodingSessionOutput,
-    type CodingSession
+    type CodingSession,
+    CodingQuestionOutput
 } from '@/ai/schemas';
 import { getFirestore } from 'firebase-admin/firestore';
 import { getAdminApp } from '@/lib/firebase-server-config';
@@ -31,11 +32,12 @@ const createCodingSessionFlow = ai.defineFlow(
     
     const { topic, difficulty, numberOfQuestions, userId } = input;
 
-    // Generate N questions in parallel
-    const questionPromises = Array.from({ length: numberOfQuestions }, () => 
-        generateCodingQuestion({ topic, difficulty })
-    );
-    const generatedQuestions = await Promise.all(questionPromises);
+    // Generate N questions sequentially to avoid hitting API rate limits
+    const generatedQuestions: CodingQuestionOutput[] = [];
+    for (let i = 0; i < numberOfQuestions; i++) {
+        const question = await generateCodingQuestion({ topic, difficulty });
+        generatedQuestions.push(question);
+    }
 
     // Create session object for Firestore
     const sessionData: Omit<CodingSession, 'id'> = {
