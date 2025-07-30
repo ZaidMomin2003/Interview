@@ -9,37 +9,36 @@ import { format, subDays, formatDistanceToNow } from 'date-fns';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { useUserData } from '@/hooks/use-user-data';
+import type { HistoryItem } from '@/ai/schemas';
 
-// --- Static Demo Data ---
-
-const demoDisplayName = "Zaid";
-const demoInterviewCount = 8;
-const demoCodingCount = 27;
-const demoNotesCount = 12;
-
-const demoUsageData = [
-  { title: "Interviews Usage", icon: <Bot className="text-primary" />, current: demoInterviewCount, total: 40, color: "hsl(var(--primary))" },
-  { title: "Coding Questions", icon: <CodeXml className="text-primary" />, current: demoCodingCount, total: 160, color: "hsl(var(--primary))" },
-  { title: "Notes Generations", icon: <FileText className="text-primary" />, current: demoNotesCount, total: 100, color: "hsl(var(--primary))" },
-];
-
-const getDemoWeeklyActivity = () => {
-    const data: {day: string, Questions: number, Interviews: number, Notes: number}[] = [];
+const getWeeklyActivity = (history: HistoryItem[]) => {
+    const activityMap = new Map<string, { Questions: number, Interviews: number, Notes: number }>();
     const today = new Date();
+    
     for (let i = 6; i >= 0; i--) {
         const date = subDays(today, i);
-        data.push({
-            day: format(date, 'E'),
-            Questions: Math.floor(Math.random() * 5),
-            Interviews: Math.floor(Math.random() * 2),
-            Notes: Math.floor(Math.random() * 3),
-        });
+        const day = format(date, 'E');
+        activityMap.set(day, { Questions: 0, Interviews: 0, Notes: 0 });
     }
-    return data;
-}
 
-const demoActivityData = getDemoWeeklyActivity();
-const demoReadiness = Math.min(100, Math.floor((demoCodingCount * 1.5) + (demoInterviewCount * 2.5)));
+    history.forEach(item => {
+        if (!item.timestamp) return;
+        const itemDate = new Date(item.timestamp);
+        const dayDiff = (today.getTime() - itemDate.getTime()) / (1000 * 3600 * 24);
+        if (dayDiff < 7 && dayDiff >= 0) {
+            const day = format(itemDate, 'E');
+            const dayActivity = activityMap.get(day);
+            if (dayActivity) {
+                if (item.type === 'coding') dayActivity.Questions++;
+                if (item.type === 'interview') dayActivity.Interviews++;
+                if (item.type === 'notes') dayActivity.Notes++;
+            }
+        }
+    });
+    
+    return Array.from(activityMap.entries()).map(([day, counts]) => ({ day, ...counts }));
+};
 
 const quickStartActions = [
     { title: "Start Mock Interview", href: "/interview-prep", icon: <Bot className="h-5 w-5"/> },
@@ -47,28 +46,42 @@ const quickStartActions = [
     { title: "Generate New Notes", href: "/notes", icon: <BrainCircuit className="h-5 w-5" /> }
 ];
 
-const typeMap: Record<string, { label: string, color: string }> = {
-    interview: { label: "Interview", color: "bg-blue-500/20 text-blue-300" },
-    coding: { label: "Coding", color: "bg-purple-500/20 text-purple-300" },
-    notes: { label: "Notes", color: "bg-yellow-500/20 text-yellow-300" },
-    resume: { label: "Resume", color: "bg-green-500/20 text-green-300" },
+const typeMap: Record<string, { label: string, color: string, href: string }> = {
+    interview: { label: "Interview", color: "bg-blue-500/20 text-blue-300", href: "/interview-prep" },
+    coding: { label: "Coding", color: "bg-purple-500/20 text-purple-300", href: "/coding-gym" },
+    notes: { label: "Notes", color: "bg-yellow-500/20 text-yellow-300", href: "/notes" },
+    resume: { label: "Resume", color: "bg-green-500/20 text-green-300", href: "/resume-studio" },
 };
-
-const demoHistory = [
-    { type: 'coding', title: 'Completed review for "Two Sum"', time: subDays(new Date(), 1), performance: "75%", href: "/coding-gym/demo-session/results" },
-    { type: 'interview', title: 'Finished mock interview for "Frontend Role"', time: subDays(new Date(), 2), performance: "82%", href: "/interview-prep/demo-session/results" },
-    { type: 'notes', title: 'Generated notes on "React Hooks"', time: subDays(new Date(), 3), performance: "N/A", href: "/notes" },
-    { type: 'resume', title: 'Reviewed resume for "Acme Corp SWE"', time: subDays(new Date(), 5), performance: "91%", href: "/resume-studio" },
-    { type: 'coding', title: 'Completed review for "Valid Parentheses"', time: subDays(new Date(), 6), performance: "50%", href: "/coding-gym/demo-session/results" },
-];
 
 
 export default function RealDashboard() {
+  const { profile } = useUserData();
+
+  if (!profile) {
+    return null; // or a loading skeleton
+  }
+
+  const { displayName, history } = profile;
+
+  const interviewCount = history.filter(item => item.type === 'interview').length;
+  const codingCount = history.filter(item => item.type === 'coding').length;
+  const notesCount = history.filter(item => item.type === 'notes').length;
+
+  const usageData = [
+    { title: "AI Interviews", icon: <Bot className="text-primary" />, current: interviewCount, total: 40, color: "hsl(var(--primary))" },
+    { title: "Coding Problems", icon: <CodeXml className="text-primary" />, current: codingCount, total: 160, color: "hsl(var(--primary))" },
+    { title: "Notes Generated", icon: <FileText className="text-primary" />, current: notesCount, total: 100, color: "hsl(var(--primary))" },
+  ];
+
+  const activityData = getWeeklyActivity(history);
+  const readiness = Math.min(100, Math.floor((codingCount * 1.5) + (interviewCount * 2.5)));
+  
+  const recentHistory = history.slice(0, 5);
 
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Welcome back, {demoDisplayName}</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">Welcome back, {displayName}</h1>
         <p className="mt-1 text-muted-foreground">
           Here's your progress overview. Keep up the great work!
         </p>
@@ -79,14 +92,14 @@ export default function RealDashboard() {
         <div className="lg:col-span-2 space-y-8">
             {/* Usage Stats */}
             <div className="grid gap-6 md:grid-cols-3">
-                {demoUsageData.map(item => (
+                {usageData.map(item => (
                     <Card key={item.title} className="bg-secondary/50">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium text-muted-foreground">{item.title}</CardTitle>
                             {item.icon}
                         </CardHeader>
                         <CardContent>
-                            <div className="text-4xl font-bold">{item.current}/{item.total}</div>
+                            <div className="text-4xl font-bold">{item.current}<span className="text-base text-muted-foreground">/{item.total}</span></div>
                             <p className="text-xs text-muted-foreground">Credits remaining for this cycle</p>
                         </CardContent>
                     </Card>
@@ -100,7 +113,7 @@ export default function RealDashboard() {
                     <CardDescription>Your activity over the last 7 days.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <ActivityChart data={demoActivityData} />
+                    <ActivityChart data={activityData} />
                 </CardContent>
             </Card>
         </div>
@@ -113,7 +126,7 @@ export default function RealDashboard() {
                     <CardDescription>Based on your recent performance.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <ReadinessChart percentage={demoReadiness} />
+                    <ReadinessChart percentage={readiness} />
                 </CardContent>
             </Card>
              <Card className="bg-secondary/50">
@@ -148,25 +161,23 @@ export default function RealDashboard() {
                       <TableRow>
                           <TableHead>Activity</TableHead>
                           <TableHead>Category</TableHead>
-                          <TableHead>Performance</TableHead>
                           <TableHead>Date</TableHead>
                           <TableHead className="text-right">Action</TableHead>
                       </TableRow>
                   </TableHeader>
                   <TableBody>
-                      {demoHistory.map((item, index) => {
-                          const details = typeMap[item.type];
+                      {recentHistory.map((item, index) => {
+                          const details = typeMap[item.type as keyof typeof typeMap];
                           return (
                             <TableRow key={index}>
                                 <TableCell className="font-medium">{item.title}</TableCell>
                                 <TableCell>
                                     <Badge variant="outline" className={details.color}>{details.label}</Badge>
                                 </TableCell>
-                                <TableCell>{item.performance}</TableCell>
-                                <TableCell>{formatDistanceToNow(item.time, { addSuffix: true })}</TableCell>
+                                <TableCell>{item.timestamp ? formatDistanceToNow(new Date(item.timestamp), { addSuffix: true }) : 'N/A'}</TableCell>
                                 <TableCell className="text-right">
                                     <Button asChild variant="ghost" size="sm">
-                                        <Link href={item.href}>View</Link>
+                                        <Link href={details.href}>View</Link>
                                     </Button>
                                 </TableCell>
                             </TableRow>
