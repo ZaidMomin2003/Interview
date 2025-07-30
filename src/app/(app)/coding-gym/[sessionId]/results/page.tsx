@@ -14,13 +14,14 @@ import type { CodingSession } from '@/ai/schemas';
 import { Skeleton } from '@/components/ui/skeleton';
 
 
-export default function CodingResultsPage({ params }: { params: Promise<{ sessionId: string }> }) {
-    const { sessionId } = use(params);
+export default function CodingResultsPage({ params }: { params: { sessionId: string } }) {
+    const { sessionId } = params;
     const { toast } = useToast();
     const { addBookmark, generateCodingFeedback } = useUserData();
     const [session, setSession] = useState<CodingSession | null>(null);
     const [loading, setLoading] = useState(true);
 
+    // Initial data fetch is now a server action, but we re-fetch to get feedback
     useEffect(() => {
         const fetchAndAnalyze = async () => {
             setLoading(true);

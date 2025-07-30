@@ -1,14 +1,16 @@
 // src/services/firestore.ts
-'use client';
+'use server';
 
-import { db } from '@/lib/firebase';
+import { db as clientDb } from '@/lib/firebase';
+import { getAdminApp } from '@/lib/firebase-server-config';
+import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import { doc, getDoc, setDoc, updateDoc, collection, addDoc } from 'firebase/firestore';
-import type { AppUser, CodingSession, CodingQuestionWithSolution } from '@/hooks/use-user-data';
+import type { AppUser, CodingSession, CodingQuestionWithSolution } from '@/ai/schemas';
 
-const usersCollectionRef = collection(db, 'users');
-const codingSessionsCollectionRef = collection(db, 'coding_sessions');
+// --- Client-side functions ---
+const usersCollectionRef = collection(clientDb, 'users');
+const codingSessionsCollectionRef = collection(clientDb, 'coding_sessions');
 
-// Get a user's profile from Firestore
 export async function getUserProfile(uid: string): Promise<AppUser | null> {
     try {
         const userDocRef = doc(usersCollectionRef, uid);
@@ -23,7 +25,6 @@ export async function getUserProfile(uid: string): Promise<AppUser | null> {
     }
 }
 
-// Create a new user profile in Firestore
 export async function createUserProfile(userData: AppUser): Promise<void> {
     try {
         const userDocRef = doc(usersCollectionRef, userData.uid);
@@ -33,7 +34,6 @@ export async function createUserProfile(userData: AppUser): Promise<void> {
     }
 }
 
-// Update an existing user profile in Firestore
 export async function updateUserProfile(uid: string, data: Partial<AppUser>): Promise<void> {
     try {
         const userDocRef = doc(usersCollectionRef, uid);
@@ -44,25 +44,33 @@ export async function updateUserProfile(uid: string, data: Partial<AppUser>): Pr
 }
 
 
-// --- Coding Session Functions ---
+// --- Coding Session Functions (SERVER-SIDE) ---
+const adminApp = getAdminApp();
+const adminDb = adminApp ? getAdminFirestore(adminApp) : null;
 
 export async function getCodingSession(sessionId: string): Promise<CodingSession | null> {
+    if (!adminDb) {
+        console.error("Admin DB not initialized");
+        return null;
+    }
     try {
-        const sessionDocRef = doc(codingSessionsCollectionRef, sessionId);
-        const sessionDoc = await getDoc(sessionDocRef);
-        if (sessionDoc.exists()) {
-            return { id: sessionDoc.id, ...sessionDoc.data() } as CodingSession;
+        const sessionDocRef = adminDb.collection('coding_sessions').doc(sessionId);
+        const sessionDoc = await sessionDocRef.get();
+        if (sessionDoc.exists) {
+            const data = sessionDoc.data() as Omit<CodingSession, 'id'>;
+            return { id: sessionDoc.id, ...data };
         }
         return null;
     } catch (error) {
-        console.error("Error fetching coding session:", error);
+        console.error("Error fetching coding session with Admin SDK:", error);
         return null;
     }
 }
 
 export async function updateCodingSessionSolutions(sessionId: string, solutions: Record<string, string>): Promise<void> {
+    if (!adminDb) throw new Error("Admin DB not initialized");
     try {
-        const sessionDocRef = doc(codingSessionsCollectionRef, sessionId);
+        const sessionDocRef = adminDb.collection('coding_sessions').doc(sessionId);
         const session = await getCodingSession(sessionId);
         if (!session) throw new Error("Session not found");
 
@@ -71,7 +79,7 @@ export async function updateCodingSessionSolutions(sessionId: string, solutions:
             userSolution: solutions[q.id] || q.userSolution || '',
         }));
 
-        await updateDoc(sessionDocRef, { questions: updatedQuestions });
+        await sessionDocRef.update({ questions: updatedQuestions });
     } catch (error) {
         console.error("Error updating solutions:", error);
         throw error;
@@ -79,9 +87,10 @@ export async function updateCodingSessionSolutions(sessionId: string, solutions:
 }
 
 export async function updateCodingSessionFeedback(sessionId: string, questions: CodingQuestionWithSolution[]): Promise<void> {
+    if (!adminDb) throw new Error("Admin DB not initialized");
     try {
-        const sessionDocRef = doc(codingSessionsCollectionRef, sessionId);
-        await updateDoc(sessionDocRef, { 
+        const sessionDocRef = adminDb.collection('coding_sessions').doc(sessionId);
+        await sessionDocRef.update({ 
             questions: questions,
             status: 'completed'
         });

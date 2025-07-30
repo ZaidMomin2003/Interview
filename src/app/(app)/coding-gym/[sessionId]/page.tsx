@@ -9,40 +9,40 @@ import { Textarea } from '@/components/ui/textarea';
 import { ChevronRight, ChevronLeft, Loader2, CheckCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
-import type { CodingSession, CodingQuestionWithSolution } from '@/ai/schemas';
+import type { CodingSession } from '@/ai/schemas';
 import { getCodingSession, updateCodingSessionSolutions } from '@/services/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 
-export default function CodingSessionPage({ params }: { params: Promise<{ sessionId: string }> }) {
-    const { sessionId } = use(params);
+export default function CodingSessionPage({ params }: { params: { sessionId: string } }) {
+    const { sessionId } = params;
     const router = useRouter();
     const { toast } = useToast();
-    const [session, setSession] = useState<CodingSession | null>(null);
-    const [loading, setLoading] = useState(true);
+    
+    // `use` hook to resolve the promise from the server action
+    const initialSession = use(getCodingSession(sessionId));
+
+    const [session] = useState<CodingSession | null>(initialSession);
+    const [loading, setLoading] = useState(false);
     const [solutions, setSolutions] = useState<Record<string, string>>({});
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [isFinishing, setIsFinishing] = useState(false);
 
     useEffect(() => {
-        const fetchSession = async () => {
-            setLoading(true);
-            const fetchedSession = await getCodingSession(sessionId);
-            if (fetchedSession) {
-                setSession(fetchedSession);
-                // Initialize solutions state
-                const initialSolutions: Record<string, string> = {};
-                fetchedSession.questions.forEach(q => {
-                    initialSolutions[q.id] = q.userSolution || '';
-                });
-                setSolutions(initialSolutions);
-            } else {
-                toast({ variant: 'destructive', title: 'Error', description: 'Coding session not found.' });
-                router.push('/coding-gym');
-            }
-            setLoading(false);
-        };
-        fetchSession();
-    }, [sessionId, router, toast]);
+        if (!session) {
+            toast({ variant: 'destructive', title: 'Error', description: 'Coding session not found.' });
+            router.push('/coding-gym');
+            return;
+        }
+
+        // Initialize solutions state from the fetched session data
+        const initialSolutions: Record<string, string> = {};
+        session.questions.forEach(q => {
+            initialSolutions[q.id] = q.userSolution || '';
+        });
+        setSolutions(initialSolutions);
+        setLoading(false);
+
+    }, [session, router, toast]);
 
     const handleNextQuestion = () => {
         if (!session || currentQuestionIndex >= session.questions.length - 1) return;
