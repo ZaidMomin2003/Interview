@@ -3,7 +3,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Bot, CodeXml, FileText, ArrowRight, BrainCircuit, History } from 'lucide-react';
+import { Bot, CodeXml, FileText, ArrowRight, BrainCircuit, History, HelpCircle } from 'lucide-react';
 import { ActivityChart, ReadinessChart } from '@/app/p/[userId]/charts';
 import { format, subDays, formatDistanceToNow } from 'date-fns';
 import Link from 'next/link';
@@ -51,6 +51,7 @@ const typeMap: Record<string, { label: string, color: string, href: string }> = 
     coding: { label: "Coding", color: "bg-purple-500/20 text-purple-300", href: "/coding-gym" },
     notes: { label: "Notes", color: "bg-yellow-500/20 text-yellow-300", href: "/notes" },
     resume: { label: "Resume", color: "bg-green-500/20 text-green-300", href: "/resume-studio" },
+    other: { label: "Other", color: "bg-gray-500/20 text-gray-300", href: "/history" },
 };
 
 
@@ -167,7 +168,7 @@ export default function RealDashboard() {
                   </TableHeader>
                   <TableBody>
                       {recentHistory.map((item, index) => {
-                          const details = typeMap[item.type as keyof typeof typeMap];
+                          const details = typeMap[item.type as keyof typeof typeMap] || typeMap.other;
                           return (
                             <TableRow key={index}>
                                 <TableCell className="font-medium">{item.title}</TableCell>
