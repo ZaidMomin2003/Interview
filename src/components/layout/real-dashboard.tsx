@@ -90,6 +90,17 @@ export default function RealDashboard() {
           Here's your progress overview. Keep up the great work!
         </p>
       </div>
+      
+      {/* Readiness Card (Mobile Only) */}
+       <Card className="bg-secondary/50 lg:hidden">
+            <CardHeader className="text-center">
+                <CardTitle>Interview Readiness</CardTitle>
+                <CardDescription>Based on your recent performance.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <ReadinessChart percentage={readiness} />
+            </CardContent>
+        </Card>
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3 lg:gap-8">
         {/* Main Content */}
@@ -124,7 +135,7 @@ export default function RealDashboard() {
 
         {/* Sidebar */}
         <div className="lg:col-span-1 space-y-8">
-             <Card className="bg-secondary/50">
+             <Card className="bg-secondary/50 hidden lg:block">
                 <CardHeader className="text-center">
                     <CardTitle>Interview Readiness</CardTitle>
                     <CardDescription>Based on your recent performance.</CardDescription>
@@ -172,6 +183,7 @@ export default function RealDashboard() {
                   <TableBody>
                       {recentHistory.map((item, index) => {
                           const details = typeMap[item.type as keyof typeof typeMap] || typeMap.other;
+                          const date = typeof item.timestamp === 'number' && !isNaN(new Date(item.timestamp).getTime()) ? new Date(item.timestamp) : null;
                           return (
                             <TableRow key={item.id || index}>
                                 <TableCell className="font-medium">{item.title}</TableCell>
@@ -179,7 +191,7 @@ export default function RealDashboard() {
                                     <Badge variant="outline" className={details.color}>{details.label}</Badge>
                                 </TableCell>
                                 <TableCell>
-                                    {typeof item.timestamp === 'number' ? formatDistanceToNow(new Date(item.timestamp), { addSuffix: true }) : 'N/A'}
+                                    {date ? formatDistanceToNow(date, { addSuffix: true }) : 'N/A'}
                                 </TableCell>
                                 <TableCell className="text-right">
                                     <Button asChild variant="ghost" size="sm">
