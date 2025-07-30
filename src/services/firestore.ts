@@ -6,7 +6,6 @@ import { getAdminApp } from '@/lib/firebase-server-config';
 import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import { doc, getDoc, setDoc, updateDoc, collection, addDoc } from 'firebase/firestore';
 import type { AppUser, CodingSession, CodingQuestionWithSolution } from '@/ai/schemas';
-import { redirect } from 'next/navigation';
 
 // --- Client-side functions ---
 const usersCollectionRef = collection(clientDb, 'users');

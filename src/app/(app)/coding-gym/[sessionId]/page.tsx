@@ -21,7 +21,7 @@ export default function CodingSessionPage({ params }: { params: { sessionId: str
     // `use` hook resolves the promise from the server action during render.
     const initialSession = use(getCodingSession(sessionId));
 
-    const [session, setSession] = useState<CodingSession | null>(initialSession);
+    const [session, setSession] = useState<CodingSession | null>(null);
     const [loading, setLoading] = useState(true); // Start with loading true until state is synced
     const [solutions, setSolutions] = useState<Record<string, string>>({});
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
