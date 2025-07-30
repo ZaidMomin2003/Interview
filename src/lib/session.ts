@@ -31,7 +31,29 @@ export async function getCurrentUser(): Promise<AppUser | null> {
         return null;
     }
 
-    return userDoc.data() as AppUser;
+    const user = userDoc.data() as AppUser;
+
+    // --- FIX: Serialize Firestore Timestamps ---
+    // Convert any Firestore Timestamps to plain numbers before returning.
+     if (user.history) {
+        user.history = user.history.map(item => {
+            if (item.timestamp && typeof item.timestamp === 'object' && 'toMillis' in item.timestamp) {
+                return { ...item, timestamp: (item.timestamp as Timestamp).toMillis() };
+            }
+            return item;
+        });
+    }
+
+    if (user.reminders) {
+        user.reminders = user.reminders.map(item => {
+             if (item.date && typeof item.date === 'object' && 'toMillis' in item.date) {
+                return { ...item, date: (item.date as unknown as Timestamp).toMillis() };
+            }
+            return item;
+        });
+    }
+
+    return user;
 
   } catch (error) {
     if ((error as any).code === 'auth/id-token-expired' || (error as any).code === 'auth/session-cookie-expired') {
@@ -62,8 +84,8 @@ export async function getUserPortfolio(userId: string): Promise<AppUser | null> 
         // Convert any Firestore Timestamps to plain numbers before returning.
         if (user.history) {
             user.history = user.history.map(item => {
-                if (item.timestamp && typeof item.timestamp === 'object' && item.timestamp instanceof Timestamp) {
-                    return { ...item, timestamp: item.timestamp.toMillis() };
+                if (item.timestamp && typeof item.timestamp === 'object' && 'toMillis' in item.timestamp) {
+                    return { ...item, timestamp: (item.timestamp as Timestamp).toMillis() };
                 }
                 return item;
             });
