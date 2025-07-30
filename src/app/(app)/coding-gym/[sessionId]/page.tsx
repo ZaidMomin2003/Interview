@@ -28,21 +28,25 @@ export default function CodingSessionPage({ params }: { params: { sessionId: str
     const [isFinishing, setIsFinishing] = useState(false);
 
     useEffect(() => {
-        if (!session) {
+        // This effect should only run if the session exists to initialize state.
+        if (session) {
+            const initialSolutions: Record<string, string> = {};
+            session.questions.forEach(q => {
+                initialSolutions[q.id] = q.userSolution || '';
+            });
+            setSolutions(initialSolutions);
+            setLoading(false);
+        }
+    }, [session]);
+    
+    useEffect(() => {
+        // This effect handles the redirection if the session doesn't exist.
+        // It runs after the initial render, preventing the state update error.
+        if (!initialSession) {
             toast({ variant: 'destructive', title: 'Error', description: 'Coding session not found.' });
             router.push('/coding-gym');
-            return;
         }
-
-        // Initialize solutions state from the fetched session data
-        const initialSolutions: Record<string, string> = {};
-        session.questions.forEach(q => {
-            initialSolutions[q.id] = q.userSolution || '';
-        });
-        setSolutions(initialSolutions);
-        setLoading(false);
-
-    }, [session, router, toast]);
+    }, [initialSession, router, toast]);
 
     const handleNextQuestion = () => {
         if (!session || currentQuestionIndex >= session.questions.length - 1) return;
