@@ -70,11 +70,20 @@ export default function CodingGymPage() {
         throw new Error('Failed to create a session ID.');
       }
     } catch (error: any) {
-      toast({
-        variant: 'destructive',
-        title: 'Error Starting Session',
-        description: error.message || 'An unexpected error occurred.',
-      });
+      const errorMessage = error.message || 'An unexpected error occurred.';
+      if (errorMessage.includes('503') || errorMessage.toLowerCase().includes('overloaded')) {
+           toast({
+            variant: 'destructive',
+            title: 'AI Service Unavailable',
+            description: 'The AI model is currently overloaded. Please wait a moment and try again.',
+          });
+      } else {
+         toast({
+          variant: 'destructive',
+          title: 'Error Starting Session',
+          description: errorMessage,
+        });
+      }
       setIsLoading(false);
     }
   };
