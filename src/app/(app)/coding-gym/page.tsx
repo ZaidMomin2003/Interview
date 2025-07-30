@@ -84,7 +84,8 @@ export default function CodingGymPage() {
           description: errorMessage,
         });
       }
-      setIsLoading(false);
+    } finally {
+        setIsLoading(false);
     }
   };
 
