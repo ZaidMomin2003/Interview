@@ -2,7 +2,7 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Github, Linkedin, Twitter, Globe, MapPin, Bot, CodeXml, FileText, Award, Trophy, ExternalLink, Brush, MessageSquareQuote, HelpCircle, Quote } from 'lucide-react';
+import { Github, Linkedin, Twitter, Globe, MapPin, Bot, CodeXml, FileText, Award, Trophy, ExternalLink, Brush, MessageSquareQuote, HelpCircle, Quote, Youtube } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ReadinessChart, ActivityChart } from './charts';
@@ -51,6 +51,12 @@ const getWeeklyActivity = (history: HistoryItem[]) => {
     return Array.from(activityMap.entries()).map(([day, counts]) => ({ day, ...counts }));
 };
 
+const getYoutubeVideoId = (url: string) => {
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+};
+
 export default async function PublicPortfolioPage({ params }: { params: { userId: string } }) {
   const profile = await getUserPortfolio(params.userId);
 
@@ -69,7 +75,7 @@ export default async function PublicPortfolioPage({ params }: { params: { userId
   }
 
   const { portfolio, photoURL, history } = profile;
-  const { displayName, bio, location, socials, skills, projects, certifications, achievements, testimonials, faqs } = portfolio;
+  const { displayName, bio, location, socials, skills, projects, certifications, achievements, testimonials, faqs, youtubeVideoUrl } = portfolio;
   
   const socialLinks = [
       { href: socials?.github, icon: <Github className="h-5 w-5" />, label: 'GitHub' },
@@ -90,6 +96,8 @@ export default async function PublicPortfolioPage({ params }: { params: { userId
 
   const activityData = getWeeklyActivity(history);
   const readiness = Math.min(100, Math.floor((codingCount * 1.5) + (interviewCount * 2.5)));
+  
+  const videoId = youtubeVideoUrl ? getYoutubeVideoId(youtubeVideoUrl) : null;
   
   return (
     <div className="min-h-screen bg-background text-foreground py-12">
@@ -161,6 +169,24 @@ export default async function PublicPortfolioPage({ params }: { params: { userId
                         </Card>
                     </div>
                 </section>
+
+                {/* Featured Video Section */}
+                {videoId && (
+                    <section>
+                        <h2 className="text-2xl font-bold font-headline mb-4 text-primary">Featured Video</h2>
+                        <div className="aspect-video w-full">
+                            <iframe
+                                className="w-full h-full rounded-lg"
+                                src={`https://www.youtube.com/embed/${videoId}`}
+                                title="YouTube video player"
+                                frameBorder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowFullScreen
+                            ></iframe>
+                        </div>
+                    </section>
+                )}
+
 
                 {/* Skills Section */}
                 <section>

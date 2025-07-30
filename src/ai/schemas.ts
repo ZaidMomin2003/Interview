@@ -157,6 +157,7 @@ export const PortfolioSchema = z.object({
   displayName: z.string().min(1, 'Display name is required.'),
   bio: z.string().optional().default(''),
   location: z.string().optional().default(''),
+  youtubeVideoUrl: z.string().url().optional().or(z.literal('')).default(''),
   socials: SocialsSchema.optional(),
   skills: z.array(SkillSchema).optional().default([]),
   projects: z.array(ProjectSchema).optional().default([]),

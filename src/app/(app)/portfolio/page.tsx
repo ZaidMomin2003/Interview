@@ -157,6 +157,9 @@ export default function PortfolioPage() {
                <FormField control={form.control} name="location" render={({ field }) => (
                 <FormItem><FormLabel>Location</FormLabel><FormControl><Input {...field} placeholder="e.g., San Francisco, CA" /></FormControl><FormMessage /></FormItem>
               )} />
+               <FormField control={form.control} name="youtubeVideoUrl" render={({ field }) => (
+                <FormItem><FormLabel>YouTube Video URL</FormLabel><FormControl><Input {...field} placeholder="e.g., https://www.youtube.com/watch?v=..." /></FormControl><FormMessage /></FormItem>
+              )} />
             </CardContent>
           </Card>
 

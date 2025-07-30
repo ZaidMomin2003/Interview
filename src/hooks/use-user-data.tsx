@@ -42,6 +42,7 @@ export const DEFAULT_PORTFOLIO: Portfolio = {
     displayName: 'Zaid Momin',
     bio: 'Senior AI Engineer specializing in Next.js and Large Language Models.',
     location: 'Bijapur, India',
+    youtubeVideoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
     skills: [
         { name: 'React' },
         { name: 'Next.js' },
@@ -91,7 +92,29 @@ export const DEFAULT_PORTFOLIO: Portfolio = {
         linkedin: 'https://www.linkedin.com/in/arshad-momin-a3139b21b/', 
         twitter: 'https://x.com/zaidwontdo', 
         website: 'https://zaidmomin.vercel.app' 
-    }
+    },
+    testimonials: [
+        {
+            quote: 'Working with Zaid was an absolute pleasure. His expertise in AI and front-end development is exceptional. He delivered a high-quality product ahead of schedule and was a great communicator throughout the process.',
+            authorName: 'Jane Doe',
+            authorRole: 'Product Manager at TechCorp'
+        },
+        {
+            quote: 'I was consistently impressed by Zaid\'s problem-solving skills and his ability to tackle complex challenges with a positive attitude. He is a true team player and a valuable asset to any project.',
+            authorName: 'John Smith',
+            authorRole: 'Lead Engineer at Innovate LLC'
+        }
+    ],
+    faqs: [
+        {
+            question: 'What are you most passionate about in software development?',
+            answer: 'I\'m most passionate about building tools that empower users and create delightful experiences. I love the intersection of complex back-end logic and intuitive front-end design, especially when leveraging AI to create something truly innovative.'
+        },
+        {
+            question: 'How do you approach learning new technologies?',
+            answer: 'I follow a project-based approach. I start with the official documentation to understand the core concepts, then immediately apply them by building a small-scale project. This hands-on method helps me solidify my understanding and uncover practical challenges early on.'
+        }
+    ]
 };
 
 
