@@ -2,13 +2,15 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Github, Linkedin, Twitter, Globe, MapPin, Bot, CodeXml, FileText, Award, Trophy, ExternalLink, Brush } from 'lucide-react';
+import { Github, Linkedin, Twitter, Globe, MapPin, Bot, CodeXml, FileText, Award, Trophy, ExternalLink, Brush, MessageSquareQuote, HelpCircle, Quote } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ReadinessChart, ActivityChart } from './charts';
 import { format, subDays } from 'date-fns';
 import { getUserPortfolio } from '@/lib/session';
 import type { HistoryItem } from '@/ai/schemas';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+
 
 function PlaceholderCard({ icon, title, description }: { icon: React.ReactNode, title: string, description: string }) {
     return (
@@ -67,7 +69,7 @@ export default async function PublicPortfolioPage({ params }: { params: { userId
   }
 
   const { portfolio, photoURL, history } = profile;
-  const { displayName, bio, location, socials, skills, projects, certifications, achievements } = portfolio;
+  const { displayName, bio, location, socials, skills, projects, certifications, achievements, testimonials, faqs } = portfolio;
   
   const socialLinks = [
       { href: socials?.github, icon: <Github className="h-5 w-5" />, label: 'GitHub' },
@@ -212,6 +214,31 @@ export default async function PublicPortfolioPage({ params }: { params: { userId
                         />
                     )}
                 </section>
+
+                {/* Testimonials Section */}
+                <section>
+                    <h2 className="text-2xl font-bold font-headline mb-4 text-primary">Testimonials</h2>
+                    {testimonials && testimonials.length > 0 ? (
+                        <div className="grid md:grid-cols-2 gap-6">
+                            {testimonials.map((testimonial, index) => (
+                                <Card key={index} className="bg-secondary/50">
+                                    <CardContent className="p-6">
+                                        <Quote className="w-8 h-8 text-primary/30 mb-4" />
+                                        <blockquote className="text-foreground italic">"{testimonial.quote}"</blockquote>
+                                        <p className="text-right font-semibold text-primary mt-4">&mdash; {testimonial.authorName}</p>
+                                        <p className="text-right text-sm text-muted-foreground">{testimonial.authorRole}</p>
+                                    </CardContent>
+                                </Card>
+                            ))}
+                        </div>
+                    ) : (
+                         <PlaceholderCard 
+                            icon={<MessageSquareQuote className="h-10 w-10 text-muted-foreground/50"/>}
+                            title="No Testimonials Added"
+                            description="Add testimonials from colleagues to build social proof."
+                        />
+                    )}
+                </section>
                 
                 {/* Certifications Section */}
                 <section>
@@ -270,6 +297,31 @@ export default async function PublicPortfolioPage({ params }: { params: { userId
                             icon={<Trophy className="h-10 w-10 text-muted-foreground/50"/>}
                             title="No Achievements Added"
                             description="Highlight your awards and key accomplishments."
+                        />
+                    )}
+                </section>
+
+                {/* FAQ Section */}
+                <section>
+                    <h2 className="text-2xl font-bold font-headline mb-4 text-primary">Frequently Asked Questions</h2>
+                    {faqs && faqs.length > 0 ? (
+                        <Accordion type="single" collapsible className="w-full">
+                           {faqs.map((faq, index) => (
+                                <AccordionItem value={`item-${index}`} key={index}>
+                                    <AccordionTrigger className="text-left hover:no-underline text-lg">
+                                        <p className="font-semibold text-foreground">{faq.question}</p>
+                                    </AccordionTrigger>
+                                    <AccordionContent className="text-base text-muted-foreground">
+                                        {faq.answer}
+                                    </AccordionContent>
+                                </AccordionItem>
+                           ))}
+                        </Accordion>
+                    ) : (
+                        <PlaceholderCard 
+                            icon={<HelpCircle className="h-10 w-10 text-muted-foreground/50"/>}
+                            title="No FAQs Added"
+                            description="Add a FAQ section to answer common questions about yourself."
                         />
                     )}
                 </section>

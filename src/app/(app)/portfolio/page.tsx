@@ -50,6 +50,16 @@ export default function PortfolioPage() {
     control: form.control,
     name: "achievements",
   });
+  
+  const { fields: testimonialFields, append: appendTestimonial, remove: removeTestimonial } = useFieldArray({
+    control: form.control,
+    name: "testimonials",
+  });
+
+  const { fields: faqFields, append: appendFaq, remove: removeFaq } = useFieldArray({
+    control: form.control,
+    name: "faqs",
+  });
 
   const onSubmit = async (data: PortfolioFormValues) => {
     try {
@@ -255,6 +265,53 @@ export default function PortfolioPage() {
                 </div>
               ))}
                <Button type="button" variant="outline" onClick={() => appendAchievement({ description: '', date: '' })}><PlusCircle className="mr-2"/> Add Achievement</Button>
+            </CardContent>
+          </Card>
+          
+           <Card>
+            <CardHeader>
+              <CardTitle>Testimonials</CardTitle>
+              <CardDescription>Add quotes from colleagues or clients.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+               {testimonialFields.map((field, index) => (
+                <div key={field.id} className="p-4 border rounded-lg space-y-4 relative">
+                    <Button type="button" variant="ghost" size="icon" className="absolute top-2 right-2 text-muted-foreground hover:text-destructive" onClick={() => removeTestimonial(index)}><Trash2 className="h-4 w-4"/></Button>
+                    <FormField control={form.control} name={`testimonials.${index}.quote`} render={({ field }) => (
+                      <FormItem><FormLabel>Quote</FormLabel><FormControl><Textarea {...field} placeholder="The testimonial text..."/></FormControl><FormMessage /></FormItem>
+                    )} />
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <FormField control={form.control} name={`testimonials.${index}.authorName`} render={({ field }) => (
+                        <FormItem><FormLabel>Author's Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                      )} />
+                      <FormField control={form.control} name={`testimonials.${index}.authorRole`} render={({ field }) => (
+                        <FormItem><FormLabel>Author's Role / Title</FormLabel><FormControl><Input {...field} placeholder="e.g., Senior Engineer at Acme" /></FormControl><FormMessage /></FormItem>
+                      )} />
+                    </div>
+                </div>
+              ))}
+               <Button type="button" variant="outline" onClick={() => appendTestimonial({ quote: '', authorName: '', authorRole: '' })}><PlusCircle className="mr-2"/> Add Testimonial</Button>
+            </CardContent>
+          </Card>
+
+           <Card>
+            <CardHeader>
+              <CardTitle>Frequently Asked Questions</CardTitle>
+              <CardDescription>Add a personal FAQ section to your profile.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+               {faqFields.map((field, index) => (
+                <div key={field.id} className="p-4 border rounded-lg space-y-4 relative">
+                    <Button type="button" variant="ghost" size="icon" className="absolute top-2 right-2 text-muted-foreground hover:text-destructive" onClick={() => removeFaq(index)}><Trash2 className="h-4 w-4"/></Button>
+                    <FormField control={form.control} name={`faqs.${index}.question`} render={({ field }) => (
+                      <FormItem><FormLabel>Question</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                    )} />
+                    <FormField control={form.control} name={`faqs.${index}.answer`} render={({ field }) => (
+                      <FormItem><FormLabel>Answer</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>
+                    )} />
+                </div>
+              ))}
+               <Button type="button" variant="outline" onClick={() => appendFaq({ question: '', answer: '' })}><PlusCircle className="mr-2"/> Add FAQ</Button>
             </CardContent>
           </Card>
 

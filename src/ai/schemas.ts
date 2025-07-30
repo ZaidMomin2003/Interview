@@ -140,6 +140,17 @@ const AchievementSchema = z.object({
   date: z.string().optional().default(''),
 });
 
+const TestimonialSchema = z.object({
+    quote: z.string().min(1),
+    authorName: z.string().min(1),
+    authorRole: z.string().min(1),
+});
+
+const FAQSchema = z.object({
+    question: z.string().min(1),
+    answer: z.string().min(1),
+});
+
 
 export const PortfolioSchema = z.object({
   isPublic: z.boolean().default(false),
@@ -151,6 +162,8 @@ export const PortfolioSchema = z.object({
   projects: z.array(ProjectSchema).optional().default([]),
   certifications: z.array(CertificationSchema).optional().default([]),
   achievements: z.array(AchievementSchema).optional().default([]),
+  testimonials: z.array(TestimonialSchema).optional().default([]),
+  faqs: z.array(FAQSchema).optional().default([]),
 });
 export type Portfolio = z.infer<typeof PortfolioSchema>;
 
