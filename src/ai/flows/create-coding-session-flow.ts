@@ -1,16 +1,17 @@
+
 'use server';
 /**
  * @fileOverview A flow for creating a new coding practice session.
  */
 import { ai } from '@/ai/genkit';
-import { generateCodingQuestion } from './generate-coding-question-flow';
+import { codingQuestionPrompt } from './generate-coding-question-flow';
 import { 
     CreateCodingSessionInputSchema, 
     CreateCodingSessionOutputSchema,
     type CreateCodingSessionInput,
     type CreateCodingSessionOutput,
     type CodingSession,
-    CodingQuestionOutput
+    type CodingQuestionOutput
 } from '@/ai/schemas';
 import { getFirestore } from 'firebase-admin/firestore';
 import { getAdminApp } from '@/lib/firebase-server-config';
@@ -35,8 +36,14 @@ const createCodingSessionFlow = ai.defineFlow(
     // Generate N questions sequentially to avoid hitting API rate limits
     const generatedQuestions: CodingQuestionOutput[] = [];
     for (let i = 0; i < numberOfQuestions; i++) {
-        const question = await generateCodingQuestion({ topic, difficulty });
-        generatedQuestions.push(question);
+        const { output } = await codingQuestionPrompt({ topic, difficulty });
+        if (output) {
+          generatedQuestions.push(output);
+        }
+    }
+
+    if (generatedQuestions.length !== numberOfQuestions) {
+        throw new Error("Failed to generate the requested number of questions.");
     }
 
     // Create session object for Firestore

@@ -5,7 +5,6 @@ import { useState, useEffect, useContext, createContext, ReactNode, useCallback 
 import { useAuth, type CoreUser } from './use-auth';
 import type { Portfolio, Bookmark, HistoryItem, Note, Reminder, AppUser, NotesInput, Task, TaskStatus, CreateCodingSessionInput, CreateCodingSessionOutput } from '@/ai/schemas';
 import { generateResumeReview } from '@/ai/flows/generate-resume-review-flow';
-import { generateCodingQuestion } from '@/ai/flows/generate-coding-question-flow';
 import { generateInterviewQuestion } from '@/ai/flows/generate-interview-question-flow';
 import { generateNotes } from '@/ai/flows/generate-notes-flow';
 import { estimateSalary } from '@/ai/flows/estimate-salary-flow';
@@ -140,7 +139,6 @@ type UserDataContextType = {
   togglePomodoroActive: () => void;
   // AI Actions
   generateResumeReview: typeof generateResumeReview;
-  generateCodingQuestion: typeof generateCodingQuestion;
   generateInterviewQuestion: typeof generateInterviewQuestion;
   generateNotes: typeof generateNotes;
   estimateSalary: typeof estimateSalary;
@@ -167,7 +165,6 @@ const UserDataContext = createContext<UserDataContextType>({
   resetPomodoroTimer: () => {},
   togglePomodoroActive: () => {},
   generateResumeReview: async () => ({ review: '', score: 0 }),
-  generateCodingQuestion: async () => ({ question: '', starter_code: '', title: '' }),
   generateInterviewQuestion: async () => ({ question: '' }),
   generateNotes: async () => ({ title: '', description: '', keyTakeaways: [], contentSections: [] }),
   estimateSalary: async () => ({ median: 0, percentile25: 0, percentile75: 0, rationale: '' }),
@@ -427,7 +424,6 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
         resetPomodoroTimer,
         togglePomodoroActive,
         generateResumeReview,
-        generateCodingQuestion,
         generateInterviewQuestion,
         generateNotes,
         estimateSalary,
