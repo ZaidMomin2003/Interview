@@ -1,7 +1,7 @@
 // src/app/(app)/coding-gym/[sessionId]/page.tsx
 "use client";
 
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -18,31 +18,31 @@ export default function CodingSessionPage({ params }: { params: { sessionId: str
     const router = useRouter();
     const { toast } = useToast();
     
-    // `use` hook resolves the promise from the server action during render.
-    const initialSession = use(getCodingSession(sessionId));
-
     const [session, setSession] = useState<CodingSession | null>(null);
-    const [loading, setLoading] = useState(true); // Start with loading true until state is synced
+    const [loading, setLoading] = useState(true);
     const [solutions, setSolutions] = useState<Record<string, string>>({});
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [isFinishing, setIsFinishing] = useState(false);
 
     useEffect(() => {
-        // This effect runs after initial render to handle the session data or redirect.
-        if (initialSession) {
-            setSession(initialSession);
-            const initialSolutions: Record<string, string> = {};
-            initialSession.questions.forEach(q => {
-                initialSolutions[q.id] = q.userSolution || '';
-            });
-            setSolutions(initialSolutions);
+        const fetchSession = async () => {
+            const fetchedSession = await getCodingSession(sessionId);
+            if (fetchedSession) {
+                setSession(fetchedSession);
+                const initialSolutions: Record<string, string> = {};
+                fetchedSession.questions.forEach(q => {
+                    initialSolutions[q.id] = q.userSolution || '';
+                });
+                setSolutions(initialSolutions);
+            } else {
+                toast({ variant: 'destructive', title: 'Error', description: 'Coding session not found.' });
+                router.push('/coding-gym');
+            }
             setLoading(false);
-        } else {
-            // The session was not found. Redirect after render is complete.
-            toast({ variant: 'destructive', title: 'Error', description: 'Coding session not found.' });
-            router.push('/coding-gym');
-        }
-    }, [initialSession, router, toast]);
+        };
+        
+        fetchSession();
+    }, [sessionId, router, toast]);
 
     const handleNextQuestion = () => {
         if (!session || currentQuestionIndex >= session.questions.length - 1) return;
