@@ -2,9 +2,6 @@
 /**
  * @fileOverview A flow for creating a new coding practice session.
  */
-import * as dotenv from 'dotenv';
-dotenv.config();
-
 import { ai } from '@/ai/genkit';
 import { generateCodingQuestion } from './generate-coding-question-flow';
 import { 
