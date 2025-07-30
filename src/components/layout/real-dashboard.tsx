@@ -25,6 +25,9 @@ const getWeeklyActivity = (history: HistoryItem[]) => {
     history.forEach(item => {
         if (!item.timestamp) return;
         const itemDate = new Date(item.timestamp);
+        // Ensure date is valid before proceeding
+        if (isNaN(itemDate.getTime())) return;
+        
         const dayDiff = (today.getTime() - itemDate.getTime()) / (1000 * 3600 * 24);
         if (dayDiff < 7 && dayDiff >= 0) {
             const day = format(itemDate, 'E');
@@ -169,13 +172,17 @@ export default function RealDashboard() {
                   <TableBody>
                       {recentHistory.map((item, index) => {
                           const details = typeMap[item.type as keyof typeof typeMap] || typeMap.other;
+                          const date = item.timestamp ? new Date(item.timestamp) : null;
+                          const isValidDate = date && !isNaN(date.getTime());
                           return (
-                            <TableRow key={index}>
+                            <TableRow key={item.id || index}>
                                 <TableCell className="font-medium">{item.title}</TableCell>
                                 <TableCell>
                                     <Badge variant="outline" className={details.color}>{details.label}</Badge>
                                 </TableCell>
-                                <TableCell>{item.timestamp ? formatDistanceToNow(new Date(item.timestamp), { addSuffix: true }) : 'N/A'}</TableCell>
+                                <TableCell>
+                                    {isValidDate ? formatDistanceToNow(date, { addSuffix: true }) : 'N/A'}
+                                </TableCell>
                                 <TableCell className="text-right">
                                     <Button asChild variant="ghost" size="sm">
                                         <Link href={details.href}>View</Link>
